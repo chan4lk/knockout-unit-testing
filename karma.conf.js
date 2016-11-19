@@ -15,9 +15,23 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'node_modules/jquery/dist/jquery.min.js',
+      'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
       'node_modules/knockout/build/output/knockout-latest.debug.js',
       'src/*.js',
-      'test/*.spec.js'
+      'test/*.spec.js',
+      {
+        pattern: 'test/mocks/*.html',
+        watched: true,
+        served: true,
+        included: false
+      },
+      {
+        pattern: 'test/mocks/*.json',
+        watched: true,
+        served: true,
+        included: false
+      },
     ],
 
 
@@ -55,10 +69,9 @@ module.exports = function(config) {
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
 
-
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    browsers: ['PhantomJS', 'Chrome', 'Firefox', 'IE'],
 
 
     // Continuous Integration mode
