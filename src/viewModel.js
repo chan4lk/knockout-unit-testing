@@ -1,25 +1,30 @@
-var PersonNameViewModel = function(first, last){
+var PersonNameViewModel = function (first, last) {
     var self = this;
-    self.isValid = false;
+
+    Object.defineProperty(self, 'IsValid', {
+        get: function () {
+            return self.isValid();
+        }
+    });
+
     self.firstName = ko.observable(first);
     self.lastName = ko.observable(last);
 
-    self.fullName = ko.computed(function(){
+    self.fullName = ko.computed(function () {
         return self.firstName() + " " + self.lastName();
-    }, self); 
+    }, self);
 
-    self.submit = function(){
-        if(self.validate()){
+    self.submit = function () {
+        if (self.IsValid) {
             alert('Successfully submited');
         }
-    }  
+    }
 
     /**
      * validate the model.
      */
-    self.validate = function(){
-        if(self.firstName() !== "" && self.lastName() !== ""){
-            self.isValid = true;
+    self.isValid = function () {
+        if (self.firstName() !== "" && self.lastName() !== "") {
             return true;
         }
 
@@ -29,6 +34,6 @@ var PersonNameViewModel = function(first, last){
     return self;
 };
 
-(function(){
+(function () {
     ko.applyBindings(new PersonNameViewModel("Ada", "Lovelace"));
 })();

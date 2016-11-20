@@ -1,12 +1,12 @@
 jasmine.getFixtures().fixturesPath = '/base/test/mocks';
 jasmine.getJSONFixtures().fixturesPath = '/base/test/mocks';
-describe('Knockout', function(){
+describe('Knockout', function () {
 
     beforeEach(function () {
-       ko.cleanNode(document.body); 
+        ko.cleanNode(document.body);
     });
 
-    it('computes fullName based on firstName and lastName', function(){
+    it('computes fullName based on firstName and lastName', function () {
         var target = new PersonNameViewModel('Ada', 'Lovelace');
         expect(target.fullName()).toBe('Ada Lovelace');
     });
@@ -17,14 +17,14 @@ describe('Knockout', function(){
         expect($(post).html()).toBe('foo');
     });
 
-    it('should bind data', function(){
-        
+    it('should bind data', function () {
+
         var data = getJSONFixture('persons.json');
         var persons = data.persons;
 
         loadFixtures('page.html');
         var content = $('.content');
-        expect(content).not.toBeUndefined(); 
+        expect(content).not.toBeUndefined();
 
         var target = new PersonNameViewModel(persons[0].firstName, persons[0].lastName);
         ko.applyBindings(target, content.get(0));
@@ -34,11 +34,11 @@ describe('Knockout', function(){
     });
 
     it('should update modle by ui', function () {
-         var data = getJSONFixture('persons.json');
+        var data = getJSONFixture('persons.json');
         var persons = data.persons;
 
         loadFixtures('page.html');
-        var content = $('.content');       
+        var content = $('.content');
 
         var model = new PersonNameViewModel(persons[0].firstName, persons[0].lastName);
         ko.applyBindings(model, content.get(0));
@@ -51,25 +51,25 @@ describe('Knockout', function(){
         expect(model.fullName()).toBe('Hansi Ranaweera')
     });
 
-    it('should validate model', function(){
+    it('should validate model', function () {
         var model = new PersonNameViewModel('Chandima', 'Ranaweera');
         loadFixtures('forms.html');
         var content = $('.container').get(0);
         ko.applyBindings(model, content);
-        
+
         //logMessage(content);
         var button = $(content).find('.btn').get(0);
         //logMessage(button);
 
-        spyOnEvent(button, 'click');        
+        spyOnEvent(button, 'click');
         $(button).click();
-        
-       expect('click').toHaveBeenTriggeredOn($(button));
-       expect(model.isValid).toBeTruthy();
-        
+
+        expect('click').toHaveBeenTriggeredOn($(button));
+        expect(model.IsValid).toBeTruthy();
+
     });
 
-    it('should invalidate model', function(){
+    it('should invalidate model', function () {
         var model = new PersonNameViewModel('Chandima', 'Ranaweera');
         loadFixtures('forms.html');
         var content = $('.container').get(0);
@@ -77,16 +77,18 @@ describe('Knockout', function(){
 
         var firstName = $(content).find('input:first').get(0);
         $(firstName).val('').change();
-        
+
         //logMessage(content);
-        var button = $(content).find('.btn').get(0); 
+        var button = $(content).find('.btn').get(0);
         $(button).click();
-  
-       expect(model.isValid).toBeFalsy();
-        
+
+        expect(model.IsValid).toBeFalsy();
+
     });
 });
 
 function logMessage(message) {
-    console.log(message);
+    if (window.console) {
+        console.log(message);
+    }
 }
