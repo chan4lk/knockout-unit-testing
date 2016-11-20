@@ -49,5 +49,44 @@ describe('Knockout', function(){
         expect($(firstName).val()).toBe('Hansi');
         expect(model.firstName()).toBe('Hansi');
         expect(model.fullName()).toBe('Hansi Ranaweera')
-    })
+    });
+
+    it('should validate model', function(){
+        var model = new PersonNameViewModel('Chandima', 'Ranaweera');
+        loadFixtures('forms.html');
+        var content = $('.container').get(0);
+        ko.applyBindings(model, content);
+        
+        //logMessage(content);
+        var button = $(content).find('.btn').get(0);
+        //logMessage(button);
+
+        spyOnEvent(button, 'click');        
+        $(button).click();
+        
+       expect('click').toHaveBeenTriggeredOn($(button));
+       expect(model.isValid).toBeTruthy();
+        
+    });
+
+    it('should invalidate model', function(){
+        var model = new PersonNameViewModel('Chandima', 'Ranaweera');
+        loadFixtures('forms.html');
+        var content = $('.container').get(0);
+        ko.applyBindings(model, content);
+
+        var firstName = $(content).find('input:first').get(0);
+        $(firstName).val('').change();
+        
+        //logMessage(content);
+        var button = $(content).find('.btn').get(0); 
+        $(button).click();
+  
+       expect(model.isValid).toBeFalsy();
+        
+    });
 });
+
+function logMessage(message) {
+    console.log(message);
+}
