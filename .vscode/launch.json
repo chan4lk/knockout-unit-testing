@@ -1,3 +1,7 @@
+/**
+Need to run chrome with these flags in order for debugger to work.
+"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --allow-file-access-from-files --remote-debugging-port=9222
+**/
 {
     "version": "0.2.0",
     "configurations": [
