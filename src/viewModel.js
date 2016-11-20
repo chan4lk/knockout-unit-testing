@@ -14,8 +14,11 @@ var PersonNameViewModel = function(first, last){
         }
     }  
 
+    /**
+     * validate the model.
+     */
     self.validate = function(){
-        if(self.firstName() !== "" && self.lastName !== ""){
+        if(self.firstName() !== "" && self.lastName() !== ""){
             self.isValid = true;
             return true;
         }
