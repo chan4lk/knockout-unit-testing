@@ -1,0 +1,187 @@
+<div class="holder">
+    <%-- Start Form Content --%>
+    <div class="row-fluid clearfix">
+        <div class="program-information clearfix">
+            <div class="clearfix criteria-wrapper">
+                <label class="program-lbl left-floating">Program ID </label>
+                <label class="program-lbl left-floating" id="EnrollmentFormProgramIdValueLabel"></label>
+            </div>
+            <%-- Start Dealer Distributor Information --%>
+            <div class="program-information-wrapper dealer-information half-width left-floating">
+                <h3 class="program-title">Dealer Information</h3>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Dealer Name </label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormDealerNameValueLabel" ></label>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Company ID </label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormDealerCompanyIdValueLabel" ></label>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Address </label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormDealerAddressValueLable" ></label>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Phone </label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormDealerPhoneValueLabel" ></label>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Fax </label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormDealerFaxValueLabel" ></label>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Email </label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormDealerEmailValueLabel" ></label>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Owner Name </label>
+                    <div class="input-right-wrapper clearfix">
+                        <div class="left-floating program-drop-down owner-name" id="dealerOwnerNamesDropdown">
+                        </div>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Owner Email Address </label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormOwnerEmailAddressValueLabel" ></label>
+                    </div>
+                </div>
+            </div>
+            <div class="program-information-wrapper distributor-information half-width right-floating">
+                <h3 class="program-title">Distributor Information</h3>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Distributor Name </label>
+                    <div class="input-right-wrapper clearfix">
+                        <div class="left-floating program-drop-down distributor-name" id="EnrollmentFormDistributorNamesDropdown">
+                        </div>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Company ID </label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormDistributorCompanyIdValueLabel" ></label>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Address </label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormDistributorAddressValueLabel" ></label>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl" id="EnrollmentFormSalesManagerNameLabel">Sales Manager Name </label>
+                    <div class="input-right-wrapper clearfix">
+                        <div class="left-floating program-drop-down sales-manager-name" id="EnrollmentFormSalesManagerDropdown">
+                        </div>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Territory Manager Name </label>
+                    <div class="input-right-wrapper clearfix">
+                        <div class="left-floating program-drop-down territory-manager-name" id="EnrollmentFormTerritoryManagerDropdown">
+                        </div>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Distributor Contact Email </label>
+                    <div class="input-right-wrapper clearfix">
+                        <input class="distributor-contact-email program-input left-floating" type="text" id="EnrollmentFormDistributorEmailTextbox"/ >
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span4 mobile-lbl">Submitted By</label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormSubmittedByValueLabel" >
+                            <input type="hidden" id="EnrollmentFormSubmittedByIdLabel" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <%-- End Dealer Distributor Information --%>
+            <%-- Start Form Unique Content --%>
+            <div class="program-information-wrapper sales-information left-floating full-width enrollment-form">
+                <div id="EnrollmentFormUniqueFieldWrapper"></div>
+            </div>
+            <%-- End Form Unique Content --%>
+            <%-- Start Approver Information --%>
+            <div class="program-information-wrapper left-floating full-width">
+                <h3 class="program-title">Approver Information</h3>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span3 mobile-lbl">Sales Manager </label>
+                    <div class="input-right-wrapper clearfix">
+                        <div class="left-floating company-drop-down salse-manager" id="EnrollmentFormApproverSalesManagerDropdown">
+                        </div>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span3 mobile-lbl">Comment</label>
+                    <div class="input-right-wrapper clearfix">
+                        <textarea class="program-discription left-floating" rows="5" id="EnrollmentFormApproverCommentTextarea"></textarea>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span3 mobile-lbl">Action </label>
+                    <div class="input-right-wrapper clearfix">
+                        <div class="left-floating company-drop-down action" id="EnrollmentFormApproverActionDropdown">
+                        </div>
+                    </div>
+                </div>
+                <div class="program-input-wrapper clearfix">
+                    <label class="program-lbl left-floating span3 mobile-lbl">Workflow States </label>
+                    <div class="input-right-wrapper clearfix">
+                        <label class="program-lbl left-floating span8" id="EnrollmentFormApproverWorkfolwStatusValueLabel" ></label>
+                    </div>
+                </div>
+            </div>
+            <%-- End Approver Information --%>
+            <%-- Start Message Div --%>
+            <div class="message-wrapper">
+                <div class="errorMessage" style="display: none" id="EnrollmentFormErrorMessageDiv"></div>
+                <div class="alert-success" style="display: none" id="EnrollmentFormSuccessMessageDiv"></div>
+            </div>
+            <%-- End Message Div --%>
+            <div class="company-information-btn-wrapper right-floating btn-wrapper">
+                <input type="button" value="Cancel" class="btn right-floating btn-cancel" id="EnrollmentFormCalcelButton" />
+                <input type="button" value="Submit" class="btn right-floating btn-submit" id="EnrollmentFormSubmitButton" />
+            </div>
+        </div>
+    </div>
+    <%-- End Form Content --%>
+    <%-- Start Error Message --%>
+    <div class="message-wrapper">
+        <div id="loadErrorMessageDiv" style="display: none" class="errorMessage"></div>
+    </div>
+    <%-- End Error Message --%>
+    <%-- Start Busy Wrapper --%>
+    <div id="EnrollmentFormInitialBusyWrapperDiv" class="loader-wrapper search-busy" style="display: none"></div>
+    <div id="EnrollmentFormInitialBusyImageDiv" class="loader-img-wrapper search-busy-img-wrapper" style="display: none">
+        <img src="/_Layouts/BlackJackUIResources/Images/icp/UTC-LoadingGif-Fan_icp.gif" alt="Loading...">
+    </div>
+    <%-- End Busy Wrapper --%>
+    <!-- Start Cancel Popup -->
+    <div class="popup_content" id="EnrollmentFormCancelPopup">
+        <div class="popup-header">
+            <label class=""></label><a href="#" class="txt-close " onclick="closelightbox('EnrollmentFormCancelPopup'); return false;">&times;</a>
+        </div>
+        <div class="popup-pinner">
+            <label id="EnrollmentFormCancelMessage">All the above data will be cleared. Are you sure you want to continue ?</label>
+            <div class="popup_btnWrapper">
+                <input id="EnrollmentFormCancelNoButton" type="button" class="btn right-floating" onclick="closelightbox('EnrollmentFormCancelPopup'); return false;" value="No" />
+                <input id="EnrollmentFormCancelYesButton" type="button" class="btn right-floating" onclick="location.reload()" value="Yes"/>
+            </div>
+        </div>
+    </div>
+    <!-- End Cancel Popup -->
+</div>
