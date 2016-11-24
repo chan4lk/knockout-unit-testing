@@ -7,8 +7,10 @@ var PersonNameViewModel = function (first, last) {
         }
     });
 
-    self.firstName = ko.observable(first);
-    self.lastName = ko.observable(last);
+    self.firstName = ko.observable(first).extend({ required: true});
+    self.lastName = ko.observable(last).extend({ required: true});    
+
+    self.age = ko.observable(0).extend({max: 100, min:5});
 
     self.fullName = ko.computed(function () {
         return self.firstName() + " " + self.lastName();
@@ -35,5 +37,5 @@ var PersonNameViewModel = function (first, last) {
 };
 
 (function () {
-    ko.applyBindings(new PersonNameViewModel("Ada", "Lovelace"));
+    ko.applyBindingsWithValidation(new PersonNameViewModel("Ada", "Lovelace"));
 })();

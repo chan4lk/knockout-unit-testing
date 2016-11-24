@@ -14,9 +14,12 @@
     <div class="container">
         <div class="form-horizontal">
             <div class="row form-group">
-                <div class="col-md-4"><input class="form-control" type="text" data-bind="value: firstName"></div>
+                <div class="col-md-4">
+                    <input class="form-control" type="text" data-bind="value: firstName">                    
+                    </div>
                 <div class="col-md-4"><input class="form-control" type="text" data-bind="value: lastName"></div>
                 <div class="col-md-4"><input class="form-control" type="text" data-bind="value: fullName"></div>
+                <div class="col-md-4"><input class="form-control" type="text" data-bind="value: age"></div>
             </div>
             <div class="clearfix"></div>
             <div class="row form-group">
@@ -30,6 +33,7 @@
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
     <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="./node_modules/knockout/build/output/knockout-latest.js"></script>
+    <script src="./node_modules/knockout.validation/dist/knockout.validation.min.js"></script>
     <script src="./src/viewModel.js"></script>
 </body>
 
