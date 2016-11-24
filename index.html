@@ -2,25 +2,27 @@
 <html lang="en">
 
 <head>
-      <meta charset="utf-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
     <title>Knockout testing</title>
-    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
 </head>
 
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-4"><input type="text" data-bind="value: firstName"></div>
-            <div class="col-md-4"><input type="text" data-bind="value: lastName"></div>
-            <div class="col-md-4"><input type="text" data-bind="value: fullName"></div>
-        </div>
-        <div class="clear-float"></div>
-        <div class="row">
-            <div class="col-md-offset-8 col-md-4">
-                <button class="btn btn-sucess" value="Submit" data-bind="click: submit">Submit</button>
+        <div class="form-horizontal">
+            <div class="row form-group">
+                <div class="col-md-4"><input class="form-control" type="text" data-bind="value: firstName"></div>
+                <div class="col-md-4"><input class="form-control" type="text" data-bind="value: lastName"></div>
+                <div class="col-md-4"><input class="form-control" type="text" data-bind="value: fullName"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="row form-group">
+                <div class="col-md-offset-8 col-md-4">
+                    <button class="btn btn-sucess btn-block" value="Submit" data-bind="click: submit">Submit</button>
+                </div>
             </div>
         </div>
     </div>
