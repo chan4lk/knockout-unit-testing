@@ -12,10 +12,10 @@ describe('Program', function(){
     });
 
     it('shoud bind ductless data', function(){
-        var entity = getJSONFixture('programs.json');
+        var entity = jasmine.getJSONFixture('programs.json');
         //console.log(entity);
-        loadFixtures('Enrollment.html');
-        appendLoadFixtures('Ductless.html')
+        jasmine.loadFixtures('Enrollment.html');
+        jasmine.appendLoadFixtures('Ductless.html')
         ProgramEnrollmentFormDuctless.dataManager.setAllControlsValue(entity);
         var vehicleExpence = $('#currentYearBrandOnePercentage');
         expect(vehicleExpence.length).toBeGreaterThan(0);
@@ -29,6 +29,15 @@ describe('Program', function(){
         data = ProgramEnrollmentFormDuctless.dataManager.getAllControlsValue();
         console.log('currentYearBrandOnePercentage', data.CompetitiveBrand1PercentageCurrentYear);
         
+        expect(ProgramEnrollmentFormDuctless.validate.isValid()).toBeTruthy();
+    });
+
+    it('shoud save ductless data', function(){
+        var entity = jasmine.getJSONFixture('programs.json');
+        //console.log(entity);
+        jasmine.loadFixtures('Enrollment.html');
+        jasmine.appendLoadFixtures('Ductless.html')
+        ProgramEnrollmentFormDuctless.dataManager.setAllControlsValue(entity);        
         expect(ProgramEnrollmentFormDuctless.validate.isValid()).toBeTruthy();
     });
 

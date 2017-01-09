@@ -5,7 +5,7 @@
         "es6": false,
         "node": true,
         "jasmine": true,
-        "jquery": true
+        "jquery": true                
     },
     "parserOptions": {
         "ecmaFeatures": {
@@ -21,5 +21,13 @@
         "no-unused-vars": "warn",
         "constructor-super": "warn",
         "valid-typeof": "warn"
+    },    
+    "globals": {
+        "ProgramEnrollmentFormCommon": true,
+        "ProgramEnrollmentFormStandard": true,
+        "ProgramEnrollmentFormDuctless":true,
+        "ProgramEnrollmentFormBigFish": true,
+        "ko": true
     }
+
 }
