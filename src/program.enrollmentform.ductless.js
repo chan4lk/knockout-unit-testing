@@ -1,9 +1,10 @@
-﻿'use strict';
-//Version QAR 2.3.2
+﻿//Version QAR 2.4.2
+'use strict';
+
 var ProgramEnrollmentFormDuctless = { // program enrollment form standard functionality name space
     config: (function () {
             var
-                decimalfieldMaxLenth = ProgramEnrollmentFormCommon.config.constant.decimalfieldMaxLenth,
+                decimalfieldMaxLength = ProgramEnrollmentFormCommon.config.constant.decimalfieldMaxLenth,
                 customValidatedProps = [{
                     id: "currentYearBrandTwoName",
                     maxLength: 50
@@ -24,6 +25,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                     maxLength: 500
                 }],
                 requiredFieldControls = [
+                    'firstYearCBPBrandPercentage',
                     'currentYearTotalSalesVolume',
                     'firstYearTotalSalesVolume',
                     'currentYearAnnualEquipmentPurchases',
@@ -57,12 +59,6 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                     "firstYearAORPurchaseVolume",
                     "currentYearConstructionPurchaseVolume",
                     "firstYearConstructionPurchaseVolume",
-                    "currentYearBrandOnePercentage",
-                    "firstYearBrandOnePercentage",
-                    "currentYearBrandTwoPercentage",
-                    "firstYearBrandTwoPercentage",
-                    "currentYearCBPBrandPercentage",
-                    "firstYearCBPBrandPercentage",
                     "vehicleIdentificationExpenses",
                     "outdoorSignExpenses",
                     "otherMerchandiseExpenses",
@@ -91,7 +87,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                 decimalFieldControls: decimalFieldControls,
                 rangeFieldControls: rangeFieldControls,
                 marketingPercentages: _marketingPercentages,
-                decimalfieldMaxLenth: decimalfieldMaxLenth,
+                decimalfieldMaxLength: decimalfieldMaxLength,
                 customValidatedProps: customValidatedProps
             }
         })()
@@ -100,7 +96,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
     ///#region Validation
     ,
     validate: (function () {
-
+            var clean = ProgramEnrollmentFormCommon.helper.CleanNumberField;
             var requiedField = function () {
                     var requiredControls = ProgramEnrollmentFormDuctless.config.requiredFieldControls;
                     var controlIdenties = ProgramEnrollmentFormCommon.helper.getControlIdArray(requiredControls);
@@ -127,7 +123,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                             var control = $(controlIdenties[index]);
                             if (control.length === 0) continue;
                             var controlValue = control.val();
-                            if (!ProgramEnrollmentFormCommon.helper.isWholeNumber(controlValue)) {
+                            if (!ProgramEnrollmentFormCommon.helper.isWholeNumber(clean(controlValue))) {
                                 return false;
                             }
 
@@ -145,7 +141,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                             var control = $(controlIdenties[index]);
                             if (control.length === 0) continue;
                             var controlValue = control.val();
-                            if (!ProgramEnrollmentFormCommon.helper.inRange(controlValue, minValue, maxValue)) {
+                            if (!ProgramEnrollmentFormCommon.helper.inRange(clean(controlValue), minValue, maxValue)) {
                                 return false;
                             }
                         }
@@ -180,7 +176,8 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
     dataManager: (function () {
         var setDefaultValue = ProgramEnrollmentFormCommon.helper.setDefaultValue;
         var salesControlsId = ProgramEnrollmentFormCommon.config.salesControlsId;
-
+        var currency = ProgramEnrollmentFormCommon.helper.FormatCurrency;
+        var clean = ProgramEnrollmentFormCommon.helper.CleanNumberField;
         var getAllControlsValue = function () {
 
                 var entity = {};
@@ -197,48 +194,48 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                 entity.AllBrandsNewConstructionPurchaseVolumeFirstYear = null;
                 entity.CompetitiveBrand1NameCurrentYear = $(salesControlsId.currentYearBrandOneName).val();
                 entity.CompetitiveBrand1NameFirstYear = $(salesControlsId.firstYearBrandOneName).val();
-                entity.CompetitiveBrand1PercentageCurrentYear = $(salesControlsId.currentYearBrandOnePercentage).val();
-                entity.CompetitiveBrand1PercentageFirstYear = $(salesControlsId.firstYearBrandOnePercentage).val();
+                entity.CompetitiveBrand1PercentageCurrentYear = clean($(salesControlsId.currentYearBrandOnePercentage).val());
+                entity.CompetitiveBrand1PercentageFirstYear = clean($(salesControlsId.firstYearBrandOnePercentage).val());
                 entity.CompetitiveBrand2NameCurrentYear = $(salesControlsId.currentYearBrandTwoName).val();
                 entity.CompetitiveBrand2NameFirstYear = $(salesControlsId.firstYearBrandTwoName).val();
-                entity.CompetitiveBrand2PercentageCurrentYear = $(salesControlsId.currentYearBrandTwoPercentage).val();
-                entity.CompetitiveBrand2PercentageFirstYear = $(salesControlsId.firstYearBrandTwoPercentage).val();
-                entity.CBPBrandPercentageCurrentYear = $(salesControlsId.currentYearCBPBrandPercentage).val();
-                entity.CBPBrandPercentageFirstYear = $(salesControlsId.firstYearCBPBrandPercentage).val();
-                entity.CBPBrandPercentageSecondYear = $(salesControlsId.secondYearCBPBrandPercentage).val();
+                entity.CompetitiveBrand2PercentageCurrentYear = clean($(salesControlsId.currentYearBrandTwoPercentage).val());
+                entity.CompetitiveBrand2PercentageFirstYear = clean($(salesControlsId.firstYearBrandTwoPercentage).val());
+                entity.CBPBrandPercentageCurrentYear = clean($(salesControlsId.currentYearCBPBrandPercentage).val());
+                entity.CBPBrandPercentageFirstYear = clean($(salesControlsId.firstYearCBPBrandPercentage).val());
+                entity.CBPBrandPercentageSecondYear = clean($(salesControlsId.secondYearCBPBrandPercentage).val());
                 entity.MarketingFundEstimateSevenPercentage = null;
-                entity.VehicleIdentificationFirstYear = $(salesControlsId.vehicleIdentificationExpenses).val();
-                entity.VehicleIdentificationSecondYear = $(salesControlsId.secondYearVehicleIdentificationExpenses).val();
-                entity.OutdoorSignFirstYear = $(salesControlsId.outdoorSignExpenses).val();
-                entity.OutdoorSignSecondYear = $(salesControlsId.secondYearOutdoorSignExpenses).val();
-                entity.OtherMerchandiseFirstYear = $(salesControlsId.otherMerchandiseExpenses).val();
-                entity.OtherMerchandiseSecondYear = $(salesControlsId.secondOtherMerchandiseExpenses).val();
-                entity.OtherMerchandisingFirstYear = $(salesControlsId.otherMerchandisingExpenses).val();
-                entity.OtherMerchandisingSecondYear = $(salesControlsId.secondOtherMerchandisingExpenses).val();
-                entity.EquipmentFirstYear = $(salesControlsId.equipmentExpenses).val();
-                entity.EquipmentSecondYear = $(salesControlsId.secondEquipmentExpenses).val();
-                entity.ServiceUniformsFirstYear = $(salesControlsId.serviceUniformsExpenses).val();
-                entity.ServiceUniformsSecondYear = $(salesControlsId.secondServiceUniformsExpenses).val();
-                entity.OtherBrandedClothesFirstYear = $(salesControlsId.otherBrandedClothesExpenses).val();
-                entity.OtherBrandedClothesSecondYear = $(salesControlsId.secondOtherBrandedClothesExpenses).val();
-                entity.ShowRoomDisplayModelsFirstYear = $(salesControlsId.showroomDisplayModelExpenses).val();
-                entity.ShowRoomDisplayModelsSecondYear = $(salesControlsId.secondShowroomDisplayModelExpenses).val();
-                entity.ConsumerLiteratureFirstYear = $(salesControlsId.consumerLiteratureExpenses).val();
-                entity.ConsumerLiteratureSecondYear = $(salesControlsId.secondConsumerLiteratureExpenses).val();
-                entity.TechnicalLiteratureFirstYear = $(salesControlsId.technicalLiteratureExpenses).val();
-                entity.TechnicalLiteratureSecondYear = $(salesControlsId.secondTechnicalLiteratureExpenses).val();
-                entity.TechnicalTrainingFirstYear = $(salesControlsId.technicalTrainingExpenses).val();
-                entity.TechnicalTrainingSecondYear = $(salesControlsId.secondTechnicalTrainingExpenses).val();
-                entity.SalesTrainingFirstYear = $(salesControlsId.salesTrainingExpenses).val();
-                entity.SalesTrainingSecondYear = $(salesControlsId.secondSalesTrainingExpenses).val();
-                entity.DigitalMarketingFirstYear = $(salesControlsId.digitalMarketingExpenses).val();
-                entity.DigitalMarketingSecondYear = $(salesControlsId.secondDigitalMarketingExpenses).val();
-                entity.AdvertisingNonDigitalFirstYear = $(salesControlsId.nonDigitalAdvertisingExpenses).val();
-                entity.AdvertisingNonDigitalSecondYear = $(salesControlsId.secondNonDigitalAdvertisingExpenses).val();
-                entity.PromotionFirstYear = $(salesControlsId.promotionExpenses).val();
-                entity.PromotionSecondYear = $(salesControlsId.secondPromotionExpenses).val();
-                entity.OtherFirstYear = $(salesControlsId.otherExpenses).val();
-                entity.OtherSecondYear = $(salesControlsId.secondOtherExpenses).val();
+                entity.VehicleIdentificationFirstYear = clean($(salesControlsId.vehicleIdentificationExpenses).val());
+                entity.VehicleIdentificationSecondYear = clean($(salesControlsId.secondYearVehicleIdentificationExpenses).val());
+                entity.OutdoorSignFirstYear = clean($(salesControlsId.outdoorSignExpenses).val());
+                entity.OutdoorSignSecondYear = clean($(salesControlsId.secondYearOutdoorSignExpenses).val());
+                entity.OtherMerchandiseFirstYear = clean($(salesControlsId.otherMerchandiseExpenses).val());
+                entity.OtherMerchandiseSecondYear = clean($(salesControlsId.secondOtherMerchandiseExpenses).val());
+                entity.OtherMerchandisingFirstYear = clean($(salesControlsId.otherMerchandisingExpenses).val());
+                entity.OtherMerchandisingSecondYear = clean($(salesControlsId.secondOtherMerchandisingExpenses).val());
+                entity.EquipmentFirstYear = clean($(salesControlsId.equipmentExpenses).val());
+                entity.EquipmentSecondYear = clean($(salesControlsId.secondEquipmentExpenses).val());
+                entity.ServiceUniformsFirstYear = clean($(salesControlsId.serviceUniformsExpenses).val());
+                entity.ServiceUniformsSecondYear = clean($(salesControlsId.secondServiceUniformsExpenses).val());
+                entity.OtherBrandedClothesFirstYear = clean($(salesControlsId.otherBrandedClothesExpenses).val());
+                entity.OtherBrandedClothesSecondYear = clean($(salesControlsId.secondOtherBrandedClothesExpenses).val());
+                entity.ShowRoomDisplayModelsFirstYear = clean($(salesControlsId.showroomDisplayModelExpenses).val());
+                entity.ShowRoomDisplayModelsSecondYear = clean($(salesControlsId.secondShowroomDisplayModelExpenses).val());
+                entity.ConsumerLiteratureFirstYear = clean($(salesControlsId.consumerLiteratureExpenses).val());
+                entity.ConsumerLiteratureSecondYear = clean($(salesControlsId.secondConsumerLiteratureExpenses).val());
+                entity.TechnicalLiteratureFirstYear = clean($(salesControlsId.technicalLiteratureExpenses).val());
+                entity.TechnicalLiteratureSecondYear = clean($(salesControlsId.secondTechnicalLiteratureExpenses).val());
+                entity.TechnicalTrainingFirstYear =clean($(salesControlsId.technicalTrainingExpenses).val());
+                entity.TechnicalTrainingSecondYear = clean($(salesControlsId.secondTechnicalTrainingExpenses).val());
+                entity.SalesTrainingFirstYear = clean($(salesControlsId.salesTrainingExpenses).val());
+                entity.SalesTrainingSecondYear = clean($(salesControlsId.secondSalesTrainingExpenses).val());
+                entity.DigitalMarketingFirstYear = clean($(salesControlsId.digitalMarketingExpenses).val());
+                entity.DigitalMarketingSecondYear = clean($(salesControlsId.secondDigitalMarketingExpenses).val());
+                entity.AdvertisingNonDigitalFirstYear =clean($(salesControlsId.nonDigitalAdvertisingExpenses).val());
+                entity.AdvertisingNonDigitalSecondYear = clean($(salesControlsId.secondNonDigitalAdvertisingExpenses).val());
+                entity.PromotionFirstYear = clean($(salesControlsId.promotionExpenses).val());
+                entity.PromotionSecondYear = clean($(salesControlsId.secondPromotionExpenses).val());
+                entity.OtherFirstYear = clean($(salesControlsId.otherExpenses).val());
+                entity.OtherSecondYear =clean($(salesControlsId.secondOtherExpenses).val());
                 entity.AllBrandsTotalSalesVolumnSecondYear = null;
                 entity.AllBrandsAnnualEquipmentPurchasesSecondYear = null;
                 entity.CBPAnnualEquipmentPurchasesSecondYear = null;
@@ -251,17 +248,17 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                 entity.MarketingFundEstimate12PercentageFirstYear = null;
                 entity.MarketingFundEstimate8PercentageFirstYear = null;
                 entity.Comment = $(salesControlsId.otherExpensesComment).val();
-                entity.AllBrandsTotalDuctlessSalesVolumeCurrentYear = $(salesControlsId.currentYearTotalSalesVolume).val();
-                entity.AllBrandsTotalDuctlessSalesVolumeFirstYear = $(salesControlsId.firstYearTotalSalesVolume).val();
-                entity.AllBrandsAnnualDustlessEquipmentPuchasesCurrentYear = $(salesControlsId.currentYearAnnualEquipmentPurchases).val();
-                entity.AllBrandsAnnualDustlessEquipmentPuchasesFirstYear = $(salesControlsId.firstYearAnnualEquipmentPurchases).val();
-                entity.CBPAnnualDuctlessEquipmentPurchasesCurrentYear = $(salesControlsId.currentYearCBPEquipmentPurchases).val();
-                entity.CBPAnnualDuctlessEquipmentPurchasesFirstYear = $(salesControlsId.firstYearCBPEquipmentPurchases).val();
-                entity.AllBrandsDuctlessAORPurchaseVolumnCurrentYear = $(salesControlsId.currentYearAORPurchaseVolume).val();
-                entity.AllBrandsDuctlessAORPurchaseVolumnFirstYear = $(salesControlsId.firstYearAORPurchaseVolume).val();
-                entity.AllBrandsNewConstructionDuctlessPurchasesVolumnCurrentYear = $(salesControlsId.currentYearConstructionPurchaseVolume).val();
-                entity.AllBrandsNewConstructionDuctlessPurchasesVolumnFirstYear = $(salesControlsId.firstYearConstructionPurchaseVolume).val();
-                entity.MarketingFundEstimateFivePercentage = $(salesControlsId.marketingFundEstimateFivePercentage).val();
+                entity.AllBrandsTotalDuctlessSalesVolumeCurrentYear = clean($(salesControlsId.currentYearTotalSalesVolume).val());
+                entity.AllBrandsTotalDuctlessSalesVolumeFirstYear = clean($(salesControlsId.firstYearTotalSalesVolume).val());
+                entity.AllBrandsAnnualDustlessEquipmentPuchasesCurrentYear = clean($(salesControlsId.currentYearAnnualEquipmentPurchases).val());
+                entity.AllBrandsAnnualDustlessEquipmentPuchasesFirstYear = clean($(salesControlsId.firstYearAnnualEquipmentPurchases).val());
+                entity.CBPAnnualDuctlessEquipmentPurchasesCurrentYear = clean($(salesControlsId.currentYearCBPEquipmentPurchases).val());
+                entity.CBPAnnualDuctlessEquipmentPurchasesFirstYear = clean($(salesControlsId.firstYearCBPEquipmentPurchases).val());
+                entity.AllBrandsDuctlessAORPurchaseVolumnCurrentYear = clean($(salesControlsId.currentYearAORPurchaseVolume).val());
+                entity.AllBrandsDuctlessAORPurchaseVolumnFirstYear = clean($(salesControlsId.firstYearAORPurchaseVolume).val());
+                entity.AllBrandsNewConstructionDuctlessPurchasesVolumnCurrentYear = clean($(salesControlsId.currentYearConstructionPurchaseVolume).val());
+                entity.AllBrandsNewConstructionDuctlessPurchasesVolumnFirstYear = clean($(salesControlsId.firstYearConstructionPurchaseVolume).val());
+                entity.MarketingFundEstimateFivePercentage = clean($(salesControlsId.marketingFundEstimateFivePercentage).val());
 
 
                 return entity;
@@ -281,39 +278,38 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                 $(salesControlsId.firstYearCBPBrandPercentage).val(setDefaultValue(entity.CBPBrandPercentageFirstYear));
                 $(salesControlsId.secondYearCBPBrandPercentage).val(setDefaultValue(entity.CBPBrandPercentageSecondYear));
                 entity.MarketingFundEstimateSevenPercentage = null;
-                $(salesControlsId.vehicleIdentificationExpenses).val(entity.VehicleIdentificationFirstYear);
 
-
-                $(salesControlsId.secondYearVehicleIdentificationExpenses).val(entity.VehicleIdentificationSecondYear);
-                $(salesControlsId.outdoorSignExpenses).val(entity.OutdoorSignFirstYear);
-                $(salesControlsId.secondYearOutdoorSignExpenses).val(entity.OutdoorSignSecondYear);
-                $(salesControlsId.otherMerchandiseExpenses).val(entity.OtherMerchandiseFirstYear);
-                $(salesControlsId.secondOtherMerchandiseExpenses).val(entity.OtherMerchandiseSecondYear);
-                $(salesControlsId.otherMerchandisingExpenses).val(entity.OtherMerchandisingFirstYear);
-                $(salesControlsId.secondOtherMerchandisingExpenses).val(entity.OtherMerchandisingSecondYear);
-                $(salesControlsId.equipmentExpenses).val(entity.EquipmentFirstYear);
-                $(salesControlsId.secondEquipmentExpenses).val(entity.EquipmentSecondYear);
-                $(salesControlsId.serviceUniformsExpenses).val(entity.ServiceUniformsFirstYear);
-                $(salesControlsId.secondServiceUniformsExpenses).val(entity.ServiceUniformsSecondYear);
-                $(salesControlsId.otherBrandedClothesExpenses).val(entity.OtherBrandedClothesFirstYear);
-                $(salesControlsId.secondOtherBrandedClothesExpenses).val(entity.OtherBrandedClothesSecondYear);
-                $(salesControlsId.showroomDisplayModelExpenses).val(entity.ShowRoomDisplayModelsFirstYear);
-                $(salesControlsId.secondShowroomDisplayModelExpenses).val(entity.ShowRoomDisplayModelsSecondYear);
-                $(salesControlsId.consumerLiteratureExpenses).val(entity.ConsumerLiteratureFirstYear);
-                $(salesControlsId.secondConsumerLiteratureExpenses).val(entity.ConsumerLiteratureSecondYear);
-                $(salesControlsId.technicalLiteratureExpenses).val(entity.TechnicalLiteratureFirstYear);
-                $(salesControlsId.secondTechnicalLiteratureExpenses).val(entity.TechnicalLiteratureSecondYear);
-                $(salesControlsId.technicalTrainingExpenses).val(entity.TechnicalTrainingFirstYear);
-                $(salesControlsId.secondTechnicalTrainingExpenses).val(entity.TechnicalTrainingSecondYear);
-                $(salesControlsId.salesTrainingExpenses).val(entity.SalesTrainingFirstYear);
-                $(salesControlsId.secondSalesTrainingExpenses).val(entity.SalesTrainingSecondYear);
-                $(salesControlsId.digitalMarketingExpenses).val(entity.DigitalMarketingFirstYear);
-                $(salesControlsId.secondDigitalMarketingExpenses).val(entity.DigitalMarketingSecondYear);
-                $(salesControlsId.nonDigitalAdvertisingExpenses).val(entity.AdvertisingNonDigitalFirstYear);
-                $(salesControlsId.secondNonDigitalAdvertisingExpenses).val(entity.AdvertisingNonDigitalSecondYear);
-                $(salesControlsId.promotionExpenses).val(entity.PromotionFirstYear);
-                $(salesControlsId.secondPromotionExpenses).val(entity.PromotionSecondYear);
-                $(salesControlsId.otherExpenses).val(entity.OtherFirstYear);
+                $(salesControlsId.vehicleIdentificationExpenses).val(currency(entity.VehicleIdentificationFirstYear));
+                $(salesControlsId.secondYearVehicleIdentificationExpenses).val(currency(entity.VehicleIdentificationSecondYear));
+                $(salesControlsId.outdoorSignExpenses).val(currency(entity.OutdoorSignFirstYear));
+                $(salesControlsId.secondYearOutdoorSignExpenses).val(currency(entity.OutdoorSignSecondYear));
+                $(salesControlsId.otherMerchandiseExpenses).val(currency(entity.OtherMerchandiseFirstYear));
+                $(salesControlsId.secondOtherMerchandiseExpenses).val(currency(entity.OtherMerchandiseSecondYear));
+                $(salesControlsId.otherMerchandisingExpenses).val(currency(entity.OtherMerchandisingFirstYear));
+                $(salesControlsId.secondOtherMerchandisingExpenses).val(currency(entity.OtherMerchandisingSecondYear));
+                $(salesControlsId.equipmentExpenses).val(currency(entity.EquipmentFirstYear));
+                $(salesControlsId.secondEquipmentExpenses).val(currency(entity.EquipmentSecondYear));
+                $(salesControlsId.serviceUniformsExpenses).val(currency(entity.ServiceUniformsFirstYear));
+                $(salesControlsId.secondServiceUniformsExpenses).val(currency(entity.ServiceUniformsSecondYear));
+                $(salesControlsId.otherBrandedClothesExpenses).val(currency(entity.OtherBrandedClothesFirstYear));
+                $(salesControlsId.secondOtherBrandedClothesExpenses).val(currency(entity.OtherBrandedClothesSecondYear));
+                $(salesControlsId.showroomDisplayModelExpenses).val(currency(entity.ShowRoomDisplayModelsFirstYear));
+                $(salesControlsId.secondShowroomDisplayModelExpenses).val(currency(entity.ShowRoomDisplayModelsSecondYear));
+                $(salesControlsId.consumerLiteratureExpenses).val(currency(entity.ConsumerLiteratureFirstYear));
+                $(salesControlsId.secondConsumerLiteratureExpenses).val(currency(entity.ConsumerLiteratureSecondYear));
+                $(salesControlsId.technicalLiteratureExpenses).val(currency(entity.TechnicalLiteratureFirstYear));
+                $(salesControlsId.secondTechnicalLiteratureExpenses).val(currency(entity.TechnicalLiteratureSecondYear));
+                $(salesControlsId.technicalTrainingExpenses).val(currency(entity.TechnicalTrainingFirstYear));
+                $(salesControlsId.secondTechnicalTrainingExpenses).val(currency(entity.TechnicalTrainingSecondYear));
+                $(salesControlsId.salesTrainingExpenses).val(currency(entity.SalesTrainingFirstYear));
+                $(salesControlsId.secondSalesTrainingExpenses).val(currency(entity.SalesTrainingSecondYear));
+                $(salesControlsId.digitalMarketingExpenses).val(currency(entity.DigitalMarketingFirstYear));
+                $(salesControlsId.secondDigitalMarketingExpenses).val(currency(entity.DigitalMarketingSecondYear));
+                $(salesControlsId.nonDigitalAdvertisingExpenses).val(currency(entity.AdvertisingNonDigitalFirstYear));
+                $(salesControlsId.secondNonDigitalAdvertisingExpenses).val(currency(entity.AdvertisingNonDigitalSecondYear));
+                $(salesControlsId.promotionExpenses).val(currency(entity.PromotionFirstYear));
+                $(salesControlsId.secondPromotionExpenses).val(currency(entity.PromotionSecondYear));
+                $(salesControlsId.otherExpenses).val(currency(entity.OtherFirstYear));
 
                 /* $(salesControlsId.secondOtherExpenses).val(entity.OtherSecondYear);
                  $(salesControlsId.secondYearTotalSalesVolume).val(entity.AllBrandsTotalSalesVolumnSecondYear);
@@ -328,16 +324,16 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
 
                 $(salesControlsId.otherExpensesComment).val(entity.Comment);
 
-                $(salesControlsId.currentYearTotalSalesVolume).val(entity.AllBrandsTotalDuctlessSalesVolumeCurrentYear);
-                $(salesControlsId.firstYearTotalSalesVolume).val(entity.AllBrandsTotalDuctlessSalesVolumeFirstYear);
-                $(salesControlsId.currentYearAnnualEquipmentPurchases).val(entity.AllBrandsAnnualDustlessEquipmentPuchasesCurrentYear);
-                $(salesControlsId.firstYearAnnualEquipmentPurchases).val(entity.AllBrandsAnnualDustlessEquipmentPuchasesFirstYear);
-                $(salesControlsId.currentYearCBPEquipmentPurchases).val(entity.CBPAnnualDuctlessEquipmentPurchasesCurrentYear);
-                $(salesControlsId.firstYearCBPEquipmentPurchases).val(entity.CBPAnnualDuctlessEquipmentPurchasesFirstYear);
-                $(salesControlsId.currentYearAORPurchaseVolume).val(entity.AllBrandsDuctlessAORPurchaseVolumnCurrentYear);
-                $(salesControlsId.firstYearAORPurchaseVolume).val(entity.AllBrandsDuctlessAORPurchaseVolumnFirstYear);
-                $(salesControlsId.currentYearConstructionPurchaseVolume).val(entity.AllBrandsNewConstructionDuctlessPurchasesVolumnCurrentYear);
-                $(salesControlsId.firstYearConstructionPurchaseVolume).val(entity.AllBrandsNewConstructionDuctlessPurchasesVolumnFirstYear);
+                $(salesControlsId.currentYearTotalSalesVolume).val(currency(entity.AllBrandsTotalDuctlessSalesVolumeCurrentYear));
+                $(salesControlsId.firstYearTotalSalesVolume).val(currency(entity.AllBrandsTotalDuctlessSalesVolumeFirstYear));
+                $(salesControlsId.currentYearAnnualEquipmentPurchases).val(currency(entity.AllBrandsAnnualDustlessEquipmentPuchasesCurrentYear));
+                $(salesControlsId.firstYearAnnualEquipmentPurchases).val(currency(entity.AllBrandsAnnualDustlessEquipmentPuchasesFirstYear));
+                $(salesControlsId.currentYearCBPEquipmentPurchases).val(currency(entity.CBPAnnualDuctlessEquipmentPurchasesCurrentYear));
+                $(salesControlsId.firstYearCBPEquipmentPurchases).val(currency(entity.CBPAnnualDuctlessEquipmentPurchasesFirstYear));
+                $(salesControlsId.currentYearAORPurchaseVolume).val(currency(entity.AllBrandsDuctlessAORPurchaseVolumnCurrentYear));
+                $(salesControlsId.firstYearAORPurchaseVolume).val(currency(entity.AllBrandsDuctlessAORPurchaseVolumnFirstYear));
+                $(salesControlsId.currentYearConstructionPurchaseVolume).val(currency(entity.AllBrandsNewConstructionDuctlessPurchasesVolumnCurrentYear));
+                $(salesControlsId.firstYearConstructionPurchaseVolume).val(currency(entity.AllBrandsNewConstructionDuctlessPurchasesVolumnFirstYear));
                 $(salesControlsId.marketingFundEstimateFivePercentage).val(entity.marketingFundEstimateFivePercentage);
                 _setCBPLabels();
                 //Register event listener
@@ -350,7 +346,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
         var _bindInputValidations = function () {
                 ProgramEnrollmentFormCommon.helper.registerNumericControls(
                     ProgramEnrollmentFormDuctless.config.decimalFieldControls,
-                    ProgramEnrollmentFormDuctless.config.decimalfieldMaxLenth,
+                    ProgramEnrollmentFormDuctless.config.decimalfieldMaxLength,
                     false);
                 ProgramEnrollmentFormCommon.helper.registerNumericControls(
                     ProgramEnrollmentFormDuctless.config.rangeFieldControls,
@@ -365,9 +361,18 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                 var firstYearCBPBrandPercentage = $(salesControlsId.firstYearCBPBrandPercentage).val();
                 var firstYearAnnualEquipmentPurchases = $(salesControlsId.firstYearAnnualEquipmentPurchases).val();
                 var firstYearFormula = _fundEstimateFirstYearFormula(firstYearAnnualEquipmentPurchases, firstYearCBPBrandPercentage);
-                $(salesControlsId.marketingFundEstimateFivePercentage).text(firstYearFormula);
+                var formatted = _formatCurrency(firstYearFormula);
+                $(salesControlsId.marketingFundEstimateFivePercentage).text(formatted);
 
             },
+           _formatCurrency = function(number) { 
+
+                    //comment out following line to format numbers as $4,000
+                    if(!number) return '';
+                    var currencySymbol = '$';                   
+                    var formatted = currencySymbol + number.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+                    return formatted;
+                },
 
             _fundEstimateFirstYearFormula = function (annualPurchasesValue, cdbBrandPercentValue) {
 
@@ -375,7 +380,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                 var cdbpercent = parseFloat(cdbBrandPercentValue);
                 //Formula:  5% x "First Year All Brands Annual Ductless Equipment Purchases" x "First Year CBP Brand percent
                 var fundEstimateValue = annualPurchases * cdbpercent * ProgramEnrollmentFormDuctless.config.marketingPercentages.firstYearFundEstimate;
-                return ProgramEnrollmentFormCommon.helper.valueRound(fundEstimateValue, 2);
+                return fundEstimateValue;
             },
 
             _setCBPLabels = function () {

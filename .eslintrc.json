@@ -5,7 +5,8 @@
         "es6": false,
         "node": true,
         "jasmine": true,
-        "jquery": true                
+        "jquery": true,
+        "mocha": true                
     },
     "parserOptions": {
         "ecmaFeatures": {
@@ -27,7 +28,8 @@
         "ProgramEnrollmentFormStandard": true,
         "ProgramEnrollmentFormDuctless":true,
         "ProgramEnrollmentFormBigFish": true,
-        "ko": true
+        "ko": true,
+        "browser": true
     }
 
 }

@@ -1,6 +1,10 @@
-﻿'use strict';
+﻿//Version QAR 2.4.2
+'use strict'
 
-var ProgramEnrollmentFormCommon = { // program enrollment form common functionality name space
+var ProgramEnrollmentFormCommon = {
+    // program enrollment form common functionality name space
+
+    //#region Configurations
     config: (function () {
             var privateConstant = {
                     serviceUrl: '/_vti_bin/BlackjackService/ProgramManagementServices.svc/',
@@ -9,7 +13,8 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                     submissionFailureErrorMessagePart1: 'Submission failure,',
                     systemErrorMessagePart1: 'System error occurred,',
                     errorMessagePart2: 'Please contact your administrator for further assistance.',
-                    decimalfieldMaxLenth: 9
+                    decimalfieldMaxLength: 9,
+                    percentageFieldMaxLength: 3
                 },
 
                 privateServiceDataType = {
@@ -159,8 +164,9 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
             }
         }())
         //#endregion Configurations
-        //#region DataStore
-        ,
+
+    //#region DataStore
+    ,
     dataStore: (function () {
             var messages = null,
                 dealerData = null,
@@ -174,10 +180,11 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                 brandData = null,
                 verticals = null,
                 queryStringData = null,
-                visibility = null;
+                visibility = null
 
 
             return {
+
                 StoreVisibility: function (data) {
                     visibility = data;
                 },
@@ -263,19 +270,32 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
     //#region DataManager
     ,
     dataManager: (function () {
-        // get selected dropdwon value
+        // get selected dropdown value
         var privateGetDropdownSelectedItem = function (controllerId, property) {
-            var item = $(controllerId).jqxDropDownList('getSelectedItem');
-            if (item) {
-                if (property)
-                    return item[property];
-                else
-                    return item.value;
+                var item = $(controllerId).jqxDropDownList('getSelectedItem');
+                if (item) {
+                    if (property)
+                        return item[property];
+                    else
+                        return item.value;
+                }
+            },
+
+            getOriginalItemValue = function (controllerId, property) {
+                var item = $(controllerId).jqxDropDownList('getSelectedItem');
+                if (item && item.originalItem) {
+                    if (property)
+                        return item.originalItem[property];
+                    else
+                        return item.originalItem;
+                }
             }
-        }
+
+
 
         return {
-            getDropdownSelectedItem: privateGetDropdownSelectedItem
+            getDropdownSelectedItem: privateGetDropdownSelectedItem,
+            getOriginalItemValue: getOriginalItemValue
         }
 
     }())
@@ -405,7 +425,7 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                         }
                     }
                 } catch (e) {
-                    window.console && window.console.error(e);
+                    ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(e.message);
                 }
             }
 
@@ -433,8 +453,9 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                     initializeProgramId = function () {
                         ProgramEnrollmentFormCommon.render.programControl.ProgramId =
                             $(ProgramEnrollmentFormCommon.config.programControlsId.EnrollmentFormProgramId);
-                        var programName = ProgramEnrollmentFormCommon.dataStore.GetProgram().Name + "(" + ProgramEnrollmentFormCommon.dataStore.GetQueryStringData().programId + ")";
-                        ProgramEnrollmentFormCommon.render.programControl.ProgramId.text(programName);
+                        var program = ProgramEnrollmentFormCommon.dataStore.GetProgram();
+                        var programTitle = program.Name + " (" + program.Code + ")";
+                        ProgramEnrollmentFormCommon.render.programControl.ProgramId.text(programTitle);
                     },
 
 
@@ -482,7 +503,15 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                         var disabled = false,
                             selectedIndex = -1;
 
-                        if (dealerData && dealerData.Owners) {
+                        if (!dealerData || !dealerData.Owners || dealerData.Owners.length === 0) {
+                            selectedIndex = -1;
+                            ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList({
+                                source: [],
+                                autoDropDownHeight: true,
+                                width: ProgramEnrollmentFormCommon.config.constant.dropdownWidth,
+                                height: ProgramEnrollmentFormCommon.config.constant.dropdownHight
+                            });
+                        } else {
                             if (dealerData.Owners.length === 1) {
                                 disabled = true;
                                 selectedIndex = 0;
@@ -490,34 +519,34 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                                 var ownerSelectedId = ProgramEnrollmentFormCommon.helper.GetIndexFromDropDownSource(dealerData.Owners, salesInfo.DealerOwnerId);
                                 selectedIndex = ownerSelectedId;
                             }
-                        }
 
-                        ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList({
-                            source: dealerData.Owners,
-                            displayMember: 'DisplayName',
-                            valueMember: 'UserId',
-                            autoDropDownHeight: true,
-                            disabled: disabled,
-                            width: ProgramEnrollmentFormCommon.config.constant.dropdownWidth,
-                            height: ProgramEnrollmentFormCommon.config.constant.dropdownHight
-                        });
-                        ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList({
-                            selectedIndex: selectedIndex
-                        });
-
-                        if (dealerData.Owners && dealerData.Owners.length > 5) {
                             ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList({
-                                autoDropDownHeight: false,
-                                dropDownHeight: 200
-                            });
-                        } else {
-                            ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList({
+                                source: dealerData.Owners,
+                                displayMember: 'DisplayName',
+                                valueMember: 'UserId',
                                 autoDropDownHeight: true,
+                                width: ProgramEnrollmentFormCommon.config.constant.dropdownWidth,
+                                height: ProgramEnrollmentFormCommon.config.constant.dropdownHight
                             });
-                        }
+                            ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList({
+                                selectedIndex: selectedIndex
+                            });
 
-                        if (selectedIndex === 0)
-                            setDealerOwner(dealerData.Owners[0].UserId);
+                            if (dealerData.Owners && dealerData.Owners.length > 5) {
+                                ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList({
+                                    autoDropDownHeight: false,
+                                    dropDownHeight: 200
+                                });
+                            } else {
+                                ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList({
+                                    autoDropDownHeight: true,
+                                });
+                            }
+
+                            if (selectedIndex === 0) {
+                                setDealerOwner(dealerData.Owners[0].UserId);
+                            }
+                        }
                     },
                     // set dealer owner
                     setDealerOwner = function (id) {
@@ -549,6 +578,8 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                         if (distributorData) {
 
                             var companies = [];
+
+
                             distributorData.forEach(function (distributor, index) {
                                 distributor.DistributorCompanyData.Submittedby = distributorData[index].Submittedby;
                                 companies.push(distributor.DistributorCompanyData);
@@ -559,6 +590,25 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                                 source: companies,
                                 displayMember: 'CompanyName',
                                 valueMember: 'CompanyId',
+                                autoDropDownHeight: true,
+                                width: ProgramEnrollmentFormCommon.config.constant.dropdownWidth,
+                                height: ProgramEnrollmentFormCommon.config.constant.dropdownHight
+                            });
+
+                            if (companies && companies.length > 5) {
+                                ProgramEnrollmentFormCommon.render.distributorControl.DistributorNames.jqxDropDownList({
+                                    autoDropDownHeight: false,
+                                    dropDownHeight: 200
+                                });
+                            } else {
+                                ProgramEnrollmentFormCommon.render.distributorControl.DistributorNames.jqxDropDownList({
+                                    autoDropDownHeight: true,
+                                });
+                            }
+
+                        } else {
+                            ProgramEnrollmentFormCommon.render.distributorControl.DistributorNames.jqxDropDownList({
+                                source: [],
                                 autoDropDownHeight: true,
                                 width: ProgramEnrollmentFormCommon.config.constant.dropdownWidth,
                                 height: ProgramEnrollmentFormCommon.config.constant.dropdownHight
@@ -582,6 +632,17 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                                 setDistributorDetails(distributorObject);
                                 ProgramEnrollmentFormCommon.render.distributorControl.DistributorNames.jqxDropDownList('selectItem', distributor);
                             }
+                        } else {
+                            // New form No distributor is selected.
+                            var selectedIndex = -1;
+                            if (distributorData && distributorData.length === 1) {
+                                // select first distributor if one is only available
+                                selectedIndex = 0;
+                            }
+
+                            ProgramEnrollmentFormCommon.render.distributorControl.DistributorNames.jqxDropDownList({
+                                selectedIndex: selectedIndex
+                            });
                         }
                     },
 
@@ -639,8 +700,9 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
 
                     // initialize distributor SalesManagers
                     instantiateSalesManagers = function (salesManagers, isDisabled, selectedSalesManagerId) {
+                        ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers = $('#EnrollmentFormSalesManagerDropdown');
                         if (salesManagers) {
-                            ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers = $('#EnrollmentFormSalesManagerDropdown');
+
                             ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList({
                                 source: salesManagers,
                                 displayMember: 'DisplayName',
@@ -648,8 +710,20 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                                 autoDropDownHeight: true,
                                 width: ProgramEnrollmentFormCommon.config.constant.dropdownWidth,
                                 height: ProgramEnrollmentFormCommon.config.constant.dropdownHight,
-                                disabled: isDisabled
+                                disabled: isDisabled,
+                                selectedIndex: -1
                             });
+
+                            if (salesManagers && salesManagers.length > 5) {
+                                ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList({
+                                    autoDropDownHeight: false,
+                                    dropDownHeight: 200
+                                });
+                            } else {
+                                ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList({
+                                    autoDropDownHeight: true,
+                                });
+                            }
 
                             if (salesManagers.length === 1) {
                                 ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList({
@@ -667,6 +741,14 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                                     selectedIndex: -1
                                 });
                             }
+                        } else {
+                            ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList({
+                                source: [],
+                                autoDropDownHeight: true,
+                                width: ProgramEnrollmentFormCommon.config.constant.dropdownWidth,
+                                height: ProgramEnrollmentFormCommon.config.constant.dropdownHight,
+                                disabled: false
+                            });
                         }
                     },
 
@@ -679,8 +761,8 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
 
                     // initialize distributor TerritoryManagerNames
                     instantiateTerritoryManagers = function (managers, isDisabled, selectedTerritoryManagerId) {
+                        ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames = $('#EnrollmentFormTerritoryManagerDropdown');
                         if (managers) {
-                            ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames = $('#EnrollmentFormTerritoryManagerDropdown');
                             ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList({
                                 source: managers,
                                 displayMember: 'DisplayName',
@@ -688,8 +770,21 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                                 autoDropDownHeight: true,
                                 width: ProgramEnrollmentFormCommon.config.constant.dropdownWidth,
                                 height: ProgramEnrollmentFormCommon.config.constant.dropdownHight,
-                                disabled: isDisabled
+                                disabled: isDisabled,
+                                selectedIndex: -1
                             });
+
+                            if (managers && managers.length > 5) {
+                                ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList({
+                                    autoDropDownHeight: false,
+                                    dropDownHeight: 200
+                                });
+                            } else {
+                                ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList({
+                                    autoDropDownHeight: true,
+                                });
+                            }
+
                             if (managers.length >= 1) {
                                 if (managers.length === 1) {
                                     ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList({
@@ -708,6 +803,14 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                                     selectedIndex: -1
                                 });
                             }
+                        } else {
+                            ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList({
+                                source: [],
+                                autoDropDownHeight: true,
+                                width: ProgramEnrollmentFormCommon.config.constant.dropdownWidth,
+                                height: ProgramEnrollmentFormCommon.config.constant.dropdownHight,
+                                disabled: false
+                            });
                         }
                     },
 
@@ -715,6 +818,14 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
 
                     // initialize distributor Email
                     instantiateDistributorEmail = function (email) {
+                        /**
+                         * DB store the email field in varchar
+                         */
+                        ProgramEnrollmentFormCommon.helper.SetMaxLength([{
+                            id: "EnrollmentFormDistributorEmailTextbox",
+                            maxLength: 100
+                        }]);
+
                         ProgramEnrollmentFormCommon.render.distributorControl.DistributorEmail = $('#EnrollmentFormDistributorEmailTextbox');
                         if (email) {
                             ProgramEnrollmentFormCommon.render.distributorControl.DistributorEmail.val(email);
@@ -757,11 +868,14 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
 
                             // For distributor role Approver action will be set to 1 from server code.
                             if (salesInfo.ApproverAction && salesInfo.ApproverAction > 0) {
+                                if (!salesInfo.ApproverWorkflowStatusId) {
+                                    hideApproverSection();
+                                }
+
                                 ProgramEnrollmentFormCommon.render.approverControl.ApproverActions.jqxDropDownList({
                                     selectedIndex: 0
                                 });
                             }
-
                         }
                     },
                     // initialize approver workflowStatus
@@ -910,19 +1024,20 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                         });
                     },
                     registerMobileTweaks = function () {
-                        var onResize = function () {
-                            if ($(window).width() <= 751) {
-                                var isMobile = true;
-                            }
-                            if (isMobile) {
-                                $(".mobile-lbl").bind("click", function () {
-                                    $(this).siblings(".input-right-wrapper").slideToggle(1000);
-                                    $(this).toggleClass("active");
-                                });
-                            }
-                        };
-                        onResize.call(this);
-                        window.addEventListener('resize', onResize);
+                        var isMobile;
+                        if ($(window).width() <= 751) {
+                            isMobile = true;
+                        }
+                        if (isMobile) {
+                            $(".mobile-lbl").bind("click", function () {
+                                $(this).siblings(".input-right-wrapper").slideToggle(1000);
+                                $(this).toggleClass("active");
+                            });
+                        }
+                    },
+                    hideApproverSection = function () {
+                        var approverSection = $('#EnrollmentFormApproverSection');
+                        approverSection.css('display', 'none');
                     };
 
                 instantiateCanclePopup();
@@ -942,8 +1057,6 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                 setSelectedDistributor();
 
                 instantiateSubmitedBy();
-                instantiateSalesManagers(undefined, true);
-                instantiateTerritoryManagers(undefined, true);
                 instantiateDistributorEmail("");
 
                 instantiateApproverCommnet();
@@ -1005,6 +1118,7 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                         ProgramEnrollmentFormCommon.dataStore.StoreMessages(data.messages);
                         ProgramEnrollmentFormCommon.dataStore.StoreVisibility(data.visibility);
 
+
                         ProgramEnrollmentFormCommon.formType = data.formType;
 
                         ProgramEnrollmentFormCommon.helper.DynamicallyLoadJsFile(data.jsFileLocation,
@@ -1046,6 +1160,8 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
         };
     }())
 
+    //#endregion Load
+
     //#region Event
     ,
     event: (function () {
@@ -1054,12 +1170,11 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
 
                     if (!ProgramEnrollmentFormCommon.validate.Execute()) {
 
-                        var error = "",
-                            data = {
-                                programId: -1,
-                                dealerId: -1,
-                                formData: {}
-                            };
+                        var data = {
+                            programId: -1,
+                            dealerId: -1,
+                            formData: {}
+                        };
 
                         data.programId = ProgramEnrollmentFormCommon.dataStore.GetQueryStringData().programId;
                         data.dealerId = ProgramEnrollmentFormCommon.dataStore.GetQueryStringData().dealerId;
@@ -1103,51 +1218,95 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
             /**
              *	Apply this function to enable numeric input for text fields.
              **/
-            var privateFilterKey = function (evt, maxLenth, isPercentage, isNotDecimal) {
-                    maxLenth = maxLenth || 9;
-                    isNotDecimal = isNotDecimal || false;
-                    var theEvent = evt || window.event;
-                    var key = theEvent.keyCode || theEvent.which;
-                    var charCode = theEvent.charCode;
-                    //if not delete and backspace
-                    if (!(charCode === 0 && (key === 8 || key === 46))) {
-                        key = String.fromCharCode(key);
-                        var regex = /[0-9]/;
-                        
-                        if (!regex.test(key) && !isNotDecimal) {
-                            theEvent.returnValue = false;
-                            if (theEvent.preventDefault) theEvent.preventDefault();
-                        }                       
+            var
+                formatCurrency = function (number) {
+                    return number;
 
-                        /**
-                         * If Percentage value
-                         */
-                        if (isPercentage && !isNotDecimal) {
-                            if (!ProgramEnrollmentFormCommon.helper.inRange(theEvent.target.value + key, 0, 100)) {
-                                theEvent.returnValue = false;
-                                if (evt.preventDefault) evt.preventDefault();
-                            }
-                        }
-
-                         //Maximum lenght is 9 digits
-                        if (theEvent.target.value.length > maxLenth - 1) {
-                            theEvent.returnValue = false;
-                            if (theEvent.preventDefault) theEvent.preventDefault();
+                    //comment out following line to format numbers as $4,000
+                    // if(!number) return '';
+                    // currencySymbol = currencySymbol || '$';                   
+                    // var fomatted = currencySymbol + number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+                    // return fomatted;
+                },
+                clearSelectedText = function (evt) {
+                    alert(evt.target.selectionStart + "" + evt.target.selectionEnd);
+                    if (evt && evt.target.value) {
+                        var value = evt.target.value;
+                        if (evt.target.selectionStart !== evt.target.selectionEnd) {
+                            var replaceText = value.substring(0, evt.target.selectionStart) + "" + value.substring(evt.target.selectionEnd);
+                            evt.target.value = replaceText;
                         }
                     }
                 },
-                setMaxLength = function(controlInfo){
+                privateFilterKey = function (evt, maxLenth, isPercentage, isNotDecimal) {
+                    //clear selected text
+                    //clearSelectedText(evt);
+                    maxLenth = maxLenth || 9;
+                    isNotDecimal = isNotDecimal || false;
+                    var ctrlKey = evt.ctrlKey;
+                    var theEvent = evt || window.event;
+                    var key = theEvent.keyCode || theEvent.which;
+                    var charCode = theEvent.charCode;
+                    var isValid = true;
+                    var currentValue = theEvent.target.value;
+                    //if not delete and backspace or ctrl key(firefox)
+                    if (!ctrlKey) {
+                        if (!(charCode === 0 && (key === 8 || key === 46))) {
+                            key = String.fromCharCode(key);
+                            var regex = /^\d+$/;
+
+                            if (!regex.test(key) && !isNotDecimal) {
+                                isValid = invalidate(isValid, theEvent);
+                            }
+
+                            /**
+                             * If Percentage value
+                             */
+                            if (isPercentage && !isNotDecimal) {
+                                if (!ProgramEnrollmentFormCommon.helper.inRange(currentValue + key, 0, 100)) {
+                                    isValid = invalidate(isValid, theEvent);
+                                }
+                            }
+
+                            //Maximum lenght is 9 digits
+                            if (currentValue.length > maxLenth - 1) {
+                                isValid = invalidate(isValid, theEvent);
+                            }
+
+                            //format currecy
+                            if (!isNotDecimal && isValid && !isPercentage) {
+                                theEvent.target.value = formatCurrency(currentValue + key);
+                                //preventDefault
+                                if (theEvent.preventDefault) theEvent.preventDefault();
+                            }
+                        }
+
+                    }
+                },
+                /**
+                 * invalidate the event.
+                 */
+                invalidate = function (isValid, theEvent) {
+                    isValid = false;
+                    if (theEvent) theEvent.returnValue = false;
+                    if (theEvent.preventDefault) theEvent.preventDefault();
+                    return isValid;
+                },
+                bindInput = function (maxLenth, isPercentage, isNotDecimal, callback) {
+                    return function (evt) {
+                        callback(evt, maxLenth, isPercentage, isNotDecimal);
+                    }
+                },
+                /**
+                 * max-length custom function.
+                 */
+                setMaxLength = function (controlInfo) {
                     for (var index = 0; index < controlInfo.length; index++) {
                         var info = controlInfo[index];
                         var element = document.getElementById(info.id);
                         if (element) {
-                            $(element).on('keypress', function (evt) {
-                                privateFilterKey(evt, info.maxLength, false, true);
-                            });
-
-                           element.onpaste = function (evt) {
-                                filterPasteData(evt, info.maxLength, false, true);
-                            };
+                            $(element).on('keypress', bindInput(info.maxLength, false, true, privateFilterKey));
+                            element.onpaste = bindInput(info.maxLength, false, true, filterPasteData);
                         }
 
                     }
@@ -1159,12 +1318,21 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                         }
                     }
                 },
+                cleanNumberField = function (value) {
+                    if (value) {
+                        return value.replace(/[^\d]+/gi, "");
+                    }
 
+                    return '';
+                },
                 filterPasteData = function (e, maxLength, isPercentage, isNotDecimal) {
+                    //clear selected text
+                    //clearSelectedText(e);
                     maxLength = maxLength || 9;
                     isNotDecimal = isNotDecimal || false;
                     var pastedData;
-
+                    var isTrimmed = false;
+                    var currentValue = e.target.value;
                     if (e.clipboardData) {
                         if (e.clipboardData.types) {
 
@@ -1184,9 +1352,9 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                     }
 
                     if (pastedData) {
-                        var currentValue = e.target.value;
-                        var regex = /[0-9]/;
 
+
+                        var regex = /^\d+$/;
                         /**
                          * if not a number
                          */
@@ -1195,7 +1363,7 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                             return false;
                         }
 
-                       
+
                         /**
                          * If Percentage value
                          */
@@ -1206,18 +1374,30 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                             }
                         }
 
-                         /**
+                        /**
                          * if length exceed max length
                          */
                         if (currentValue.length + pastedData.length > maxLength) {
-                            e.target.value = (currentValue + pastedData).substr(0, maxLength - 1);
+                            e.target.value = (currentValue + pastedData).substr(0, maxLength);
                             if (e.preventDefault) e.preventDefault();
-                        }                        
-                        
+                            isTrimmed = true;
+                        }
+
+                        //format decimal but not percentage (currency)
+                        if (!isNotDecimal && !isPercentage) {
+                            var value = isTrimmed ? e.target.value : currentValue + pastedData;
+                            e.target.value = value;
+                            //preventDefault
+                            if (e.preventDefault) e.preventDefault();
+                        }
+
                     }
 
                 },
-                
+                /**
+                 * Mannual validate every key stroke and paste event
+                 * To allow only numbers with maximum length.
+                 */
                 privateRegisterNumericControls = function (controlIdentifiers, maxLength, isPercentage) {
                     for (var index = 0; index < controlIdentifiers.length; index++) {
 
@@ -1282,6 +1462,7 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                     //// Program information
                     enrollmententity.ProgramVertical = ProgramEnrollmentFormCommon.helper.GetVertical();
                     enrollmententity.ProgramName = ProgramEnrollmentFormCommon.dataStore.GetProgram().Name;
+                    enrollmententity.ProgramCode = ProgramEnrollmentFormCommon.dataStore.GetProgram().Code;
                     enrollmententity.ProgramBrandId = ProgramEnrollmentFormCommon.dataStore.GetProgram().Brand;
                     enrollmententity.ProgramManagers = ProgramEnrollmentFormCommon.dataStore.GetProgram().ProgramManagers;
                     //// Dealer information
@@ -1298,6 +1479,7 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                     /// #region Distributor information
                     //'#EnrollmentFormDistributorNamesDropdown'
                     enrollmententity.DistributorCompanyId = ProgramEnrollmentFormCommon.dataManager.getDropdownSelectedItem(ProgramEnrollmentFormCommon.config.distributorControlsId.enrollmentFormDistributorNamesDropdown, 'value');
+                    enrollmententity.DistributorDisplayId = ProgramEnrollmentFormCommon.dataManager.getOriginalItemValue(ProgramEnrollmentFormCommon.config.distributorControlsId.enrollmentFormDistributorNamesDropdown, 'CompanyDisplayId');
                     enrollmententity.DistributorName = ProgramEnrollmentFormCommon.dataManager.getDropdownSelectedItem(ProgramEnrollmentFormCommon.config.distributorControlsId.enrollmentFormDistributorNamesDropdown, 'label');
                     //enrollmententity.DistributorAddress = ProgramEnrollmentFormCommon.render.distributorControl.DistributorAddress.text();
 
@@ -1346,12 +1528,12 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                         "AllBrandsAORPurchasesVolumeFirstYear": "0",
                         "AllBrandsNewConstructionPurchaseVolumeCurrentYear": "0",
                         "AllBrandsNewConstructionPurchaseVolumeFirstYear": "0",
-                        "CompetitiveBrand1NameCurrentYear": "0",
-                        "CompetitiveBrand1NameFirstYear": "0",
+                        "CompetitiveBrand1NameCurrentYear": "",
+                        "CompetitiveBrand1NameFirstYear": "",
                         "CompetitiveBrand1PercentageCurrentYear": "0",
                         "CompetitiveBrand1PercentageFirstYear": "0",
-                        "CompetitiveBrand2NameCurrentYear": "0",
-                        "CompetitiveBrand2NameFirstYear": "0",
+                        "CompetitiveBrand2NameCurrentYear": "",
+                        "CompetitiveBrand2NameFirstYear": "",
                         "CompetitiveBrand2PercentageCurrentYear": "0",
                         "CompetitiveBrand2PercentageFirstYear": "0",
                         "CBPBrandPercentageCurrentYear": "0",
@@ -1395,9 +1577,9 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                         "CBPAnnualEquipmentPurchasesSecondYear": "0",
                         "AllBrandsAORPurchaseVolumnSecondYear": "0",
                         "AllBrandsNewConstructionPurchaseVolumnSecondYear": "0",
-                        "CompetitiveBrand1NameSecondYear": "0",
+                        "CompetitiveBrand1NameSecondYear": "",
                         "CompetitiveBrand1PercentageSecondYear": "0",
-                        "CompetitiveBrand2NameSecondYear": "0",
+                        "CompetitiveBrand2NameSecondYear": "",
                         "CompetitiveBrand2PercentageSecondYear": "0",
                         "MarketingFundEstimate12PercentageFirstYear": "0",
                         "MarketingFundEstimate8PercentageFirstYear": "0",
@@ -1426,14 +1608,14 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                         "ApproverWorkflowStatus": "0",
                         "ApproverWorkflowStatusText": null,
                         "DealerCompanyID": "0",
-                        "DealerName": "0",
+                        "DealerName": "",
                         "DealerAddress": "0",
                         "DealerPhone": "0",
                         "DealerFax": "0",
                         "DealerEmailAddress": "0",
                         "DealerOwnerEmailAddress": "0",
                         "DistributorId": "0",
-                        "DistributorName": "0",
+                        "DistributorName": "",
                         "DistributorAddress": "0",
                         "FormType": "0",
                         "EnrollmentStatus": "0",
@@ -1473,8 +1655,9 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                 privateIsWholeNumber = function (number) {
                     var number_regEx = /^\d*$/;
 
+                    //ignore empty fields
                     if (number === "") {
-                        return false;
+                        return true;
                     }
 
                     return regXValidation(number_regEx, number);
@@ -1744,7 +1927,13 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
                 };
 
             return {
-                SetMaxLength: function(controlInfo){
+                FormatCurrency: function (number, symbol) {
+                    return formatCurrency(number, symbol);
+                },
+                CleanNumberField: function (value) {
+                    return cleanNumberField(value);
+                },
+                SetMaxLength: function (controlInfo) {
                     setMaxLength(controlInfo)
                 },
                 HidePageInfo: function () {
@@ -1898,172 +2087,190 @@ var ProgramEnrollmentFormCommon = { // program enrollment form common functional
         }())
         //#endregion Submit Data
 
+    //#region validate
     ,
     validate: (function () {
-        var errorMessage = {
-                emailFormatError: "Invalid email format",
-                noDealerOwner: "No Owner exists for this dealer company",
-                noDistributor: "Distributor is required",
-                selectSalesManager: "Please select <Ductless/Residential> Sales Manager",
-                noSalesManager: "No <Ductless/Residential> Sales Manager exists for this Distributor Company",
-                selectTerritoryManager: "Please select Territory Manager",
-                noTerritoryManager: "No Territory Manager exists for this Distributor Company",
-                noApproverAction: "No action is selected",
-                requiredFieldError: "Please fill all the required fields"
-            },
-            message = '',
-            isErrorFound = false;
-
-        var execute = function () {
-
-            ProgramEnrollmentFormCommon.helper.HideMessages();
-
-            //(Dealer section)
-            //validate Dealer Owner Name
-            var validateDealerOwnerName = function () {
-                    var dealerOwner = ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList('getSelectedItem'),
-                        message = null;
-
-                    // dealerOwner is required
-                    if (!dealerOwner) {
-                        message = errorMessage.noDealerOwner;
-                    }
-
-                    if (message && message.length > 0) {
-                        isErrorFound = true;
-                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                    }
+            var errorMessage = {
+                    emailFormatError: "Invalid email format",
+                    noDealerOwner: "No Owner exists for this Dealer Company",
+                    noSalesManager: "No <Ductless/Residential> Sales Manager exists for this Distributor Company",
+                    noTerritoryManager: "No Territory Manager exists for this Distributor Company",
+                    requiredFieldError: "Please provide valid information to all the required fields to proceed."
                 },
+                message = '',
+                isErrorFound = false;
 
-                //(Distributor Section)
-                //validate Distributor Name
-                validateDistributorName = function () {
-                    var distributor = ProgramEnrollmentFormCommon.render.distributorControl.DistributorNames.jqxDropDownList('getSelectedItem'),
-                        message = null;
+            var execute = function () {
 
-                    // distributor is required
-                    if (!distributor) {
-                        message = errorMessage.noDistributor;
-                    }
-                    if (message && message.length > 0) {
-                        isErrorFound = true;
-                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                    }
-                },
+                ProgramEnrollmentFormCommon.helper.HideMessages();
 
-                //Sales Manager Name (Distributor Section)
-                validateSalesManager = function () {
-                    var managers = ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList('source');
-                    var salesManager = ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList('getSelectedItem'),
-                        message = null;
-                    var vertical = ProgramEnrollmentFormCommon.helper.GetVertical();
-                    // salesManager is required
-                    if (managers.length) {
-                        message = errorMessage.noSalesManager.replace("<Ductless/Residential>", vertical);
-                    } else if (!salesManager && managers.length) {
-                        message = errorMessage.selectSalesManager.replace("<Ductless/Residential>", vertical);
-                    }
-
-                    if (message && message.length > 0) {
-                        isErrorFound = true;
-                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                    }
-                },
-
-                //"Territory Manager Name
-                validateTerritoryManager = function () {
-                    var managers = ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList('source');
-
-                    var territoryManager = ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList('getSelectedItem'),
-                        message = null;
+                //(Dealer section)
+                //validate Dealer Owner Name
+                var validateDealerOwnerName = function () {
+                        var message = null;
+                        if (!ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames) {
+                            message = errorMessage.noDealerOwner;
+                        } else {
+                            var owners = ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList('source');
+                            var dealerOwner = ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList('getSelectedItem');
 
 
-                    if (!managers || !managers.length) {
-                        // if managers no manager is available.
-                        message = errorMessage.noTerritoryManager;
-                    } else if (!territoryManager && managers && managers.length) {
-                        //if manager is not selected.
-                        message = errorMessage.selectTerritoryManager;
-                    }
+                            // dealerOwner is required
+                            if (!owners || owners && !owners.length) {
+                                message = errorMessage.noDealerOwner;
+                            } else if (owners && owners.length && !dealerOwner) {
+                                message = errorMessage.requiredFieldError;
+                            }
+                        }
 
-                    if (message && message.length > 0) {
-                        isErrorFound = true;
-                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                    }
-                },
+                        if (message && message.length > 0) {
+                            isErrorFound = true;
+                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                        }
+                    },
 
-                //Distributor Email
-                validateDistributorEmail = function () {
-                    var distributorEmail = ProgramEnrollmentFormCommon.render.distributorControl.DistributorEmail.val();
+                    //(Distributor Section)
+                    //validate Distributor Name
+                    validateDistributorName = function () {
+                        if (!ProgramEnrollmentFormCommon.render.distributorControl) {
+                            message = errorMessage.requiredFieldError;
+                        } else {
+                            var distributor = ProgramEnrollmentFormCommon.render.distributorControl.DistributorNames.jqxDropDownList('getSelectedItem'),
+                                message = null;
 
-                    if (!ProgramEnrollmentFormCommon.helper.IsValidEmail(distributorEmail)) {
-                        isErrorFound = true;
-                        message = errorMessage.emailFormatError;
-                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                    }
-                },
+                            // distributor is required
+                            if (!distributor) {
+                                message = errorMessage.requiredFieldError;
+                            }
+                        }
+                        if (message && message.length > 0) {
+                            isErrorFound = true;
+                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                        }
+                    },
 
-                //(action )
-                validateApproverAction = function () {
-                    var action = ProgramEnrollmentFormCommon.render.approverControl.ApproverActions.jqxDropDownList('getSelectedItem'),
-                        message = null;
+                    //Sales Manager Name (Distributor Section)
+                    validateSalesManager = function () {
+                        var message = null;
+                        var vertical = ProgramEnrollmentFormCommon.helper.GetVertical();
+                        if (!ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers) {
+                            message = errorMessage.noSalesManager.replace("<Ductless/Residential>", vertical);
+                        } else {
+                            var managers = ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList('source');
+                            var salesManager = ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList('getSelectedItem');
 
-                    // action is required
-                    if (!action) {
-                        message = errorMessage.noApproverAction;
-                    }
+                            // salesManager is required
+                            if (!managers || (managers && !managers.length)) {
+                                message = errorMessage.noSalesManager.replace("<Ductless/Residential>", vertical);
+                            } else if (!salesManager && managers && managers.length) {
+                                message = errorMessage.requiredFieldError;
+                            }
+                        }
 
-                    if (message && message.length > 0) {
-                        isErrorFound = true;
-                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                    }
-                },
+                        if (message && message.length > 0) {
+                            isErrorFound = true;
+                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                        }
+                    },
 
-                //Sales information section
-                validateSalesInformation = function () {
-                    // validate BigFish Standard or Ductless controls (if validation fails pass false)
-                    isErrorFound = isErrorFound || !ProgramEnrollmentFormCommon.validate.salesInfomation.execute();
+                    //"Territory Manager Name
+                    validateTerritoryManager = function () {
+                        var message = '';
+                        if (!ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames) {
+                            message = errorMessage.noTerritoryManager;
+                        } else {
+                            var managers = ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList('source');
 
+                            var territoryManager = ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList('getSelectedItem');
+
+                            if (!managers || (managers && !managers.length)) {
+                                // if managers no manager is available.
+                                message = errorMessage.noTerritoryManager;
+                            } else if (!territoryManager && managers && managers.length) {
+                                //if manager is not selected.
+                                message = errorMessage.requiredFieldError;
+                            }
+                        }
+
+                        if (message && message.length > 0) {
+                            isErrorFound = true;
+                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                        }
+                    },
+
+                    //Distributor Email
+                    validateDistributorEmail = function () {
+                        var distributorEmail = ProgramEnrollmentFormCommon.render.distributorControl.DistributorEmail.val();
+
+                        if (distributorEmail && !ProgramEnrollmentFormCommon.helper.IsValidEmail(distributorEmail)) {
+                            isErrorFound = true;
+                            message = errorMessage.emailFormatError;
+                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                        }
+                    },
+
+                    //(action )
+                    validateApproverAction = function () {
+                        var action = ProgramEnrollmentFormCommon.render.approverControl.ApproverActions.jqxDropDownList('getSelectedItem'),
+                            message = null;
+
+                        // action is required
+                        if (!action) {
+                            message = errorMessage.requiredFieldError;
+                        }
+
+                        if (message && message.length > 0) {
+                            isErrorFound = true;
+                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                        }
+                    },
+
+                    //Sales information section
+                    validateSalesInformation = function () {
+                        // validate BigFish Standard or Ductless controls (if validation fails pass false)
+                        isErrorFound = isErrorFound || !ProgramEnrollmentFormCommon.validate.salesInfomation.execute();
+
+                        if (isErrorFound) {
+                            message = errorMessage.requiredFieldError;
+                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                        }
+                    },
+
+                    validations = [],
+                    self = this;
+
+                isErrorFound = false;
+
+                validations.push(
+                    validateDealerOwnerName,
+                    validateDistributorName,
+                    validateSalesManager,
+                    validateTerritoryManager,
+                    validateDistributorEmail,
+                    validateApproverAction,
+                    validateSalesInformation);
+
+                validations.forEach(function (validator) {
                     if (isErrorFound) {
-                        message = errorMessage.requiredFieldError;
-                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                        return;
                     }
-                },
+                    validator.call(self);
 
-                validations = [],
-                self = this;
+                });
 
-            isErrorFound = false;
-
-            validations.push(
-                validateDealerOwnerName,
-                validateDistributorName,
-                validateSalesManager,
-                validateTerritoryManager,
-                validateDistributorEmail,
-                validateApproverAction,
-                validateSalesInformation);
-
-            validations.forEach(function (validator) {
-                if (isErrorFound) {
-                    return;
-                }
-                validator.call(self);
-
-            });
-
-            return isErrorFound;
-        }
-
-        return {
-            Execute: function () {
-                return execute();
-            },
-            salesInfomation: function () {
-                return {};
+                return isErrorFound;
             }
-        }
-    })()
+
+            return {
+                Execute: function () {
+                    return execute();
+                },
+                salesInfomation: function () {
+                    return {};
+                }
+            }
+        })()
+        //#endregion validate
 };
 
 $(document).ready(function () {

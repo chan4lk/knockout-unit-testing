@@ -18,7 +18,9 @@ module.exports = function(config) {
       'node_modules/jquery/dist/jquery.min.js',
       'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
       'node_modules/knockout/build/output/knockout-latest.debug.js',
-      'src/*.js',
+      'src/program.enrollmentform.common.js',
+      'src/program.enrollmentform.*.js',
+      'src/viewModel.js',
       'test/*.spec.js',
       {
         pattern: 'test/mocks/*.html',
@@ -50,7 +52,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['spec'],
 
 
     // web server port
@@ -71,7 +73,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS', 'Chrome'],
+    browsers: [/*'PhantomJS', 'Chrome', */'Firefox'],
 
 
     // Continuous Integration mode
