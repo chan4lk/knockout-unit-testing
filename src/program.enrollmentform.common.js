@@ -1,5 +1,5 @@
-﻿//Version QAR 2.4.2
-'use strict'
+//<-- version UAT 2.1.5 -->
+'use strict';
 
 var ProgramEnrollmentFormCommon = {
     // program enrollment form common functionality name space
@@ -165,8 +165,8 @@ var ProgramEnrollmentFormCommon = {
         }())
         //#endregion Configurations
 
-    //#region DataStore
-    ,
+        //#region DataStore
+        ,
     dataStore: (function () {
             var messages = null,
                 dealerData = null,
@@ -267,43 +267,43 @@ var ProgramEnrollmentFormCommon = {
         }())
         //#endregion DataStore
 
-    //#region DataManager
-    ,
+        //#region DataManager
+        ,
     dataManager: (function () {
-        // get selected dropdown value
-        var privateGetDropdownSelectedItem = function (controllerId, property) {
-                var item = $(controllerId).jqxDropDownList('getSelectedItem');
-                if (item) {
-                    if (property)
-                        return item[property];
-                    else
-                        return item.value;
-                }
-            },
+            // get selected dropdown value
+            var privateGetDropdownSelectedItem = function (controllerId, property) {
+                    var item = $(controllerId).jqxDropDownList('getSelectedItem');
+                    if (item) {
+                        if (property)
+                            return item[property];
+                        else
+                            return item.value;
+                    }
+                },
 
-            getOriginalItemValue = function (controllerId, property) {
-                var item = $(controllerId).jqxDropDownList('getSelectedItem');
-                if (item && item.originalItem) {
-                    if (property)
-                        return item.originalItem[property];
-                    else
-                        return item.originalItem;
+                getOriginalItemValue = function (controllerId, property) {
+                    var item = $(controllerId).jqxDropDownList('getSelectedItem');
+                    if (item && item.originalItem) {
+                        if (property)
+                            return item.originalItem[property];
+                        else
+                            return item.originalItem;
+                    }
                 }
+
+
+
+            return {
+                getDropdownSelectedItem: privateGetDropdownSelectedItem,
+                getOriginalItemValue: getOriginalItemValue
             }
 
+        }())
 
+        //#endregion DataManager
 
-        return {
-            getDropdownSelectedItem: privateGetDropdownSelectedItem,
-            getOriginalItemValue: getOriginalItemValue
-        }
-
-    }())
-
-    //#endregion DataManager
-
-    //#region WebService
-    ,
+        //#region WebService
+        ,
     webService: (function () {
             // call service
             var call = function (serviceMethod, requestType, dataType, data, beforeSend, success, error, complete, contextObject) {
@@ -343,8 +343,8 @@ var ProgramEnrollmentFormCommon = {
         }())
         //#endregion WebService
 
-    //#region Render
-    ,
+        //#region Render
+        ,
     render: {
         programControl: {
             //Program info
@@ -1084,86 +1084,86 @@ var ProgramEnrollmentFormCommon = {
     ,
     load: (function () {
 
-        var beforeSend = function () {
-                ProgramEnrollmentFormCommon.helper.HideMessages();
-                ProgramEnrollmentFormCommon.helper.ShowBusyWrapper();
-            },
-            success = function (data) {
+            var beforeSend = function () {
+                    ProgramEnrollmentFormCommon.helper.HideMessages();
+                    ProgramEnrollmentFormCommon.helper.ShowBusyWrapper();
+                },
+                success = function (data) {
 
-                try {
-                    if (!data) {
-                        ProgramEnrollmentFormCommon.helper.HidePageInfo();
+                    try {
+                        if (!data) {
+                            ProgramEnrollmentFormCommon.helper.HidePageInfo();
+                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(
+                                ProgramEnrollmentFormCommon.helper.GetDefinedErrorMessage("Data object is null", true));
+                            ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
+                        } else if (!data.status) {
+                            ProgramEnrollmentFormCommon.helper.HidePageInfo();
+                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(
+                                ProgramEnrollmentFormCommon.helper.GetDefinedErrorMessage("Status object is null", true));
+                            ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
+                        } else if (!data.status.Success) {
+                            ProgramEnrollmentFormCommon.helper.HidePageInfo();
+                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(
+                                ProgramEnrollmentFormCommon.helper.GetDefinedErrorMessage(data.status.Message, true));
+                            ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
+                        } else {
+                            ProgramEnrollmentFormCommon.dataStore.StoreProgram(data.program);
+                            ProgramEnrollmentFormCommon.dataStore.StoreBrands(data.brands);
+                            ProgramEnrollmentFormCommon.dataStore.StoreVerticals(data.verticals);
+                            ProgramEnrollmentFormCommon.dataStore.StoreDealerData(data.dealer);
+                            ProgramEnrollmentFormCommon.dataStore.StoreDistributorData(data.distributors);
+                            ProgramEnrollmentFormCommon.dataStore.StoreSalesInformationDivContent(data.salesInforamtionHtml);
+                            ProgramEnrollmentFormCommon.dataStore.StoreSalesInformation(data.data);
+                            ProgramEnrollmentFormCommon.dataStore.StoreWorkflowActions(data.actionTypes);
+                            ProgramEnrollmentFormCommon.dataStore.StoreMessages(data.messages);
+                            ProgramEnrollmentFormCommon.dataStore.StoreVisibility(data.visibility);
+
+
+                            ProgramEnrollmentFormCommon.formType = data.formType;
+
+                            ProgramEnrollmentFormCommon.helper.DynamicallyLoadJsFile(data.jsFileLocation,
+                                ProgramEnrollmentFormCommon.render.InitializeHtmlObjects);
+                        }
+                    } catch (exception) {
                         ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(
-                            ProgramEnrollmentFormCommon.helper.GetDefinedErrorMessage("Data object is null", true));
-                        ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
-                    } else if (!data.status) {
-                        ProgramEnrollmentFormCommon.helper.HidePageInfo();
-                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(
-                            ProgramEnrollmentFormCommon.helper.GetDefinedErrorMessage("Status object is null", true));
-                        ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
-                    } else if (!data.status.Success) {
-                        ProgramEnrollmentFormCommon.helper.HidePageInfo();
-                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(
-                            ProgramEnrollmentFormCommon.helper.GetDefinedErrorMessage(data.status.Message, true));
-                        ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
-                    } else {
-                        ProgramEnrollmentFormCommon.dataStore.StoreProgram(data.program);
-                        ProgramEnrollmentFormCommon.dataStore.StoreBrands(data.brands);
-                        ProgramEnrollmentFormCommon.dataStore.StoreVerticals(data.verticals);
-                        ProgramEnrollmentFormCommon.dataStore.StoreDealerData(data.dealer);
-                        ProgramEnrollmentFormCommon.dataStore.StoreDistributorData(data.distributors);
-                        ProgramEnrollmentFormCommon.dataStore.StoreSalesInformationDivContent(data.salesInforamtionHtml);
-                        ProgramEnrollmentFormCommon.dataStore.StoreSalesInformation(data.data);
-                        ProgramEnrollmentFormCommon.dataStore.StoreWorkflowActions(data.actionTypes);
-                        ProgramEnrollmentFormCommon.dataStore.StoreMessages(data.messages);
-                        ProgramEnrollmentFormCommon.dataStore.StoreVisibility(data.visibility);
+                            ProgramEnrollmentFormCommon.helper.GetDefinedErrorMessage(exception.message, true));
 
-
-                        ProgramEnrollmentFormCommon.formType = data.formType;
-
-                        ProgramEnrollmentFormCommon.helper.DynamicallyLoadJsFile(data.jsFileLocation,
-                            ProgramEnrollmentFormCommon.render.InitializeHtmlObjects);
+                        ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
                     }
-                } catch (exception) {
+                },
+                onerror = function (error) {
+                    //Hide Page content.
+                    ProgramEnrollmentFormCommon.helper.HidePageInfo();
                     ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(
-                        ProgramEnrollmentFormCommon.helper.GetDefinedErrorMessage(exception.message, true));
-
+                        ProgramEnrollmentFormCommon.helper.GetDefinedErrorMessage(
+                            ProgramEnrollmentFormCommon.helper.GetErrorMessageUsingAjaxErrorObject(error),
+                            true));
+                    ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
+                },
+                complete = function () {
                     ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
                 }
-            },
-            onerror = function (error) {
-                //Hide Page content.
-                ProgramEnrollmentFormCommon.helper.HidePageInfo();
-                ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(
-                    ProgramEnrollmentFormCommon.helper.GetDefinedErrorMessage(
-                        ProgramEnrollmentFormCommon.helper.GetErrorMessageUsingAjaxErrorObject(error),
-                        true));
-                ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
-            },
-            complete = function () {
-                ProgramEnrollmentFormCommon.helper.HideBusyWrapper();
-            }
 
-        return {
-            BeforeSend: function () {
-                beforeSend();
-            },
-            Success: function (data) {
-                success(data);
-            },
-            Error: function (error) {
-                onerror(error);
-            },
-            Complete: function () {
-                complete();
-            }
-        };
-    }())
+            return {
+                BeforeSend: function () {
+                    beforeSend();
+                },
+                Success: function (data) {
+                    success(data);
+                },
+                Error: function (error) {
+                    onerror(error);
+                },
+                Complete: function () {
+                    complete();
+                }
+            };
+        }())
 
-    //#endregion Load
+        //#endregion Load
 
-    //#region Event
-    ,
+        //#region Event
+        ,
     event: (function () {
             var submitData = function () {
 
@@ -1212,8 +1212,8 @@ var ProgramEnrollmentFormCommon = {
         }())
         //#endregion Event
 
-    //#region Helper
-    ,
+        //#region Helper
+        ,
     helper: (function () {
             /**
              *	Apply this function to enable numeric input for text fields.
@@ -1249,9 +1249,9 @@ var ProgramEnrollmentFormCommon = {
                     var charCode = theEvent.charCode;
                     var isValid = true;
                     var currentValue = theEvent.target.value;
-                    //if not delete and backspace or ctrl key(firefox)
+                    //if not delete and backspace or ctrl or tab key(firefox)
                     if (!ctrlKey) {
-                        if (!(charCode === 0 && (key === 8 || key === 46))) {
+                        if (!(charCode === 0 && (key === 8 || key === 9 || key === 46))) {
                             key = String.fromCharCode(key);
                             var regex = /^\d+$/;
 
@@ -1274,11 +1274,11 @@ var ProgramEnrollmentFormCommon = {
                             }
 
                             //format currecy
-                            if (!isNotDecimal && isValid && !isPercentage) {
-                                theEvent.target.value = formatCurrency(currentValue + key);
-                                //preventDefault
-                                if (theEvent.preventDefault) theEvent.preventDefault();
-                            }
+                            // if (!isNotDecimal && isValid && !isPercentage) {
+                            //     theEvent.target.value = formatCurrency(currentValue + key);
+                            //     //preventDefault
+                            //     if (theEvent.preventDefault) theEvent.preventDefault();
+                            // }
                         }
 
                     }
@@ -1334,16 +1334,8 @@ var ProgramEnrollmentFormCommon = {
                     var isTrimmed = false;
                     var currentValue = e.target.value;
                     if (e.clipboardData) {
-                        if (e.clipboardData.types) {
-
-                            var key = e.clipboardData.types[0];
-                            pastedData = e.clipboardData.getData(key);
-
-
-                        } else {
-                            // Look for access to data if types array is missing 
-                            pastedData = e.clipboardData.getData('text/plain');
-                        }
+                        // Look for access to data if types array is missing 
+                        pastedData = e.clipboardData.getData('text/plain');
                     }
 
                     // IE event is attached to the window object
@@ -1384,12 +1376,12 @@ var ProgramEnrollmentFormCommon = {
                         }
 
                         //format decimal but not percentage (currency)
-                        if (!isNotDecimal && !isPercentage) {
-                            var value = isTrimmed ? e.target.value : currentValue + pastedData;
-                            e.target.value = value;
-                            //preventDefault
-                            if (e.preventDefault) e.preventDefault();
-                        }
+                        // if (!isNotDecimal && !isPercentage) {
+                        //     var value = isTrimmed ? e.target.value : currentValue + pastedData;
+                        //     e.target.value = value;
+                        //     //preventDefault
+                        //     if (e.preventDefault) e.preventDefault();
+                        // }
 
                     }
 
@@ -2025,8 +2017,8 @@ var ProgramEnrollmentFormCommon = {
         }())
         //#endregion Helper
 
-    //#region Submit Data
-    ,
+        //#region Submit Data
+        ,
     submitData: (function () {
 
             // before send
@@ -2087,190 +2079,190 @@ var ProgramEnrollmentFormCommon = {
         }())
         //#endregion Submit Data
 
-    //#region validate
-    ,
+        //#region validate
+        ,
     validate: (function () {
-            var errorMessage = {
-                    emailFormatError: "Invalid email format",
-                    noDealerOwner: "No Owner exists for this Dealer Company",
-                    noSalesManager: "No <Ductless/Residential> Sales Manager exists for this Distributor Company",
-                    noTerritoryManager: "No Territory Manager exists for this Distributor Company",
-                    requiredFieldError: "Please provide valid information to all the required fields to proceed."
-                },
-                message = '',
-                isErrorFound = false;
+        var errorMessage = {
+                emailFormatError: "Invalid email format",
+                noDealerOwner: "No Owner exists for this Dealer Company",
+                noSalesManager: "No <Ductless/Residential> Sales Manager exists for this Distributor Company",
+                noTerritoryManager: "No Territory Manager exists for this Distributor Company",
+                requiredFieldError: "Please provide valid information to all the required fields to proceed."
+            },
+            message = '',
+            isErrorFound = false;
 
-            var execute = function () {
+        var execute = function () {
 
-                ProgramEnrollmentFormCommon.helper.HideMessages();
+            ProgramEnrollmentFormCommon.helper.HideMessages();
 
-                //(Dealer section)
-                //validate Dealer Owner Name
-                var validateDealerOwnerName = function () {
-                        var message = null;
-                        if (!ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames) {
+            //(Dealer section)
+            //validate Dealer Owner Name
+            var validateDealerOwnerName = function () {
+                    var message = null;
+                    if (!ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames) {
+                        message = errorMessage.noDealerOwner;
+                    } else {
+                        var owners = ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList('source');
+                        var dealerOwner = ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList('getSelectedItem');
+
+
+                        // dealerOwner is required
+                        if (!owners || owners && !owners.length) {
                             message = errorMessage.noDealerOwner;
-                        } else {
-                            var owners = ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList('source');
-                            var dealerOwner = ProgramEnrollmentFormCommon.render.dealerControl.DealerOwnerNames.jqxDropDownList('getSelectedItem');
-
-
-                            // dealerOwner is required
-                            if (!owners || owners && !owners.length) {
-                                message = errorMessage.noDealerOwner;
-                            } else if (owners && owners.length && !dealerOwner) {
-                                message = errorMessage.requiredFieldError;
-                            }
-                        }
-
-                        if (message && message.length > 0) {
-                            isErrorFound = true;
-                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                        }
-                    },
-
-                    //(Distributor Section)
-                    //validate Distributor Name
-                    validateDistributorName = function () {
-                        if (!ProgramEnrollmentFormCommon.render.distributorControl) {
+                        } else if (owners && owners.length && !dealerOwner) {
                             message = errorMessage.requiredFieldError;
-                        } else {
-                            var distributor = ProgramEnrollmentFormCommon.render.distributorControl.DistributorNames.jqxDropDownList('getSelectedItem'),
-                                message = null;
-
-                            // distributor is required
-                            if (!distributor) {
-                                message = errorMessage.requiredFieldError;
-                            }
                         }
-                        if (message && message.length > 0) {
-                            isErrorFound = true;
-                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                        }
-                    },
+                    }
 
-                    //Sales Manager Name (Distributor Section)
-                    validateSalesManager = function () {
-                        var message = null;
-                        var vertical = ProgramEnrollmentFormCommon.helper.GetVertical();
-                        if (!ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers) {
-                            message = errorMessage.noSalesManager.replace("<Ductless/Residential>", vertical);
-                        } else {
-                            var managers = ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList('source');
-                            var salesManager = ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList('getSelectedItem');
+                    if (message && message.length > 0) {
+                        isErrorFound = true;
+                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                    }
+                },
 
-                            // salesManager is required
-                            if (!managers || (managers && !managers.length)) {
-                                message = errorMessage.noSalesManager.replace("<Ductless/Residential>", vertical);
-                            } else if (!salesManager && managers && managers.length) {
-                                message = errorMessage.requiredFieldError;
-                            }
-                        }
-
-                        if (message && message.length > 0) {
-                            isErrorFound = true;
-                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                        }
-                    },
-
-                    //"Territory Manager Name
-                    validateTerritoryManager = function () {
-                        var message = '';
-                        if (!ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames) {
-                            message = errorMessage.noTerritoryManager;
-                        } else {
-                            var managers = ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList('source');
-
-                            var territoryManager = ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList('getSelectedItem');
-
-                            if (!managers || (managers && !managers.length)) {
-                                // if managers no manager is available.
-                                message = errorMessage.noTerritoryManager;
-                            } else if (!territoryManager && managers && managers.length) {
-                                //if manager is not selected.
-                                message = errorMessage.requiredFieldError;
-                            }
-                        }
-
-                        if (message && message.length > 0) {
-                            isErrorFound = true;
-                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                        }
-                    },
-
-                    //Distributor Email
-                    validateDistributorEmail = function () {
-                        var distributorEmail = ProgramEnrollmentFormCommon.render.distributorControl.DistributorEmail.val();
-
-                        if (distributorEmail && !ProgramEnrollmentFormCommon.helper.IsValidEmail(distributorEmail)) {
-                            isErrorFound = true;
-                            message = errorMessage.emailFormatError;
-                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                        }
-                    },
-
-                    //(action )
-                    validateApproverAction = function () {
-                        var action = ProgramEnrollmentFormCommon.render.approverControl.ApproverActions.jqxDropDownList('getSelectedItem'),
+                //(Distributor Section)
+                //validate Distributor Name
+                validateDistributorName = function () {
+                    if (!ProgramEnrollmentFormCommon.render.distributorControl) {
+                        message = errorMessage.requiredFieldError;
+                    } else {
+                        var distributor = ProgramEnrollmentFormCommon.render.distributorControl.DistributorNames.jqxDropDownList('getSelectedItem'),
                             message = null;
 
-                        // action is required
-                        if (!action) {
+                        // distributor is required
+                        if (!distributor) {
                             message = errorMessage.requiredFieldError;
                         }
-
-                        if (message && message.length > 0) {
-                            isErrorFound = true;
-                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                        }
-                    },
-
-                    //Sales information section
-                    validateSalesInformation = function () {
-                        // validate BigFish Standard or Ductless controls (if validation fails pass false)
-                        isErrorFound = isErrorFound || !ProgramEnrollmentFormCommon.validate.salesInfomation.execute();
-
-                        if (isErrorFound) {
-                            message = errorMessage.requiredFieldError;
-                            ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
-                        }
-                    },
-
-                    validations = [],
-                    self = this;
-
-                isErrorFound = false;
-
-                validations.push(
-                    validateDealerOwnerName,
-                    validateDistributorName,
-                    validateSalesManager,
-                    validateTerritoryManager,
-                    validateDistributorEmail,
-                    validateApproverAction,
-                    validateSalesInformation);
-
-                validations.forEach(function (validator) {
-                    if (isErrorFound) {
-                        return;
                     }
-                    validator.call(self);
-
-                });
-
-                return isErrorFound;
-            }
-
-            return {
-                Execute: function () {
-                    return execute();
+                    if (message && message.length > 0) {
+                        isErrorFound = true;
+                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                    }
                 },
-                salesInfomation: function () {
-                    return {};
+
+                //Sales Manager Name (Distributor Section)
+                validateSalesManager = function () {
+                    var message = null;
+                    var vertical = ProgramEnrollmentFormCommon.helper.GetVertical();
+                    if (!ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers) {
+                        message = errorMessage.noSalesManager.replace("<Ductless/Residential>", vertical);
+                    } else {
+                        var managers = ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList('source');
+                        var salesManager = ProgramEnrollmentFormCommon.render.distributorControl.DistributorSalesManagers.jqxDropDownList('getSelectedItem');
+
+                        // salesManager is required
+                        if (!managers || (managers && !managers.length)) {
+                            message = errorMessage.noSalesManager.replace("<Ductless/Residential>", vertical);
+                        } else if (!salesManager && managers && managers.length) {
+                            message = errorMessage.requiredFieldError;
+                        }
+                    }
+
+                    if (message && message.length > 0) {
+                        isErrorFound = true;
+                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                    }
+                },
+
+                //"Territory Manager Name
+                validateTerritoryManager = function () {
+                    var message = '';
+                    if (!ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames) {
+                        message = errorMessage.noTerritoryManager;
+                    } else {
+                        var managers = ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList('source');
+
+                        var territoryManager = ProgramEnrollmentFormCommon.render.distributorControl.DistributorTerritoryManagerNames.jqxDropDownList('getSelectedItem');
+
+                        if (!managers || (managers && !managers.length)) {
+                            // if managers no manager is available.
+                            message = errorMessage.noTerritoryManager;
+                        } else if (!territoryManager && managers && managers.length) {
+                            //if manager is not selected.
+                            message = errorMessage.requiredFieldError;
+                        }
+                    }
+
+                    if (message && message.length > 0) {
+                        isErrorFound = true;
+                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                    }
+                },
+
+                //Distributor Email
+                validateDistributorEmail = function () {
+                    var distributorEmail = ProgramEnrollmentFormCommon.render.distributorControl.DistributorEmail.val();
+
+                    if (distributorEmail && !ProgramEnrollmentFormCommon.helper.IsValidEmail(distributorEmail)) {
+                        isErrorFound = true;
+                        message = errorMessage.emailFormatError;
+                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                    }
+                },
+
+                //(action )
+                validateApproverAction = function () {
+                    var action = ProgramEnrollmentFormCommon.render.approverControl.ApproverActions.jqxDropDownList('getSelectedItem'),
+                        message = null;
+
+                    // action is required
+                    if (!action) {
+                        message = errorMessage.requiredFieldError;
+                    }
+
+                    if (message && message.length > 0) {
+                        isErrorFound = true;
+                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                    }
+                },
+
+                //Sales information section
+                validateSalesInformation = function () {
+                    // validate BigFish Standard or Ductless controls (if validation fails pass false)
+                    isErrorFound = isErrorFound || !ProgramEnrollmentFormCommon.validate.salesInfomation.execute();
+
+                    if (isErrorFound) {
+                        message = errorMessage.requiredFieldError;
+                        ProgramEnrollmentFormCommon.helper.DisplayErrorMessage(message);
+                    }
+                },
+
+                validations = [],
+                self = this;
+
+            isErrorFound = false;
+
+            validations.push(
+                validateDealerOwnerName,
+                validateDistributorName,
+                validateSalesManager,
+                validateTerritoryManager,
+                validateDistributorEmail,
+                validateApproverAction,
+                validateSalesInformation);
+
+            validations.forEach(function (validator) {
+                if (isErrorFound) {
+                    return;
                 }
+                validator.call(self);
+
+            });
+
+            return isErrorFound;
+        }
+
+        return {
+            Execute: function () {
+                return execute();
+            },
+            salesInfomation: function () {
+                return {};
             }
-        })()
-        //#endregion validate
+        }
+    })()
+    //#endregion validate
 };
 
 $(document).ready(function () {

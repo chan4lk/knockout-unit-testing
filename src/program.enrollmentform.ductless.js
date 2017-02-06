@@ -1,4 +1,4 @@
-﻿//Version QAR 2.4.2
+//<-- version UAT 2.1.3 -->
 'use strict';
 
 var ProgramEnrollmentFormDuctless = { // program enrollment form standard functionality name space
@@ -399,8 +399,9 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
         }
 
     })()
+    ///#endregion DataManager
 };
-///#endregion DataManager
+
 
 ProgramEnrollmentFormCommon.render.onSalesInformationDivRendered = function (entity) {
     ProgramEnrollmentFormDuctless.dataManager.bindInputValidations();

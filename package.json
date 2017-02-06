@@ -10,7 +10,8 @@
     "test": "karma start --single-run",
     "server": "java -jar selenium-server-standalone.jar",
     "wdio:test": "wdio wdio.conf.js ",
-    "e2e": "npm-run-all --parallel server wdio:test"
+    "e2e": "npm-run-all --parallel server wdio:test",
+    "tag": "gulp tag"
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
@@ -19,6 +20,12 @@
   },
   "devDependencies": {
     "@types/jasmine-jquery": "^1.5.28",
+    "chai": "^3.5.0",
+    "dotenv": "^4.0.0",
+    "gulp": "^3.9.1",
+    "gulp-debug": "^3.0.0",
+    "gulp-inject-string": "^1.1.0",
+    "gulp-load-plugins": "^1.4.0",
     "jasmine": "^2.5.2",
     "jasmine-core": "^2.5.2",
     "jasmine-jquery": "^2.1.1",
@@ -31,11 +38,10 @@
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-spec-reporter": "0.0.26",
     "karma-xml-reporter": "^0.1.4",
+    "npm-run-all": "^3.1.2",
     "phantomjs": "^2.1.7+deprecated",
-    "chai": "^3.5.0",
     "wdio-mocha-framework": "^0.5.4",
     "wdio-spec-reporter": "0.0.5",
-    "webdriverio": "^4.6.1",
-    "npm-run-all": "^3.1.2"
+    "webdriverio": "^4.6.1"
   }
 }

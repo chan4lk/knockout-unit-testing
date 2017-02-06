@@ -29,7 +29,9 @@
         "ProgramEnrollmentFormDuctless":true,
         "ProgramEnrollmentFormBigFish": true,
         "ko": true,
-        "browser": true
+        "browser": true,
+        "showlightbox": true,
+        "closelightbox": true
     }
 
 }
