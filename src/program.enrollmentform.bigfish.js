@@ -1,277 +1,288 @@
-//<-- version UAT 2.1.3 -->
+//<-- version HYP_PH2_1.0.1 -->
 'use strict';
+
+var ProgramEnrollmentFormCommon = ProgramEnrollmentFormCommon || {};
+
 var ProgramEnrollmentFormBigfish = { // program enrollment form standard functionality name space
     config: (function () {
 
-        var
-            decimalfieldMaxLength = ProgramEnrollmentFormCommon.config.constant.decimalfieldMaxLength,
-            customValidatedProps = [{
-                id: "currentYearBrandTwoName",
-                maxLength: 50
-            }, {
-                id: "firstYearBrandTwoName",
-                maxLength: 50
-            }, {
-                id: "currentYearBrandOneName",
-                maxLength: 50
-            }, {
-                id: "firstYearBrandOneName",
-                maxLength: 50
-            },
-            {
-                id: "secondYearBrandTwoName",
-                maxLength: 50
-            },
-            {
-                id: "secondYearBrandOneName",
-                maxLength: 50
-            }, {
-                id: "EnrollmentFormApproverCommentTextarea",
-                maxLength: 500
-            }, {
-                id: "otherExpensesComment",
-                maxLength: 500
-            }],
-            requiredFieldControls = [
-                "firstYearCBPBrandPercentage",
-                "secondYearCBPBrandPercentage",
-                "currentYearTotalSalesVolume",
-                "firstYearTotalSalesVolume",
-                "secondYearTotalSalesVolume",
-                "currentYearAnnualEquipmentPurchases",
-                "firstYearAnnualEquipmentPurchases",
-                "secondYearAnnualEquipmentPurchases",
-                "currentYearCBPEquipmentPurchases",
-                "firstYearCBPEquipmentPurchases",
-                "secondYearCBPEquipmentPurchases",
-                "currentYearAORPurchaseVolume",
-                "firstYearAORPurchaseVolume",
-                "secondYearAORPurchaseVolume",
-                "currentYearConstructionPurchaseVolume",
-                "firstYearConstructionPurchaseVolume",
-                "secondYearConstructionPurchaseVolume",
-
-            ],
-            rangeFieldControls = [
-                "secondYearBrandOnePercentage",
-                "secondYearBrandTwoPercentage",
-                "secondYearCBPBrandPercentage",
-                "currentYearBrandOnePercentage",
-                "firstYearBrandOnePercentage",
-                "currentYearBrandTwoPercentage",
-                "firstYearBrandTwoPercentage",
-                "currentYearCBPBrandPercentage",
-                "firstYearCBPBrandPercentage"
-            ],
-            decimalFieldControls = [
-                "currentYearTotalSalesVolume",
-                "firstYearTotalSalesVolume",
-                "secondYearTotalSalesVolume",
-                "currentYearAnnualEquipmentPurchases",
-                "firstYearAnnualEquipmentPurchases",
-                "secondYearAnnualEquipmentPurchases",
-                "currentYearCBPEquipmentPurchases",
-                "firstYearCBPEquipmentPurchases",
-                "secondYearCBPEquipmentPurchases",
-                "currentYearAORPurchaseVolume",
-                "firstYearAORPurchaseVolume",
-                "secondYearAORPurchaseVolume",
-                "currentYearConstructionPurchaseVolume",
-                "firstYearConstructionPurchaseVolume",
-                "secondYearConstructionPurchaseVolume",
-                "vehicleIdentificationExpenses",
-                "secondYearVehicleIdentificationExpenses",
-                "outdoorSignExpenses",
-                "secondYearOutdoorSignExpenses",
-                "otherMerchandiseExpenses",
-                "secondOtherMerchandiseExpenses",
-                "otherMerchandisingExpenses",
-                "secondOtherMerchandisingExpenses",
-                "equipmentExpenses",
-                "secondEquipmentExpenses",
-                "serviceUniformsExpenses",
-                "secondServiceUniformsExpenses",
-                "otherBrandedClothesExpenses",
-                "secondOtherBrandedClothesExpenses",
-                "showroomDisplayModelExpenses",
-                "secondShowroomDisplayModelExpenses",
-                "consumerLiteratureExpenses",
-                "secondConsumerLiteratureExpenses",
-                "technicalLiteratureExpenses",
-                "secondTechnicalLiteratureExpenses",
-                "technicalTrainingExpenses",
-                "secondTechnicalTrainingExpenses",
-                "salesTrainingExpenses",
-                "secondSalesTrainingExpenses",
-                "digitalMarketingExpenses",
-                "secondDigitalMarketingExpenses",
-                "nonDigitalAdvertisingExpenses",
-                "secondNonDigitalAdvertisingExpenses",
-                "promotionExpenses",
-                "secondPromotionExpenses",
-                "otherExpenses",
-                "secondOtherExpenses"
-            ],
-            allFieldControls = [
-                "currentYearTotalSalesVolume",
-                "firstYearTotalSalesVolume",
-                "secondYearTotalSalesVolume",
-                "currentYearAnnualEquipmentPurchases",
-                "firstYearAnnualEquipmentPurchases",
-                "secondYearAnnualEquipmentPurchases",
-                "currentYearCBPEquipmentPurchases",
-                "firstYearCBPEquipmentPurchases",
-                "secondYearCBPEquipmentPurchases",
-                "currentYearAORPurchaseVolume",
-                "firstYearAORPurchaseVolume",
-                "secondYearAORPurchaseVolume",
-                "currentYearConstructionPurchaseVolume",
-                "firstYearConstructionPurchaseVolume",
-                "secondYearConstructionPurchaseVolume",
-                "currentYearBrandOnePercentage",
-                "firstYearBrandOnePercentage",
-                "secondYearBrandOnePercentage",
-                "currentYearBrandTwoPercentage",
-                "firstYearBrandTwoPercentage",
-                "secondYearBrandTwoPercentage",
-                "currentYearCBPBrandPercentage",
-                "firstYearCBPBrandPercentage",
-                "secondYearCBPBrandPercentage",
-                "vehicleIdentificationExpenses",
-                "secondYearvehicleIdentificationExpenses",
-                "outdoorSignExpenses",
-                "secondYearOutdoorSignExpenses",
-                "otherMerchandiseExpenses",
-                "secondOtherMerchandiseExpenses",
-                "otherMerchandisingExpenses",
-                "secondOtherMerchandisingExpenses",
-                "equipmentExpenses",
-                "secondEquipmentExpenses",
-                "serviceUniformsExpenses",
-                "secondServiceUniformsExpenses",
-                "otherBrandedClothesExpenses",
-                "secondOtherBrandedClothesExpenses",
-                "showroomDisplayModelExpenses",
-                "secondShowroomDisplayModelExpenses",
-                "consumerLiteratureExpenses",
-                "secondConsumerLiteratureExpenses",
-                "technicalLiteratureExpenses",
-                "secondTechnicalLiteratureExpenses",
-                "technicalTrainingExpenses",
-                "secondTechnicalTrainingExpenses",
-                "salesTrainingExpenses",
-                "secondSalesTrainingExpenses",
-                "digitalMarketingExpenses",
-                "secondDigitalMarketingExpenses",
-                "nonDigitalAdvertisingExpenses",
-                "secondNonDigitalAdvertisingExpenses",
-                "promotionExpenses",
-                "secondPromotionExpenses",
-                "otherExpenses",
-                "secondOtherExpenses",
-                "otherExpensesComment"
-            ];
-
-
-        var _marketingPercentages = {
-            //Marketing Fund Estimate Second Year  (8%) 
-            secondYearFundEstimate: 0.08,
-            //Marketing Fund Estimate First Year (12%)
-            firstYearFundEstimate: 0.12
-        };
-
-        return {
-            decimalfieldMaxLenth: decimalfieldMaxLength,
-            requiredFieldControls: requiredFieldControls,
-            decimalFieldControls: decimalFieldControls,
-            allFieldControls: allFieldControls,
-            rangeFieldControls: rangeFieldControls,
-            marketingPercentages: _marketingPercentages,
-            customValidatedProps: customValidatedProps
-        }
-
-    })()
-    ///#endregion Configurations
-
-    ///#region Validation
-    ,
-    validate: (function () {
-        var clean = ProgramEnrollmentFormCommon.helper.CleanNumberField;
-        var requiedField = function () {
-            var requiredControls = ProgramEnrollmentFormBigfish.config.requiredFieldControls;
-            var controlIdenties = ProgramEnrollmentFormCommon.helper.getControlIdArray(requiredControls);
-            if (controlIdenties.length > 0) {
-                for (var index = 0; index < controlIdenties.length; index++) {
-                    var control = $(controlIdenties[index]);
-                    if (control.length === 0) continue;
-                    var controlValue = control.val();
-                    if (!ProgramEnrollmentFormCommon.helper.requiedField(controlValue)) {
-                        return false;
+            var
+                decimalfieldMaxLength = ProgramEnrollmentFormCommon.config.constant.decimalfieldMaxLength,
+                customValidatedProps = [{
+                        id: "currentYearBrandTwoName",
+                        maxLength: 50
+                    }, {
+                        id: "firstYearBrandTwoName",
+                        maxLength: 50
+                    }, {
+                        id: "currentYearBrandOneName",
+                        maxLength: 50
+                    }, {
+                        id: "firstYearBrandOneName",
+                        maxLength: 50
+                    },
+                    {
+                        id: "secondYearBrandTwoName",
+                        maxLength: 50
+                    },
+                    {
+                        id: "secondYearBrandOneName",
+                        maxLength: 50
+                    }, {
+                        id: "EnrollmentFormApproverCommentTextArea",
+                        maxLength: 500
+                    }, {
+                        id: "otherExpensesComment",
+                        maxLength: 500
                     }
-                }
-            }
-            return true;
-        },
-            decimalfields = function () {
-                var decimalControls = ProgramEnrollmentFormBigfish.config.decimalFieldControls;
-                var controlIdenties = ProgramEnrollmentFormCommon.helper.getControlIdArray(decimalControls);
+                ],
+                requiredFieldControls = [
+                    "firstYearCBPBrandPercentage",
+                    "secondYearCBPBrandPercentage",
+                    "currentYearTotalSalesVolume",
+                    "firstYearTotalSalesVolume",
+                    "secondYearTotalSalesVolume",
+                    "currentYearAnnualEquipmentPurchases",
+                    "firstYearAnnualEquipmentPurchases",
+                    "secondYearAnnualEquipmentPurchases",
+                    "currentYearCBPEquipmentPurchases",
+                    "firstYearCBPEquipmentPurchases",
+                    "secondYearCBPEquipmentPurchases",
+                    "currentYearAORPurchaseVolume",
+                    "firstYearAORPurchaseVolume",
+                    "secondYearAORPurchaseVolume",
+                    "currentYearConstructionPurchaseVolume",
+                    "firstYearConstructionPurchaseVolume",
+                    "secondYearConstructionPurchaseVolume",
 
-                if (controlIdenties.length > 0) {
-                    for (var index = 0; index < controlIdenties.length; index++) {
-                        var control = $(controlIdenties[index]);
-                        if (control.length === 0) continue;
-                        var controlValue = control.val();
-                        if (!ProgramEnrollmentFormCommon.helper.isWholeNumber(clean(controlValue))) {
-                            return false;
-                        }
+                ],
+                rangeFieldControls = [
+                    "secondYearBrandOnePercentage",
+                    "secondYearBrandTwoPercentage",
+                    "secondYearCBPBrandPercentage",
+                    "currentYearBrandOnePercentage",
+                    "firstYearBrandOnePercentage",
+                    "currentYearBrandTwoPercentage",
+                    "firstYearBrandTwoPercentage",
+                    "currentYearCBPBrandPercentage",
+                    "firstYearCBPBrandPercentage"
+                ],
+                decimalFieldControls = [
+                    "currentYearTotalSalesVolume",
+                    "firstYearTotalSalesVolume",
+                    "secondYearTotalSalesVolume",
+                    "currentYearAnnualEquipmentPurchases",
+                    "firstYearAnnualEquipmentPurchases",
+                    "secondYearAnnualEquipmentPurchases",
+                    "currentYearCBPEquipmentPurchases",
+                    "firstYearCBPEquipmentPurchases",
+                    "secondYearCBPEquipmentPurchases",
+                    "currentYearAORPurchaseVolume",
+                    "firstYearAORPurchaseVolume",
+                    "secondYearAORPurchaseVolume",
+                    "currentYearConstructionPurchaseVolume",
+                    "firstYearConstructionPurchaseVolume",
+                    "secondYearConstructionPurchaseVolume",
+                    "vehicleIdentificationExpenses",
+                    "secondYearVehicleIdentificationExpenses",
+                    "outdoorSignExpenses",
+                    "secondYearOutdoorSignExpenses",
+                    "otherMerchandiseExpenses",
+                    "secondOtherMerchandiseExpenses",
+                    "otherMerchandisingExpenses",
+                    "secondOtherMerchandisingExpenses",
+                    "equipmentExpenses",
+                    "secondEquipmentExpenses",
+                    "serviceUniformsExpenses",
+                    "secondServiceUniformsExpenses",
+                    "otherBrandedClothesExpenses",
+                    "secondOtherBrandedClothesExpenses",
+                    "showroomDisplayModelExpenses",
+                    "secondShowroomDisplayModelExpenses",
+                    "consumerLiteratureExpenses",
+                    "secondConsumerLiteratureExpenses",
+                    "technicalLiteratureExpenses",
+                    "secondTechnicalLiteratureExpenses",
+                    "technicalTrainingExpenses",
+                    "secondTechnicalTrainingExpenses",
+                    "salesTrainingExpenses",
+                    "secondSalesTrainingExpenses",
+                    "digitalMarketingExpenses",
+                    "secondDigitalMarketingExpenses",
+                    "nonDigitalAdvertisingExpenses",
+                    "secondNonDigitalAdvertisingExpenses",
+                    "promotionExpenses",
+                    "secondPromotionExpenses",
+                    "otherExpenses",
+                    "secondOtherExpenses"
+                ],
+                allFieldControls = [
+                    "currentYearTotalSalesVolume",
+                    "firstYearTotalSalesVolume",
+                    "secondYearTotalSalesVolume",
+                    "currentYearAnnualEquipmentPurchases",
+                    "firstYearAnnualEquipmentPurchases",
+                    "secondYearAnnualEquipmentPurchases",
+                    "currentYearCBPEquipmentPurchases",
+                    "firstYearCBPEquipmentPurchases",
+                    "secondYearCBPEquipmentPurchases",
+                    "currentYearAORPurchaseVolume",
+                    "firstYearAORPurchaseVolume",
+                    "secondYearAORPurchaseVolume",
+                    "currentYearConstructionPurchaseVolume",
+                    "firstYearConstructionPurchaseVolume",
+                    "secondYearConstructionPurchaseVolume",
+                    "currentYearBrandOnePercentage",
+                    "firstYearBrandOnePercentage",
+                    "secondYearBrandOnePercentage",
+                    "currentYearBrandTwoPercentage",
+                    "firstYearBrandTwoPercentage",
+                    "secondYearBrandTwoPercentage",
+                    "currentYearCBPBrandPercentage",
+                    "firstYearCBPBrandPercentage",
+                    "secondYearCBPBrandPercentage",
+                    "vehicleIdentificationExpenses",
+                    "secondYearvehicleIdentificationExpenses",
+                    "outdoorSignExpenses",
+                    "secondYearOutdoorSignExpenses",
+                    "otherMerchandiseExpenses",
+                    "secondOtherMerchandiseExpenses",
+                    "otherMerchandisingExpenses",
+                    "secondOtherMerchandisingExpenses",
+                    "equipmentExpenses",
+                    "secondEquipmentExpenses",
+                    "serviceUniformsExpenses",
+                    "secondServiceUniformsExpenses",
+                    "otherBrandedClothesExpenses",
+                    "secondOtherBrandedClothesExpenses",
+                    "showroomDisplayModelExpenses",
+                    "secondShowroomDisplayModelExpenses",
+                    "consumerLiteratureExpenses",
+                    "secondConsumerLiteratureExpenses",
+                    "technicalLiteratureExpenses",
+                    "secondTechnicalLiteratureExpenses",
+                    "technicalTrainingExpenses",
+                    "secondTechnicalTrainingExpenses",
+                    "salesTrainingExpenses",
+                    "secondSalesTrainingExpenses",
+                    "digitalMarketingExpenses",
+                    "secondDigitalMarketingExpenses",
+                    "nonDigitalAdvertisingExpenses",
+                    "secondNonDigitalAdvertisingExpenses",
+                    "promotionExpenses",
+                    "secondPromotionExpenses",
+                    "otherExpenses",
+                    "secondOtherExpenses",
+                    "otherExpensesComment"
+                ];
 
-                    }
-                }
-                return true;
-            },
-            rangeFields = function () {
-                var rangeControls = ProgramEnrollmentFormBigfish.config.rangeFieldControls;
-                var controlIdenties = ProgramEnrollmentFormCommon.helper.getControlIdArray(rangeControls);
-                var minValue = 0;
-                var maxValue = 100;
-                if (controlIdenties.length > 0) {
-                    for (var index = 0; index < controlIdenties.length; index++) {
-                        var control = $(controlIdenties[index]);
-                        if (control.length === 0) continue;
-                        var controlValue = control.val();
-                        if (!ProgramEnrollmentFormCommon.helper.inRange(clean(controlValue), minValue, maxValue)) {
-                            return false;
-                        }
-                    }
-                } else {
-                    window.console && console.log('No Controls');
-                }
-                return true;
-            },
 
-            validateAll = function () {
-                var result = true;
-
-                if (!requiedField() || !rangeFields()) {
-                    result = false;
-                }
-                if (!decimalfields()) {
-                    result = false;
-                }
-
-
-                return result;
+            var _marketingPercentages = {
+                //Marketing Fund Estimate Second Year  (8%) 
+                secondYearFundEstimate: 0.08,
+                //Marketing Fund Estimate First Year (12%)
+                firstYearFundEstimate: 0.12
             };
 
-        return {
-            execute: validateAll
-        }
+            return {
+                decimalfieldMaxLength: decimalfieldMaxLength,
+                requiredFieldControls: requiredFieldControls,
+                decimalFieldControls: decimalFieldControls,
+                allFieldControls: allFieldControls,
+                rangeFieldControls: rangeFieldControls,
+                marketingPercentages: _marketingPercentages,
+                customValidatedProps: customValidatedProps
+            };
 
-    })()
-    ///#endregion Validation
+        })()
+        ///#endregion Configurations
 
-    ///#region DataManager
-    ,
+        ///#region Validation
+        ,
+    validate: (function () {
+            var clean = ProgramEnrollmentFormCommon.helper.CleanNumberField;
+            var requiedField = function () {
+                    var requiredControls = ProgramEnrollmentFormBigfish.config.requiredFieldControls;
+                    var controlIdenties = ProgramEnrollmentFormCommon.helper.getControlIdArray(requiredControls);
+                    if (controlIdenties.length > 0) {
+                        for (var index = 0; index < controlIdenties.length; index++) {
+                            var control = $(controlIdenties[index]);
+                            if (control.length === 0) {
+                                continue;
+                            }
+                            var controlValue = control.val();
+                            if (!ProgramEnrollmentFormCommon.helper.requiedField(controlValue)) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                },
+                decimalfields = function () {
+                    var decimalControls = ProgramEnrollmentFormBigfish.config.decimalFieldControls;
+                    var controlIdenties = ProgramEnrollmentFormCommon.helper.getControlIdArray(decimalControls);
+
+                    if (controlIdenties.length > 0) {
+                        for (var index = 0; index < controlIdenties.length; index++) {
+                            var control = $(controlIdenties[index]);
+                            if (control.length === 0) {
+                                continue;
+                            }
+
+                            var controlValue = control.val();
+                            if (!ProgramEnrollmentFormCommon.helper.isWholeNumber(clean(controlValue))) {
+                                return false;
+                            }
+
+                        }
+                    }
+                    return true;
+                },
+                rangeFields = function () {
+                    var rangeControls = ProgramEnrollmentFormBigfish.config.rangeFieldControls;
+                    var controlIdenties = ProgramEnrollmentFormCommon.helper.getControlIdArray(rangeControls);
+                    var minValue = 0;
+                    var maxValue = 100;
+                    if (controlIdenties.length > 0) {
+                        for (var index = 0; index < controlIdenties.length; index++) {
+                            var control = $(controlIdenties[index]);
+                            if (control.length === 0) {
+                                 continue;
+                            }
+                            var controlValue = control.val();
+                            if (!ProgramEnrollmentFormCommon.helper.inRange(clean(controlValue), minValue, maxValue)) {
+                                return false;
+                            }
+                        }
+                    } else {
+                        window.console && console.log('No Controls');
+                    }
+                    return true;
+                },
+
+                validateAll = function () {
+                    var result = true;
+
+                    if (!requiedField() || !rangeFields()) {
+                        result = false;
+                    }
+                    if (!decimalfields()) {
+                        result = false;
+                    }
+
+
+                    return result;
+                };
+
+            return {
+                execute: validateAll
+            };
+
+        })()
+        ///#endregion Validation
+
+        ///#region DataManager
+        ,
     dataManager: (function () {
 
         var setDefaultValue = ProgramEnrollmentFormCommon.helper.setDefaultValue;
@@ -282,90 +293,90 @@ var ProgramEnrollmentFormBigfish = { // program enrollment form standard functio
         //get all values from HTML input and label value and returns entity object
         var getAllControlsValue = function () {
 
-            var entity = {};
+                var entity = {};
 
-            entity.AllBrandsTotalSalesVolumeCurrentYear = clean($(salesControlsId.currentYearTotalSalesVolume).val());
-            entity.AllBrandsTotalSalesVolumeFirstYear = clean($(salesControlsId.firstYearTotalSalesVolume).val());
-            entity.AllBrandsAnnualEquipmentPurchasesCurrentYear = clean($(salesControlsId.currentYearAnnualEquipmentPurchases).val());
-            entity.AllBrandsAnnualEquipmentPurchasesFirstYear = clean($(salesControlsId.firstYearAnnualEquipmentPurchases).val());
-            entity.CBPAnnualEquipmentPurchasesCurrentYear = clean($(salesControlsId.currentYearCBPEquipmentPurchases).val());
-            entity.CBPAnnualEquipmentPurchasesFirstYear = clean($(salesControlsId.firstYearCBPEquipmentPurchases).val());
-            entity.AllBrandsAORPurchasesVolumeCurrentYear = clean($(salesControlsId.currentYearAORPurchaseVolume).val());
-            entity.AllBrandsAORPurchasesVolumeFirstYear = clean($(salesControlsId.firstYearAORPurchaseVolume).val());
-            entity.AllBrandsNewConstructionPurchaseVolumeCurrentYear = clean($(salesControlsId.currentYearConstructionPurchaseVolume).val());
-            entity.AllBrandsNewConstructionPurchaseVolumeFirstYear = clean($(salesControlsId.firstYearConstructionPurchaseVolume).val());
-            entity.CompetitiveBrand1NameCurrentYear = $(salesControlsId.currentYearBrandOneName).val();
-            entity.CompetitiveBrand1NameFirstYear = $(salesControlsId.firstYearBrandOneName).val();
-            entity.CompetitiveBrand1PercentageCurrentYear = ($(salesControlsId.currentYearBrandOnePercentage).val());
-            entity.CompetitiveBrand1PercentageFirstYear = ($(salesControlsId.firstYearBrandOnePercentage).val());
-            entity.CompetitiveBrand2NameCurrentYear = $(salesControlsId.currentYearBrandTwoName).val();
-            entity.CompetitiveBrand2NameFirstYear = $(salesControlsId.firstYearBrandTwoName).val();
-            entity.CompetitiveBrand2PercentageCurrentYear = ($(salesControlsId.currentYearBrandTwoPercentage).val());
-            entity.CompetitiveBrand2PercentageFirstYear = ($(salesControlsId.firstYearBrandTwoPercentage).val());
-            entity.CBPBrandPercentageCurrentYear = ($(salesControlsId.currentYearCBPBrandPercentage).val());
-            entity.CBPBrandPercentageFirstYear = ($(salesControlsId.firstYearCBPBrandPercentage).val());
-            entity.CBPBrandPercentageSecondYear = ($(salesControlsId.secondYearCBPBrandPercentage).val());
-            entity.MarketingFundEstimateSevenPercentage = null;
-            entity.VehicleIdentificationFirstYear = clean($(salesControlsId.vehicleIdentificationExpenses).val());
-            entity.VehicleIdentificationSecondYear = clean($(salesControlsId.secondYearVehicleIdentificationExpenses).val());
-            entity.OutdoorSignFirstYear = clean($(salesControlsId.outdoorSignExpenses).val());
-            entity.OutdoorSignSecondYear = clean($(salesControlsId.secondYearOutdoorSignExpenses).val());
-            entity.OtherMerchandiseFirstYear = clean($(salesControlsId.otherMerchandiseExpenses).val());
-            entity.OtherMerchandiseSecondYear = clean($(salesControlsId.secondOtherMerchandiseExpenses).val());
-            entity.OtherMerchandisingFirstYear = clean($(salesControlsId.otherMerchandisingExpenses).val());
-            entity.OtherMerchandisingSecondYear = clean($(salesControlsId.secondOtherMerchandisingExpenses).val());
-            entity.EquipmentFirstYear = clean($(salesControlsId.equipmentExpenses).val());
-            entity.EquipmentSecondYear = clean($(salesControlsId.secondEquipmentExpenses).val());
-            entity.ServiceUniformsFirstYear = clean($(salesControlsId.serviceUniformsExpenses).val());
-            entity.ServiceUniformsSecondYear = clean($(salesControlsId.secondServiceUniformsExpenses).val());
-            entity.OtherBrandedClothesFirstYear = clean($(salesControlsId.otherBrandedClothesExpenses).val());
-            entity.OtherBrandedClothesSecondYear = clean($(salesControlsId.secondOtherBrandedClothesExpenses).val());
-            entity.ShowRoomDisplayModelsFirstYear = clean($(salesControlsId.showroomDisplayModelExpenses).val());
-            entity.ShowRoomDisplayModelsSecondYear = clean($(salesControlsId.secondShowroomDisplayModelExpenses).val());
-            entity.ConsumerLiteratureFirstYear = clean($(salesControlsId.consumerLiteratureExpenses).val());
-            entity.ConsumerLiteratureSecondYear = clean($(salesControlsId.secondConsumerLiteratureExpenses).val());
-            entity.TechnicalLiteratureFirstYear = clean($(salesControlsId.technicalLiteratureExpenses).val());
-            entity.TechnicalLiteratureSecondYear = clean($(salesControlsId.secondTechnicalLiteratureExpenses).val());
-            entity.TechnicalTrainingFirstYear = clean($(salesControlsId.technicalTrainingExpenses).val());
-            entity.TechnicalTrainingSecondYear = clean($(salesControlsId.secondTechnicalTrainingExpenses).val());
-            entity.SalesTrainingFirstYear = clean($(salesControlsId.salesTrainingExpenses).val());
-            entity.SalesTrainingSecondYear = clean($(salesControlsId.secondSalesTrainingExpenses).val());
-            entity.DigitalMarketingFirstYear = clean($(salesControlsId.digitalMarketingExpenses).val());
-            entity.DigitalMarketingSecondYear = clean($(salesControlsId.secondDigitalMarketingExpenses).val());
-            entity.AdvertisingNonDigitalFirstYear = clean($(salesControlsId.nonDigitalAdvertisingExpenses).val());
-            entity.AdvertisingNonDigitalSecondYear = clean($(salesControlsId.secondNonDigitalAdvertisingExpenses).val());
-            entity.PromotionFirstYear = clean($(salesControlsId.promotionExpenses).val());
-            entity.PromotionSecondYear = clean($(salesControlsId.secondPromotionExpenses).val());
-            entity.OtherFirstYear = clean($(salesControlsId.otherExpenses).val());
-            entity.OtherSecondYear = clean($(salesControlsId.secondOtherExpenses).val());
-            entity.AllBrandsTotalSalesVolumnSecondYear = clean($(salesControlsId.secondYearTotalSalesVolume).val());
-            entity.AllBrandsAnnualEquipmentPurchasesSecondYear = clean($(salesControlsId.secondYearAnnualEquipmentPurchases).val());
-            entity.CBPAnnualEquipmentPurchasesSecondYear = clean($(salesControlsId.secondYearCBPEquipmentPurchases).val());
-            entity.AllBrandsAORPurchaseVolumnSecondYear = clean($(salesControlsId.secondYearAORPurchaseVolume).val());
-            entity.AllBrandsNewConstructionPurchaseVolumnSecondYear = clean($(salesControlsId.secondYearConstructionPurchaseVolume).val());
-            entity.CompetitiveBrand1NameSecondYear = $(salesControlsId.secondYearBrandOneName).val();
-            entity.CompetitiveBrand1PercentageSecondYear = $(salesControlsId.secondYearBrandOnePercentage).val();
-            entity.CompetitiveBrand2NameSecondYear = $(salesControlsId.secondYearBrandTwoName).val();
-            entity.CompetitiveBrand2PercentageSecondYear = $(salesControlsId.secondYearBrandTwoPercentage).val();
-            entity.MarketingFundEstimate12PercentageFirstYear = clean(_fundEstimateFirstYearFormula($(salesControlsId.marketingFundEstimate12PercentageFirstYear).val()));
-            entity.MarketingFundEstimate8PercentageFirstYear = clean(_fundEstimateFirstYearFormula($(salesControlsId.marketingFundEstimate8PercentageFirstYear).val()));
-            entity.Comment = $(salesControlsId.otherExpensesComment).val();
-            entity.AllBrandsTotalDuctlessSalesVolumeCurrentYear = null;
-            entity.AllBrandsTotalDuctlessSalesVolumeFirstYear = null;
-            entity.AllBrandsAnnualDustlessEquipmentPuchasesCurrentYear = null;
-            entity.AllBrandsAnnualDustlessEquipmentPuchasesFirstYear = null;
-            entity.CBPAnnualDuctlessEquipmentPurchasesCurrentYear = null;
-            entity.CBPAnnualDuctlessEquipmentPurchasesFirstYear = null;
-            entity.AllBrandsDuctlessAORPurchaseVolumnCurrentYear = null;
-            entity.AllBrandsDuctlessAORPurchaseVolumnFirstYear = null;
-            entity.AllBrandsNewConstructionDuctlessPurchasesVolumnCurrentYear = null;
-            entity.AllBrandsNewConstructionDuctlessPurchasesVolumnFirstYear = null;
-            entity.MarketingFundEstimateFivePercentage = null;
+                entity.AllBrandsTotalSalesVolumeCurrentYear = clean($(salesControlsId.currentYearTotalSalesVolume).val());
+                entity.AllBrandsTotalSalesVolumeFirstYear = clean($(salesControlsId.firstYearTotalSalesVolume).val());
+                entity.AllBrandsAnnualEquipmentPurchasesCurrentYear = clean($(salesControlsId.currentYearAnnualEquipmentPurchases).val());
+                entity.AllBrandsAnnualEquipmentPurchasesFirstYear = clean($(salesControlsId.firstYearAnnualEquipmentPurchases).val());
+                entity.CBPAnnualEquipmentPurchasesCurrentYear = clean($(salesControlsId.currentYearCBPEquipmentPurchases).val());
+                entity.CBPAnnualEquipmentPurchasesFirstYear = clean($(salesControlsId.firstYearCBPEquipmentPurchases).val());
+                entity.AllBrandsAORPurchasesVolumeCurrentYear = clean($(salesControlsId.currentYearAORPurchaseVolume).val());
+                entity.AllBrandsAORPurchasesVolumeFirstYear = clean($(salesControlsId.firstYearAORPurchaseVolume).val());
+                entity.AllBrandsNewConstructionPurchaseVolumeCurrentYear = clean($(salesControlsId.currentYearConstructionPurchaseVolume).val());
+                entity.AllBrandsNewConstructionPurchaseVolumeFirstYear = clean($(salesControlsId.firstYearConstructionPurchaseVolume).val());
+                entity.CompetitiveBrand1NameCurrentYear = $(salesControlsId.currentYearBrandOneName).val();
+                entity.CompetitiveBrand1NameFirstYear = $(salesControlsId.firstYearBrandOneName).val();
+                entity.CompetitiveBrand1PercentageCurrentYear = ($(salesControlsId.currentYearBrandOnePercentage).val());
+                entity.CompetitiveBrand1PercentageFirstYear = ($(salesControlsId.firstYearBrandOnePercentage).val());
+                entity.CompetitiveBrand2NameCurrentYear = $(salesControlsId.currentYearBrandTwoName).val();
+                entity.CompetitiveBrand2NameFirstYear = $(salesControlsId.firstYearBrandTwoName).val();
+                entity.CompetitiveBrand2PercentageCurrentYear = ($(salesControlsId.currentYearBrandTwoPercentage).val());
+                entity.CompetitiveBrand2PercentageFirstYear = ($(salesControlsId.firstYearBrandTwoPercentage).val());
+                entity.CBPBrandPercentageCurrentYear = ($(salesControlsId.currentYearCBPBrandPercentage).val());
+                entity.CBPBrandPercentageFirstYear = ($(salesControlsId.firstYearCBPBrandPercentage).val());
+                entity.CBPBrandPercentageSecondYear = ($(salesControlsId.secondYearCBPBrandPercentage).val());
+                entity.MarketingFundEstimateSevenPercentage = null;
+                entity.VehicleIdentificationFirstYear = clean($(salesControlsId.vehicleIdentificationExpenses).val());
+                entity.VehicleIdentificationSecondYear = clean($(salesControlsId.secondYearVehicleIdentificationExpenses).val());
+                entity.OutdoorSignFirstYear = clean($(salesControlsId.outdoorSignExpenses).val());
+                entity.OutdoorSignSecondYear = clean($(salesControlsId.secondYearOutdoorSignExpenses).val());
+                entity.OtherMerchandiseFirstYear = clean($(salesControlsId.otherMerchandiseExpenses).val());
+                entity.OtherMerchandiseSecondYear = clean($(salesControlsId.secondOtherMerchandiseExpenses).val());
+                entity.OtherMerchandisingFirstYear = clean($(salesControlsId.otherMerchandisingExpenses).val());
+                entity.OtherMerchandisingSecondYear = clean($(salesControlsId.secondOtherMerchandisingExpenses).val());
+                entity.EquipmentFirstYear = clean($(salesControlsId.equipmentExpenses).val());
+                entity.EquipmentSecondYear = clean($(salesControlsId.secondEquipmentExpenses).val());
+                entity.ServiceUniformsFirstYear = clean($(salesControlsId.serviceUniformsExpenses).val());
+                entity.ServiceUniformsSecondYear = clean($(salesControlsId.secondServiceUniformsExpenses).val());
+                entity.OtherBrandedClothesFirstYear = clean($(salesControlsId.otherBrandedClothesExpenses).val());
+                entity.OtherBrandedClothesSecondYear = clean($(salesControlsId.secondOtherBrandedClothesExpenses).val());
+                entity.ShowRoomDisplayModelsFirstYear = clean($(salesControlsId.showroomDisplayModelExpenses).val());
+                entity.ShowRoomDisplayModelsSecondYear = clean($(salesControlsId.secondShowroomDisplayModelExpenses).val());
+                entity.ConsumerLiteratureFirstYear = clean($(salesControlsId.consumerLiteratureExpenses).val());
+                entity.ConsumerLiteratureSecondYear = clean($(salesControlsId.secondConsumerLiteratureExpenses).val());
+                entity.TechnicalLiteratureFirstYear = clean($(salesControlsId.technicalLiteratureExpenses).val());
+                entity.TechnicalLiteratureSecondYear = clean($(salesControlsId.secondTechnicalLiteratureExpenses).val());
+                entity.TechnicalTrainingFirstYear = clean($(salesControlsId.technicalTrainingExpenses).val());
+                entity.TechnicalTrainingSecondYear = clean($(salesControlsId.secondTechnicalTrainingExpenses).val());
+                entity.SalesTrainingFirstYear = clean($(salesControlsId.salesTrainingExpenses).val());
+                entity.SalesTrainingSecondYear = clean($(salesControlsId.secondSalesTrainingExpenses).val());
+                entity.DigitalMarketingFirstYear = clean($(salesControlsId.digitalMarketingExpenses).val());
+                entity.DigitalMarketingSecondYear = clean($(salesControlsId.secondDigitalMarketingExpenses).val());
+                entity.AdvertisingNonDigitalFirstYear = clean($(salesControlsId.nonDigitalAdvertisingExpenses).val());
+                entity.AdvertisingNonDigitalSecondYear = clean($(salesControlsId.secondNonDigitalAdvertisingExpenses).val());
+                entity.PromotionFirstYear = clean($(salesControlsId.promotionExpenses).val());
+                entity.PromotionSecondYear = clean($(salesControlsId.secondPromotionExpenses).val());
+                entity.OtherFirstYear = clean($(salesControlsId.otherExpenses).val());
+                entity.OtherSecondYear = clean($(salesControlsId.secondOtherExpenses).val());
+                entity.AllBrandsTotalSalesVolumnSecondYear = clean($(salesControlsId.secondYearTotalSalesVolume).val());
+                entity.AllBrandsAnnualEquipmentPurchasesSecondYear = clean($(salesControlsId.secondYearAnnualEquipmentPurchases).val());
+                entity.CBPAnnualEquipmentPurchasesSecondYear = clean($(salesControlsId.secondYearCBPEquipmentPurchases).val());
+                entity.AllBrandsAORPurchaseVolumnSecondYear = clean($(salesControlsId.secondYearAORPurchaseVolume).val());
+                entity.AllBrandsNewConstructionPurchaseVolumnSecondYear = clean($(salesControlsId.secondYearConstructionPurchaseVolume).val());
+                entity.CompetitiveBrand1NameSecondYear = $(salesControlsId.secondYearBrandOneName).val();
+                entity.CompetitiveBrand1PercentageSecondYear = $(salesControlsId.secondYearBrandOnePercentage).val();
+                entity.CompetitiveBrand2NameSecondYear = $(salesControlsId.secondYearBrandTwoName).val();
+                entity.CompetitiveBrand2PercentageSecondYear = $(salesControlsId.secondYearBrandTwoPercentage).val();
+                entity.MarketingFundEstimate12PercentageFirstYear = clean(_fundEstimateFirstYearFormula($(salesControlsId.marketingFundEstimate12PercentageFirstYear).val()));
+                entity.MarketingFundEstimate8PercentageFirstYear = clean(_fundEstimateFirstYearFormula($(salesControlsId.marketingFundEstimate8PercentageFirstYear).val()));
+                entity.Comment = $(salesControlsId.otherExpensesComment).val();
+                entity.AllBrandsTotalDuctlessSalesVolumeCurrentYear = null;
+                entity.AllBrandsTotalDuctlessSalesVolumeFirstYear = null;
+                entity.AllBrandsAnnualDustlessEquipmentPuchasesCurrentYear = null;
+                entity.AllBrandsAnnualDustlessEquipmentPuchasesFirstYear = null;
+                entity.CBPAnnualDuctlessEquipmentPurchasesCurrentYear = null;
+                entity.CBPAnnualDuctlessEquipmentPurchasesFirstYear = null;
+                entity.AllBrandsDuctlessAORPurchaseVolumnCurrentYear = null;
+                entity.AllBrandsDuctlessAORPurchaseVolumnFirstYear = null;
+                entity.AllBrandsNewConstructionDuctlessPurchasesVolumnCurrentYear = null;
+                entity.AllBrandsNewConstructionDuctlessPurchasesVolumnFirstYear = null;
+                entity.MarketingFundEstimateFivePercentage = null;
 
 
-            return entity;
+                return entity;
 
-        },
+            },
             // set entity values to Html inputs and labels
             setAllControlsValue = function (entity) {
 
@@ -447,7 +458,10 @@ var ProgramEnrollmentFormBigfish = { // program enrollment form standard functio
             _formatCurrency = function (number) {
 
                 //comment out following line to format numbers as $4,000
-                if (!number) return '';
+                if (!number) {
+                    return '';
+                }
+                
                 var currencySymbol = '$';
                 var formatted = currencySymbol + number.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
                 return formatted;
@@ -470,7 +484,7 @@ var ProgramEnrollmentFormBigfish = { // program enrollment form standard functio
 
                 var annualPurchases = parseInt(annualPurchasesValue, 10);
                 var cdbpercent = parseFloat(cdbBrandPercentValue);
-                var fundEstimateValue = annualPurchases * cdbpercent * ProgramEnrollmentFormBigfish.config.marketingPercentages.firstYearFundEstimate;
+                var fundEstimateValue = annualPurchases * cdbpercent * 0.01 * ProgramEnrollmentFormBigfish.config.marketingPercentages.firstYearFundEstimate;
                 return fundEstimateValue;
             },
 
@@ -479,21 +493,21 @@ var ProgramEnrollmentFormBigfish = { // program enrollment form standard functio
                 //Formula:  (Second Year All Brands Annual Equipment Purchases" x "Second Year CBP Brand percent) x 8%
                 var annualPurchases = parseInt(annualPurchasesValue, 10);
                 var cdbpercent = parseFloat(cdbBrandPercentValue);
-                var fundEstimateValue = annualPurchases * cdbpercent * ProgramEnrollmentFormBigfish.config.marketingPercentages.secondYearFundEstimate;
+                var fundEstimateValue = annualPurchases * cdbpercent * 0.01 * ProgramEnrollmentFormBigfish.config.marketingPercentages.secondYearFundEstimate;
                 return fundEstimateValue;
-            }
+            };
 
         var _bindInputValidations = function () {
-            ProgramEnrollmentFormCommon.helper.registerNumericControls(
-                ProgramEnrollmentFormBigfish.config.decimalFieldControls,
-                ProgramEnrollmentFormBigfish.config.decimalfieldMaxLenth,
-                false);
-            ProgramEnrollmentFormCommon.helper.registerNumericControls(
-                ProgramEnrollmentFormBigfish.config.rangeFieldControls,
-                3,
-                true);
-            ProgramEnrollmentFormCommon.helper.SetMaxLength(ProgramEnrollmentFormBigfish.config.customValidatedProps);
-        },
+                ProgramEnrollmentFormCommon.helper.registerNumericControls(
+                    ProgramEnrollmentFormBigfish.config.decimalFieldControls,
+                    ProgramEnrollmentFormBigfish.config.decimalfieldMaxLength,
+                    false);
+                ProgramEnrollmentFormCommon.helper.registerNumericControls(
+                    ProgramEnrollmentFormBigfish.config.rangeFieldControls,
+                    3,
+                    true);
+                ProgramEnrollmentFormCommon.helper.SetMaxLength(ProgramEnrollmentFormBigfish.config.customValidatedProps);
+            },
             _setCBPLabels = function () {
                 var annualPurchase = ProgramEnrollmentFormCommon.helper.replaceBrand($(salesControlsId.annualPurchaseLabel).text());
                 var brandPercentage = ProgramEnrollmentFormCommon.helper.replaceBrand($(salesControlsId.brandPercentageLabel).text());
@@ -509,19 +523,19 @@ var ProgramEnrollmentFormBigfish = { // program enrollment form standard functio
             getAllControlsValue: getAllControlsValue,
             setAllControlsValue: setAllControlsValue,
             bindInputValidations: _bindInputValidations
-        }
+        };
 
     })()
 };
 ///#endregion DataManager
 
-ProgramEnrollmentFormCommon.render.onSalesInformationDivRendered = function (entity) {
+ProgramEnrollmentFormCommon.onSalesInformationDivRendered = function (entity) {
     ProgramEnrollmentFormBigfish.dataManager.bindInputValidations();
     ProgramEnrollmentFormBigfish.dataManager.setAllControlsValue(entity);
     ProgramEnrollmentFormCommon.dataManager.getSalesInformationValues = function () {
         return ProgramEnrollmentFormBigfish.dataManager.getAllControlsValue();
-    }
+    };
     ProgramEnrollmentFormCommon.validate.salesInfomation.execute = function () {
         return ProgramEnrollmentFormBigfish.validate.execute();
-    }
-}
+    };
+};

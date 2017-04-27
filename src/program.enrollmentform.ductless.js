@@ -1,5 +1,8 @@
-//<-- version UAT 2.1.3 -->
+//<-- version HYP_PH2_1.0.1 -->
 'use strict';
+
+
+var ProgramEnrollmentFormCommon = ProgramEnrollmentFormCommon || {};
 
 var ProgramEnrollmentFormDuctless = { // program enrollment form standard functionality name space
     config: (function () {
@@ -18,7 +21,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                     id: "firstYearBrandOneName",
                     maxLength: 50
                 }, {
-                    id: "EnrollmentFormApproverCommentTextarea",
+                    id: "EnrollmentFormApproverCommentTextArea",
                     maxLength: 500
                 }, {
                     id: "otherExpensesComment",
@@ -89,7 +92,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                 marketingPercentages: _marketingPercentages,
                 decimalfieldMaxLength: decimalfieldMaxLength,
                 customValidatedProps: customValidatedProps
-            }
+            };
         })()
         ///#endregion Configurations
 
@@ -104,7 +107,9 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                     if (controlIdenties.length > 0) {
                         for (var index = 0; index < controlIdenties.length; index++) {
                             var control = $(controlIdenties[index]);
-                            if (control.length === 0) continue;
+                            if (control.length === 0){
+                                 continue;
+                            }
                             var controlValue = control.val();
                             if (!ProgramEnrollmentFormCommon.helper.requiedField(controlValue)) {
                                 return false;
@@ -121,7 +126,10 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                     if (controlIdenties.length > 0) {
                         for (var index = 0; index < controlIdenties.length; index++) {
                             var control = $(controlIdenties[index]);
-                            if (control.length === 0) continue;
+                            if (control.length === 0){
+                                continue;
+                            }
+
                             var controlValue = control.val();
                             if (!ProgramEnrollmentFormCommon.helper.isWholeNumber(clean(controlValue))) {
                                 return false;
@@ -139,7 +147,10 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                     if (controlIdenties.length > 0) {
                         for (var index = 0; index < controlIdenties.length; index++) {
                             var control = $(controlIdenties[index]);
-                            if (control.length === 0) continue;
+                            if (control.length === 0) {
+                                continue;
+                            }
+
                             var controlValue = control.val();
                             if (!ProgramEnrollmentFormCommon.helper.inRange(clean(controlValue), minValue, maxValue)) {
                                 return false;
@@ -162,11 +173,11 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                     }
 
                     return result;
-                }
+                };
 
             return {
                 execute: validateAll
-            }
+            };
 
         })()
         ///#endregion Validation
@@ -341,7 +352,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
 
                 //Update on load
                 _updateMarketingEstimates();
-            }
+            };
 
         var _bindInputValidations = function () {
                 ProgramEnrollmentFormCommon.helper.registerNumericControls(
@@ -368,7 +379,9 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
            _formatCurrency = function(number) { 
 
                     //comment out following line to format numbers as $4,000
-                    if(!number) return '';
+                    if(!number) {
+                        return '';
+                    }
                     var currencySymbol = '$';                   
                     var formatted = currencySymbol + number.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
                     return formatted;
@@ -379,7 +392,7 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
                 var annualPurchases = parseInt(annualPurchasesValue, 10);
                 var cdbpercent = parseFloat(cdbBrandPercentValue);
                 //Formula:  5% x "First Year All Brands Annual Ductless Equipment Purchases" x "First Year CBP Brand percent
-                var fundEstimateValue = annualPurchases * cdbpercent * ProgramEnrollmentFormDuctless.config.marketingPercentages.firstYearFundEstimate;
+                var fundEstimateValue = annualPurchases * cdbpercent * 0.01 * ProgramEnrollmentFormDuctless.config.marketingPercentages.firstYearFundEstimate;
                 return fundEstimateValue;
             },
 
@@ -396,20 +409,19 @@ var ProgramEnrollmentFormDuctless = { // program enrollment form standard functi
             getAllControlsValue: getAllControlsValue,
             setAllControlsValue: setAllControlsValue,
             bindInputValidations: _bindInputValidations
-        }
+        };
 
     })()
-    ///#endregion DataManager
 };
-
+///#endregion DataManager
 
 ProgramEnrollmentFormCommon.render.onSalesInformationDivRendered = function (entity) {
     ProgramEnrollmentFormDuctless.dataManager.bindInputValidations();
     ProgramEnrollmentFormDuctless.dataManager.setAllControlsValue(entity);
     ProgramEnrollmentFormCommon.dataManager.getSalesInformationValues = function () {
         return ProgramEnrollmentFormDuctless.dataManager.getAllControlsValue();
-    }
+    };
     ProgramEnrollmentFormCommon.validate.salesInfomation.execute = function () {
         return ProgramEnrollmentFormDuctless.validate.execute();
-    }
-}
+    };
+};

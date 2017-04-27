@@ -20,6 +20,8 @@ module.exports = function(config) {
       'node_modules/knockout/build/output/knockout-latest.debug.js',
       'src/program.enrollmentform.common.js',
       'src/program.enrollmentform.*.js',
+      'src/query-builder.standalone.js',
+      'src/query.builder.wrapper.js',
       'src/viewModel.js',
       'test/*.spec.js',
       {
@@ -73,7 +75,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: [/*'PhantomJS', 'Chrome', */'Firefox'],
+    browsers: [/*'PhantomJS', */ 'Chrome',/*'Firefox'*/],
 
 
     // Continuous Integration mode
@@ -83,5 +85,5 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity
-  })
-}
+  });
+};

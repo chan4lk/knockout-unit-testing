@@ -1,5 +1,7 @@
-//<-- version UAT 2.1.3 -->
+//<-- version HYP_PH2_1.0.1 -->
 'use strict';
+
+var ProgramEnrollmentFormCommon = ProgramEnrollmentFormCommon || {};
 
 var ProgramEnrollmentFormStandard = {
 
@@ -21,13 +23,12 @@ var ProgramEnrollmentFormStandard = {
                     id: "firstYearBrandOneName",
                     maxLength: 50
                 }, {
-                    id: "EnrollmentFormApproverCommentTextarea",
+                    id: "EnrollmentFormApproverCommentTextArea",
                     maxLength: 500
                 }, {
                     id: "otherExpensesComment",
                     maxLength: 500
-                }
-                ],
+                }],
                 requiredFieldControls = [
                     'firstYearCBPBrandPercentage',
                     'currentYearTotalSalesVolume',
@@ -93,13 +94,13 @@ var ProgramEnrollmentFormStandard = {
                 rangeFieldControls: rangeFieldControls,
                 marketingPercentages: _marketingPercentages,
                 customValidatedProps: customValidatedProps
-            }
+            };
 
         })()
-    //#endregion Configurations
+        //#endregion Configurations
 
-    //#region Validation
-    ,
+        //#region Validation
+        ,
     validate: (function () {
             var clean = ProgramEnrollmentFormCommon.helper.CleanNumberField;
 
@@ -110,7 +111,9 @@ var ProgramEnrollmentFormStandard = {
                     if (controlIdenties.length > 0) {
                         for (var index = 0; index < controlIdenties.length; index++) {
                             var control = $(controlIdenties[index]);
-                            if (control.length === 0) continue;
+                            if (control.length === 0) {
+                                continue;
+                            }
                             var controlValue = control.val();
                             if (!ProgramEnrollmentFormCommon.helper.requiedField(controlValue)) {
                                 return false;
@@ -126,7 +129,9 @@ var ProgramEnrollmentFormStandard = {
                     if (controlIdenties.length > 0) {
                         for (var index = 0; index < controlIdenties.length; index++) {
                             var control = $(controlIdenties[index]);
-                            if (control.length === 0) continue;
+                            if (control.length === 0) {
+                                continue;
+                            }
                             var controlValue = control.val();
                             if (!ProgramEnrollmentFormCommon.helper.isWholeNumber(clean(controlValue))) {
                                 return false;
@@ -144,7 +149,9 @@ var ProgramEnrollmentFormStandard = {
                     if (controlIdenties.length > 0) {
                         for (var index = 0; index < controlIdenties.length; index++) {
                             var control = $(controlIdenties[index]);
-                            if (control.length === 0) continue;
+                            if (control.length === 0) {
+                                continue;
+                            }
                             var controlValue = control.val();
                             if (!ProgramEnrollmentFormCommon.helper.inRange(clean(controlValue), minValue, maxValue)) {
                                 return false;
@@ -172,13 +179,13 @@ var ProgramEnrollmentFormStandard = {
 
             return {
                 execute: validateAll
-            }
+            };
 
         })()
         ///#endregion Validation
 
-    //#region DataManager    
-    ,
+        //#region DataManager    
+        ,
     dataManager: (function () {
         var setDefaultValue = ProgramEnrollmentFormCommon.helper.setDefaultValue;
         var salesControlsId = ProgramEnrollmentFormCommon.config.salesControlsId;
@@ -203,7 +210,7 @@ var ProgramEnrollmentFormStandard = {
             entity.CompetitiveBrand1NameFirstYear = $(salesControlsId.firstYearBrandOneName).val();
             entity.CompetitiveBrand1PercentageCurrentYear = clean($(salesControlsId.currentYearBrandOnePercentage).val());
             entity.CompetitiveBrand1PercentageFirstYear = clean($(salesControlsId.firstYearBrandOnePercentage).val());
-            entity.CompetitiveBrand2NameCurrentYear =$(salesControlsId.currentYearBrandTwoName).val();
+            entity.CompetitiveBrand2NameCurrentYear = $(salesControlsId.currentYearBrandTwoName).val();
             entity.CompetitiveBrand2NameFirstYear = $(salesControlsId.firstYearBrandTwoName).val();
             entity.CompetitiveBrand2PercentageCurrentYear = clean($(salesControlsId.currentYearBrandTwoPercentage).val());
             entity.CompetitiveBrand2PercentageFirstYear = clean($(salesControlsId.firstYearBrandTwoPercentage).val());
@@ -268,7 +275,7 @@ var ProgramEnrollmentFormStandard = {
             entity.MarketingFundEstimateFivePercentage = null;
 
             return entity;
-        }
+        };
 
         var setAllControlsValue = function (entity) {
             $(salesControlsId.currentYearTotalSalesVolume).val(currency(setDefaultValue(entity.AllBrandsTotalSalesVolumeCurrentYear)));
@@ -355,18 +362,20 @@ var ProgramEnrollmentFormStandard = {
                     ProgramEnrollmentFormStandard.config.rangeFieldControls,
                     3,
                     true);
-                 ProgramEnrollmentFormCommon.helper.SetMaxLength(ProgramEnrollmentFormStandard.config.customValidatedProps);
-                 
+                ProgramEnrollmentFormCommon.helper.SetMaxLength(ProgramEnrollmentFormStandard.config.customValidatedProps);
+
             },
 
-            _formatCurrency = function(number) { 
+            _formatCurrency = function (number) {
 
-                    //comment out following line to format numbers as $4,000
-                    if(!number) return '';
-                    var currencySymbol = '$';                   
-                    var formatted = currencySymbol + number.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-                    return formatted;
-                },
+                //comment out following line to format numbers as $4,000
+                if (!number) {
+                    return '';
+                }
+                var currencySymbol = '$';
+                var formatted = currencySymbol + number.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+                return formatted;
+            },
 
             _updateMarketingEstimates = function () {
                 var firstYearCBPBrandPercentage = $(salesControlsId.firstYearCBPBrandPercentage).val();
@@ -382,7 +391,7 @@ var ProgramEnrollmentFormStandard = {
                 var cdbpercent = parseFloat(cdbBrandPercentValue);
 
                 //Formula:  7% x "First Year All Brands Annual Equipment Purchases" x "First Year CBP Brand percent
-                var fundEstimateValue = annualPurchases * cdbpercent * ProgramEnrollmentFormStandard.config.marketingPercentages.firstYearFundEstimate;
+                var fundEstimateValue = annualPurchases * cdbpercent * 0.01 * ProgramEnrollmentFormStandard.config.marketingPercentages.firstYearFundEstimate;
                 return fundEstimateValue;
             },
             _setCBPLabels = function () {
@@ -397,7 +406,7 @@ var ProgramEnrollmentFormStandard = {
             getAllControlsValue: getAllControlsValue,
             setAllControlsValue: setAllControlsValue,
             bindInputValidations: _bindInputValidations,
-        }
+        };
 
     })()
     //#endregion DataManager
@@ -409,8 +418,8 @@ ProgramEnrollmentFormCommon.render.onSalesInformationDivRendered = function (ent
     ProgramEnrollmentFormStandard.dataManager.setAllControlsValue(entity);
     ProgramEnrollmentFormCommon.dataManager.getSalesInformationValues = function () {
         return ProgramEnrollmentFormStandard.dataManager.getAllControlsValue();
-    }
+    };
     ProgramEnrollmentFormCommon.validate.salesInfomation.execute = function () {
         return ProgramEnrollmentFormStandard.validate.execute();
-    }
-}
+    };
+};

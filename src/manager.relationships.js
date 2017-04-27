@@ -389,7 +389,8 @@ ManageRelationships.events = (function () {
     var privateLastEditedCell;
 
     //Returns the host name
-    var privateGetServereHostedName = function () {
+    var
+        privateGetServereHostedName = function () {
             if (!window.location.origin) {
                 window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
             }
@@ -552,6 +553,8 @@ ManageRelationships.events = (function () {
 
             var data = $('span.delete-btn.action-icons[data-processing=true]');
 
+            if (!data.length) return;
+
             var constants = ManageRelationships.config.constants;
 
             //Get the row data
@@ -585,16 +588,33 @@ ManageRelationships.events = (function () {
         privateConfirmationDeactivateMessage = function (data) {
             // Add attribute to the button to recognize after confirm.
             $(data).attr('data-processing', true);
+
             var constants = ManageRelationships.config.constants;
-            privateShowMessage(ManageRelationships.collections.initialData.Entity.Messages.Deactivation,
-                constants.relationshipPopupMessageDivId,
-                constants.relationshipMessagePopupWrapperDivId);
+
+            var gridId = $(data).attr(constants.gridIdTextKey);
+
+            //if pricing relationship removal
+            if (gridId === constants.pricingWarrantyRelationshipGridId) {
+
+                //Deactivate first.
+                privateDeactivateRelationship();
+
+                //Show Message.
+                privateShowMessage(ManageRelationships.collections.initialData.Entity.Messages.PricingDeactivated,
+                    constants.relationshipPopupMessageDivId,
+                    constants.relationshipMessagePopupWrapperDivId);
+            }else{
+                privateShowMessage(ManageRelationships.collections.initialData.Entity.Messages.Deactivation,
+                    constants.relationshipPopupMessageDivId,
+                    constants.relationshipMessagePopupWrapperDivId);
+            }
         },
 
         privateConfirmationActivateMessage = function (data) {
             // Add attribute to the button to recognize after confirm.
             $(data).attr('data-processing', true);
             var constants = ManageRelationships.config.constants;
+            privateActivateRelationship();
             privateShowMessage(ManageRelationships.collections.initialData.Entity.Messages.Activation,
                 constants.relationshipPopupMessageDivId,
                 constants.relationshipMessagePopupWrapperDivId);
@@ -604,6 +624,8 @@ ManageRelationships.events = (function () {
         privateActivateRelationship = function () {
 
             var data = $('span.locator-btn.action-icons[data-processing=true]');
+
+            if (!data.length) return;
 
             var constants = ManageRelationships.config.constants;
 
@@ -896,8 +918,8 @@ ManageRelationships.events = (function () {
                     '<div class="popup-pinner">' +
                     ' <div id="relationshipPopupMessageDiv"></div>' +
                     ' <div class="popup_btnWrapper">' +
-                    ' <input type="button" class="btn right-floating btn-submit" onclick="ManageRelationships.events.closeMessage(); return false;" value="Ok" />' +
-                    ' <input type="button" class="btn right-floating btn-submit" onclick="ManageRelationships.events.closeMessage(); return false;" value="Cancel" />' +
+                    ' <input type="button" class="btn right-floating btn-submit cancel-button" onclick="ManageRelationships.events.closeMessage(); return false;" value="Cancel" />' +
+                    ' <input type="button" class="btn right-floating btn-submit ok-button" onclick="ManageRelationships.events.deactivateRelationship(); return false;" value="Ok" />' +
                     '</div>' +
                     ' </div>' +
                     '</div>';
@@ -943,17 +965,30 @@ ManageRelationships.events = (function () {
                 localMessageDivId = messageDivId || constants.relationshipPopupMessageDivId,
                 localPopupDivId = popupDivId || constants.relationshipMessagePopupWrapperDivId;
             $(localMessageDivId).html(message);
-            if(message === ManageRelationships.collections.initialData.Entity.Messages.Activation){
-                $('#'+localPopupDivId)
-                    .find('.ok-button')
-                    .attr('onclick', 'ManageRelationships.events.deactivateRelationship(); return false;');
-            }else if(message === ManageRelationships.collections.initialData.Entity.Messages.Deactivation){
-                 $('#'+localPopupDivId)
-                    .find('.ok-button')
-                    .attr('onclick', 'ManageRelationships.events.activateRelationship(); return false;');
-            }
+
+            privateFormatPopupButtonActions(message, localPopupDivId);
+
             $(ManageRelationships.config.constants.relationshipPopupOverlayDivId).show();
             showlightbox(localPopupDivId);
+        },
+
+        privateFormatPopupButtonActions = function (message, localPopupDivId) {
+            //Show Activate Confirm Message
+            if (message === ManageRelationships.collections.initialData.Entity.Messages.Deactivation) {
+                $('#' + localPopupDivId)
+                    .find('.ok-button')
+                    .attr('onclick', 'ManageRelationships.events.deactivateRelationship(); return false;');
+
+                $('#' + localPopupDivId)
+                    .find('.cancel-button').show();
+            } else {
+                $('#' + localPopupDivId)
+                    .find('.ok-button')
+                    .attr('onclick', 'ManageRelationships.events.closeMessage(); return false;');
+
+                $('#' + localPopupDivId)
+                    .find('.cancel-button').hide();
+            }
         },
 
         //Function to execute once user clicks on the ok button

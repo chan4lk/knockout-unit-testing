@@ -22,11 +22,14 @@ describe('CommonJS', function () {
     });
 
     it(' should freeze all controls', function () {        
-        
         expect(ProgramEnrollmentFormCommon.render.freezeAll).toBeDefined();          
         ProgramEnrollmentFormCommon.render.freezeAll();        
 
         var disabled = $(':disabled');        
-        expect(disabled.length).toBeGreaterThan(0);         
+        expect(disabled.length).toBeGreaterThan(0);
+
+        for(var key in ProgramEnrollmentFormCommon.config.salesControlsId){
+            expect($(ProgramEnrollmentFormCommon.config.salesControlsId[key]).attr('disabled')).toBeDefined();
+        }      
     });
 });
