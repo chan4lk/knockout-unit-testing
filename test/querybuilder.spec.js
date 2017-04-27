@@ -71,4 +71,44 @@ describe('Query Builder', function () {
         expect(sql_raw).toContain('countyId');
     });
 
+    it('should update state and county after country change', function () {
+        builderDiv.queryBuilder('setRules', {
+            condition: 'OR',
+            rules: [{
+                    id: 'Country',
+                    operator: 'equal',
+                    value: '224' /* "USA - US" */
+                },
+                {
+                    id: 'StateProvince',
+                    operator: 'equal',
+                    value: '3069' /*"New York"*/
+                },
+                {
+                    id: 'County',
+                    operator: 'equal',
+                    value: '1837' /* "WASHINGTON" */
+                }
+            ]
+        });
+
+        var rules_info = builderDiv.queryBuilder('getRules');
+        console.log(JSON.stringify(rules_info));
+        expect(rules_info.rules.length).toBeGreaterThan(0);
+
+        var model = builderDiv.queryBuilder('getModel');
+        console.log(model);
+        var builderModel = builderDiv.data('queryBuilder').model;
+        builderDiv.queryBuilder("addRule", builderModel.root);
+        builderDiv.queryBuilder('addRule', model, {
+            id: 'Country',
+            operator: 'equal',
+            value: '36' /* "Canada - CA" */
+        });
+
+        var rules_info = builderDiv.queryBuilder('getRules');
+        console.log(JSON.stringify(rules_info));
+        expect(rules_info.rules.length).toBeGreaterThan(0);
+    });
+
 });
