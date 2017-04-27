@@ -1,5 +1,38 @@
 'use strict';
 
+function addRule(instance, data, group) {
+    if (data.id === undefined) {
+        throw new Error('Missing rule field id');
+    }
+
+    if (data.operator === undefined) {
+        data.operator = 'equal';
+    }
+
+    if (group === undefined) {
+        group = instance.model.root;
+    }
+
+    var model = instance.addRule(group);
+    if (model === null) {
+        return;
+    }
+
+    model.filter = instance.getFilterById(data.id);
+    model.operator = instance.getOperatorByType(data.operator);
+    model.flags = instance.parseRuleFlags(data);
+
+    if (data.data) {
+        model.data = data.data;
+    }
+
+    if (model.operator.nb_inputs !== 0 && data.value !== undefined) {
+        instance.setRuleValue(model, data.value);
+    }
+
+    return model;
+}
+
 jasmine.getFixtures().fixturesPath = '/base/test/mocks';
 jasmine.getJSONFixtures().fixturesPath = '/base/test/mocks';
 describe('Query Builder', function () {
@@ -93,22 +126,18 @@ describe('Query Builder', function () {
         });
 
         var rules_info = builderDiv.queryBuilder('getRules');
-        console.log(JSON.stringify(rules_info));
-        expect(rules_info.rules.length).toBeGreaterThan(0);
+        expect(rules_info.rules.length).toEqual(3);
 
-        var model = builderDiv.queryBuilder('getModel');
-        console.log(model);
-        var builderModel = builderDiv.data('queryBuilder').model;
-        builderDiv.queryBuilder("addRule", builderModel.root);
-        builderDiv.queryBuilder('addRule', model, {
+        var builder = builderDiv.data('queryBuilder');
+        var data = {
             id: 'Country',
             operator: 'equal',
             value: '36' /* "Canada - CA" */
-        });
+        };
 
-        var rules_info = builderDiv.queryBuilder('getRules');
-        console.log(JSON.stringify(rules_info));
-        expect(rules_info.rules.length).toBeGreaterThan(0);
+        var model = addRule(builder, data);  
+        console.log(model.values);      
+        rules_info = builderDiv.queryBuilder('getRules');
+        expect(rules_info.rules.length).toEqual(4);
     });
-
 });

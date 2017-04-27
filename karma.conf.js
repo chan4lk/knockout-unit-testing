@@ -22,7 +22,7 @@ module.exports = function(config) {
       'src/program.enrollmentform.*.js',
       'src/query-builder.standalone.js',
       'src/query.builder.wrapper.js',
-      'src/company.search.js',
+      // 'src/company.search.js',
       'src/ko/viewModel.js',
       /*'test/*.spec.js',*/
       'test/querybuilder.spec.js',
