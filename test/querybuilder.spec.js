@@ -177,7 +177,7 @@ describe('Query Builder', function () {
 
         var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
         
-
+        debugger;
         var builder = builderDiv.data('queryBuilder');
         var data = {
             id: 'Country',
@@ -190,7 +190,7 @@ describe('Query Builder', function () {
         var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
                 
         rules_info = builderDiv.queryBuilder('getRules');
-        expect(rules_info.rules.length).toEqual(3);
+        expect(rules_info.rules.length).toEqual(2);
     });
 
     it('should update county after state change', function () {
@@ -263,13 +263,14 @@ describe('Query Builder', function () {
                 }]
         });
        
-        const rules_widget = builder.model.root.rules;
+        let rules_widget = builder.model.root.rules;
         window._TEST_PRINT_ = true;
         rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica - CR"'
         window._TEST_PRINT_ = false;
         const state = rules_widget[1].$el.find('select').last().val();        
         expect(state).toEqual('609'); 
         state.should.equal('609'); // expect State value to be 'Alajuela - 2'
+        rules_widget = builder.model.root.rules;
         cexpect(rules_widget).to.have.length.of(2); // expect County rule to be removed.
     });
 
