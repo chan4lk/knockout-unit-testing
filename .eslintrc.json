@@ -6,7 +6,7 @@
         "node": true,
         "jasmine": true,
         "jquery": true,
-        "mocha": true                
+        "mocha": true
     },
     "parserOptions": {
         "ecmaFeatures": {
@@ -24,13 +24,15 @@
         "valid-typeof": "warn",
         "semi":"error",
         "brace-style":"error",
-        "curly":"error"        
-    },    
-    "globals": {       
+        "curly":"error"
+    },
+    "globals": {
         "ko": true,
         "browser": true,
         "showlightbox": true,
-        "closelightbox": true
+        "closelightbox": true,
+        "loadFixtures" : true,
+        "getJSONFixture": true
     }
 
 }

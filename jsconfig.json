@@ -1,9 +1,15 @@
-{    
+{
     "compilerOptions": {
         "target": "ES5",
         "allowSyntheticDefaultImports":true
     },
    "exclude": [
        "node_modules"
-   ]
+   ],
+   "typeAcquisition": {
+       "enable": true,
+       "include": [
+           "nock"
+       ]
+   }
 }

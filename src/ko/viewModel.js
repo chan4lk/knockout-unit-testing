@@ -18,7 +18,7 @@ var PersonNameViewModel = function (first, last) {
         if (self.IsValid) {
             alert('Successfully submited');
         }
-    }
+    };
 
     /**
      * validate the model.
@@ -29,7 +29,7 @@ var PersonNameViewModel = function (first, last) {
         }
 
         return false;
-    }
+    };
 
     return self;
 };

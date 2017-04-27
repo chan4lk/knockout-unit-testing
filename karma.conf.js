@@ -18,12 +18,15 @@ module.exports = function(config) {
       'node_modules/jquery/dist/jquery.min.js',
       'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
       'node_modules/knockout/build/output/knockout-latest.debug.js',
+      '',
       'src/program.enrollmentform.common.js',
       'src/program.enrollmentform.*.js',
       'src/query-builder.standalone.js',
       'src/query.builder.wrapper.js',
-      'src/viewModel.js',
-      'test/*.spec.js',
+      'src/company.search.js',
+      'src/ko/viewModel.js',
+      /*'test/*.spec.js',*/
+      'test/querybuilder.spec.js',
       {
         pattern: 'test/mocks/*.html',
         watched: true,
