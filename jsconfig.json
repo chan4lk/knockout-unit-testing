@@ -7,6 +7,9 @@
        "node_modules"
    ],
    "typeAcquisition": {
-       "enable": true       
+       "enable": true,
+       "include": [
+           "chai"
+       ]       
    }
 }

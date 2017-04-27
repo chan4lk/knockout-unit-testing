@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "lite-server",
-    "test": "karma start --single-run",
+    "test": "karma start",
     "server": "java -jar selenium-server-standalone.jar",
     "wdio:test": "wdio wdio.conf.js ",
     "e2e": "npm-run-all --parallel server wdio:test",
@@ -38,8 +38,7 @@
     "karma-jquery-jasmine": "^0.1.12",
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-spec-reporter": "0.0.26",
-    "karma-xml-reporter": "^0.1.4",
-    "nock": "^9.0.13",
+    "karma-xml-reporter": "^0.1.4",    
     "npm-run-all": "^3.1.2",
     "phantomjs": "^2.1.7+deprecated",
     "wdio-mocha-framework": "^0.5.4",

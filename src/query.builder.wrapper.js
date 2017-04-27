@@ -63,11 +63,10 @@
                 if (!args || args.length === 0) {
                     internalQueryBuilder.logging("Arguments are null,empty or undefined");
                 }
-                    // if DOM elements are empty
+                // if DOM elements are empty
                 else if (!domElements || domElements.length === 0) {
                     internalQueryBuilder.logging("Cannot find DOM element");
-                }
-                else {
+                } else {
                     //Change operator display values
                     internalQueryBuilder.updateOperatorDisplayValues();
 
@@ -83,7 +82,7 @@
                         if (typeof firstArgument === internalQueryBuilder.config.type.object) {
                             internalQueryBuilder.handleObject($element, firstArgument)
                         }
-                            //if first argument is a string
+                        //if first argument is a string
                         else if (typeof firstArgument === internalQueryBuilder.config.type.string) {
                             returnData = internalQueryBuilder.handleMethod($element, firstArgument, args);
                         }
@@ -91,8 +90,7 @@
                 }
 
                 return returnData;
-            }
-            catch (error) {
+            } catch (error) {
                 internalQueryBuilder.logging(error);
             }
         };
@@ -111,8 +109,7 @@
             // if there are more than one arguments 
             if (args.length > 1) {
                 return $element.queryBuilder(firstArgument, args[1]);
-            }
-            else {
+            } else {
                 return $element.queryBuilder(firstArgument);
             }
 
@@ -177,8 +174,12 @@
                 return childCodes;
             },
 
+            isKeyInParentRule: function (currentRule, key) {
+                return true;
+            },
+
             //get child option string based on parent key
-            getOptionListString: function (selectedParentKey, parentChildFilterMapping) {
+            getOptionListString: function (selectedParentKey, parentChildFilterMapping, rule) {
                 var returnOptionString = "",
                     mappingLength = parentChildFilterMapping.length,
                     childNodeLength = -1,
@@ -194,7 +195,7 @@
                         childNodeLength = selectedMappingChildData.length;
                         if (selectedParentKey) {
                             //identify mapping which is associated to selected parent key
-                            if (selectedMapping.ParentKey === selectedParentKey) {
+                            if (selectedMapping.ParentKey === selectedParentKey && internalQueryBuilder.parentChildFunctionality.isKeyInParentRule(selectedParentKey)) {
                                 selectedMappingChildData.sort(internalQueryBuilder.commonFunctions.getSortedArray('Value'));
                                 // loop through all child
                                 for (var j = 0; j < childNodeLength; j++) {
@@ -202,8 +203,7 @@
                                 }
                                 return returnOptionString;
                             }
-                        }
-                        else {
+                        } else {
                             // loop through all child
                             for (var j = 0; j < childNodeLength; j++) {
                                 allChildDataArray.push(selectedMappingChildData[j]);
@@ -241,25 +241,27 @@
                                 parentRuleLength = inUseRule.parent.rules.length;
 
                             // iterate through all the rules in same group
-                            for (var i = 0 ; i < parentRuleLength ; i++) {
-                                var rule = inUseRule.parent.rules[i];
-                                //select child in group whiteout considering nested group rules.
-                                if (rule && rule.filter && rule.level === inUseRule.level && rule.filter.id === childId) {
-                                    internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(inUseRule.value, rule);
+                            for (var j = 0; j < parentRuleLength; j++) {
+                                for (var i = 0; i < parentRuleLength; i++) {
+                                    var rule = inUseRule.parent.rules[i];
+                                    //select child in group whiteout considering nested group rules.
+                                    if (rule && rule.filter && rule.level === inUseRule.level && rule.filter.id === childId) {
+                                        internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(inUseRule, rule);
+                                    }
                                 }
                             }
                         }
-                    }
-                    else {
+                    } else {
                         if (firstParentRule && (firstParentRule.level === inUseRule.level)) {
-                            internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(firstParentRule.value, inUseRule);
+                            internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(firstParentRule, inUseRule);
                         }
                     }
                 }
             },
 
             //refresh child data based on parent
-            refreshChildDataBasedOnParent: function (parentKey, childRule) {
+            refreshChildDataBasedOnParent: function (parentRule, childRule) {
+                var parentKey = parentRule.value;
                 var optionListString = internalQueryBuilder.parentChildFunctionality.getOptionListString(parentKey, childRule.filter.parentChildFilterMapping);
                 internalQueryBuilder.commonFunctions.rebindSelectInput(childRule, optionListString);
             },
@@ -267,8 +269,8 @@
             //display all child data
             displayAllChildData: function (childRule) {
                 var allOptionListString = internalQueryBuilder.parentChildFunctionality.getOptionListString(null, childRule.filter.parentChildFilterMapping),
-                // get child control
-                $childInput = childRule.$el.find(internalQueryBuilder.config.selectors.rule_value_container);
+                    // get child control
+                    $childInput = childRule.$el.find(internalQueryBuilder.config.selectors.rule_value_container);
                 // if child node exist
                 if ($childInput && $childInput.length > 0) {
                     var $selectedChildInput = $childInput.find(internalQueryBuilder.config.constant.select);
@@ -289,14 +291,13 @@
                 if (inUseRule.filter.childId) {
                     // select in use rule as parent
                     parentId = inUseRule.filter.id;
-                }
-                else {
+                } else {
                     // when child. get it's parent filter id
                     parentId = inUseRule.filter.parentId;
                 }
 
                 //loop through all loops
-                for (var i = 0 ; i < ruleLength ; i++) {
+                for (var i = 0; i < ruleLength; i++) {
                     rule = inUseRule.parent.rules[i];
                     if (rule.filter && (rule.level === inUseRule.level) && (parentId === rule.filter.id)) {
                         return rule;
@@ -309,21 +310,20 @@
             //Get first and second parent
             getFirstAndSecondParent: function (toBeDeleteRule) {
                 var returnObject = {
-                    firstParentRule: null,
-                    secondParentRule: null
-                },
-                parentRuleLength = toBeDeleteRule.parent.rules.length;
+                        firstParentRule: null,
+                        secondParentRule: null
+                    },
+                    parentRuleLength = toBeDeleteRule.parent.rules.length;
 
                 // iterate parent rules
-                for (var i = 0 ; i < parentRuleLength  ; i++) {
+                for (var i = 0; i < parentRuleLength; i++) {
 
                     var rule = toBeDeleteRule.parent.rules[i];
 
                     if (rule.filter && (rule.level === toBeDeleteRule.level) && (toBeDeleteRule.filter.id === rule.filter.id)) {
                         if (!returnObject.firstParentRule) {
                             returnObject.firstParentRule = rule;
-                        }
-                        else if (returnObject.firstParentRule && !returnObject.secondParentRule) {
+                        } else if (returnObject.firstParentRule && !returnObject.secondParentRule) {
                             returnObject.secondParentRule = rule;
                             break;
                         }
@@ -349,8 +349,7 @@
                                 $selectedChildInput.empty();
                                 if (optionListString) {
                                     $selectedChildInput.html(optionListString);
-                                }
-                                else {
+                                } else {
                                     if (rule) {
                                         internalQueryBuilder.commonFunctions.generateDropDownEmptyErrorMessagePopup($(childElement.closest('.query-builder')));
                                         rule.drop();
@@ -367,20 +366,40 @@
                     popupContainer = $queryBuilderDiv.siblings('#' + popupContainerDivId)
                 if (popupContainer && popupContainer.length > 0) {
                     showlightbox(popupContainerDivId);
-                }
-                else {
+                } else {
                     $queryBuilderDiv.after(
-                        $('<div/>', { 'id': internalQueryBuilder.config.selectors.queryBuilderDropdownDataEmptyErrorPopupDiv, 'class': 'popup_content' })
+                        $('<div/>', {
+                            'id': internalQueryBuilder.config.selectors.queryBuilderDropdownDataEmptyErrorPopupDiv,
+                            'class': 'popup_content'
+                        })
                         .append(
-                            $('<div/>', { 'class': 'popup-header' })
-                                .append($('<span/>', { text: 'Filter is removed' }))
-                                .append($('<a/>', { 'href': '#', 'class': 'txt-close', 'onclick': 'closelightbox("queryBuilderDropdownDataEmptyErrorPopup"); return false;', 'html': '&times;' }))
+                            $('<div/>', {
+                                'class': 'popup-header'
+                            })
+                            .append($('<span/>', {
+                                text: 'Filter is removed'
+                            }))
+                            .append($('<a/>', {
+                                'href': '#',
+                                'class': 'txt-close',
+                                'onclick': 'closelightbox("queryBuilderDropdownDataEmptyErrorPopup"); return false;',
+                                'html': '&times;'
+                            }))
+                        )
+                        .append($('<div/>', {
+                                'class': 'popup-pinner'
+                            })
+                            .append($('<div>Filter is removed due to empty data.</div>'))
+                            .append($('<div/>', {
+                                    'class': 'popup_btnWrapper'
+                                })
+                                .append($('<input/>', {
+                                    'value': 'Ok',
+                                    'type': 'button',
+                                    'class': 'btn right-floating btn-cancel',
+                                    'onclick': 'closelightbox("queryBuilderDropdownDataEmptyErrorPopup"); return false;'
+                                }))
                             )
-                        .append($('<div/>', { 'class': 'popup-pinner' })
-                                .append($('<div>Filter is removed due to empty data.</div>'))
-                                .append($('<div/>', { 'class': 'popup_btnWrapper' })
-                                    .append($('<input/>', { 'value': 'Ok', 'type': 'button', 'class': 'btn right-floating btn-cancel', 'onclick': 'closelightbox("queryBuilderDropdownDataEmptyErrorPopup"); return false;' }))
-                                )
                         )
                     );
                     showlightbox(popupContainerDivId);
@@ -448,8 +467,7 @@
             // if valid data
             if (cacheData) {
                 $element.data(internalQueryBuilder.config.constant.cache_key, cacheData);
-            }
-            else {
+            } else {
                 $element.data(internalQueryBuilder.config.constant.cache_key, {});
             }
         };
@@ -461,8 +479,7 @@
             if (firstArgument.event) {
                 var event = firstArgument.event;
                 internalQueryBuilder.cacheData($element, event, internalQueryBuilder.config.constant.cache_key);
-            }
-            else {
+            } else {
                 internalQueryBuilder.cacheData($element, {}, internalQueryBuilder.config.constant.cache_key);
             }
 
@@ -474,8 +491,7 @@
                 // if property exist
                 if (eventData.beforeCreateRuleEvent) {
                     eventData.beforeCreateRuleEvent(e, rule, error, value);
-                }
-                else {
+                } else {
                     var $submitButton = $(internalQueryBuilder.config.selectors.submitButton);
                     if ($submitButton) {
                         $submitButton.attr('disabled', false);
@@ -485,8 +501,7 @@
                 // if property exist
                 if (eventData.createRuleEvent) {
                     eventData.createRuleEvent(e, rule, error, value);
-                }
-                else {
+                } else {
                     rule.addRule = true;
                     var selectedFilter = rule.filter,
                         selectedFilterId = "",
@@ -496,7 +511,7 @@
                         if (selectedFilter.input === "select" && selectedFilter.sortInAlphabetically) {
                             selectedFilterValues = selectedFilter.values;
                             selectedFilterId = selectedFilter.id;
-                            var optionListString = internalQueryBuilder.commonFunctions.getOptionListString(selectedFilterId, selectedFilterValues);
+                            var optionListString = internalQueryBuilder.commonFunctions.getOptionListString(selectedFilterId, selectedFilterValues, rule);
                             internalQueryBuilder.commonFunctions.rebindSelectInput(rule, optionListString);
                         }
                     }
@@ -521,8 +536,7 @@
                 // if property exist
                 if (eventData.updateRuleEvent) {
                     eventData.updateRuleEvent(e, rule, error, value);
-                }
-                else {
+                } else {
                     var childId = rule.filter.childId;
 
                     if (rule.filter.parentId || childId) {
@@ -531,7 +545,7 @@
                             rule.addRule = false;
                             internalQueryBuilder.parentChildFunctionality.analyzeChild(rule);
                         }
-                            //Value change event of parent
+                        //Value change event of parent
                         else if (!rule.addRule && childId) {
                             internalQueryBuilder.parentChildFunctionality.analyzeChild(rule);
                         }
@@ -561,8 +575,7 @@
                 // if property exist
                 if (eventData.deleteRuleEvent) {
                     eventData.deleteRuleEvent(e, rule, error, value);
-                }
-                else {
+                } else {
                     //handles only filter deletion
                     if (toBeDeleteRule.filter) {
 
@@ -574,19 +587,18 @@
                             var firstSecondParent = internalQueryBuilder.parentChildFunctionality.getFirstAndSecondParent(toBeDeleteRule);
 
                             if (!firstSecondParent.secondParentRule) {
-                                for (var i = 0 ; i < parentRuleLength ; i++) {
+                                for (var i = 0; i < parentRuleLength; i++) {
                                     var childRule = toBeDeleteRule.parent.rules[i];
                                     if (childRule.filter && childRule.level === toBeDeleteRule.level && childRule.filter.id === childId) {
                                         internalQueryBuilder.parentChildFunctionality.displayAllChildData(childRule);
                                     }
                                 }
-                            }
-                            else if (firstSecondParent.secondParentRule && toBeDeleteRule.id === firstSecondParent.firstParentRule.id) {
+                            } else if (firstSecondParent.secondParentRule && toBeDeleteRule.id === firstSecondParent.firstParentRule.id) {
                                 var selectedParentValue = firstSecondParent.secondParentRule.value;
-                                for (var i = 0 ; i < parentRuleLength ; i++) {
+                                for (var i = 0; i < parentRuleLength; i++) {
                                     var childRule = toBeDeleteRule.parent.rules[i];
                                     if (childRule.filter && childRule.level === toBeDeleteRule.level && childRule.filter.id === childId) {
-                                        internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(firstSecondParent.secondParentRule.value, childRule);
+                                        internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(firstSecondParent.secondParentRule, childRule);
                                     }
                                 }
                             }
@@ -614,8 +626,8 @@
                     window.setTimeout(function () {
                         $(internalQueryBuilder.config.selectors.submitButton).click();
                     }, 15);
-                    
-                }                
+
+                }
             });
         };
 
@@ -649,4 +661,3 @@ Array.prototype.moveItem = function (property, value, newIndex) {
     }
     return this; // for testing purposes
 };
-

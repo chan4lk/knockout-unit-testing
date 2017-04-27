@@ -18,6 +18,7 @@ module.exports = function(config) {
       'node_modules/jquery/dist/jquery.min.js',
       'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
       'node_modules/knockout/build/output/knockout-latest.debug.js',
+      'node_modules/chai/chai.js',
       'src/program.enrollmentform.common.js',
       'src/program.enrollmentform.*.js',
       'src/query-builder.standalone.js',
