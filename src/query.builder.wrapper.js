@@ -179,7 +179,7 @@
             },
 
             //get child option string based on parent key
-            getOptionListString: function (selectedParentKey, parentChildFilterMapping, rule) {
+            getOptionListString: function (selectedParentKey, parentChildFilterMapping) {
                 var returnOptionString = "",
                     mappingLength = parentChildFilterMapping.length,
                     childNodeLength = -1,
@@ -236,22 +236,24 @@
                     if (inUseRule.filter.childId) {
                         //if in use rule and first parent are same, then we need to populate children.
                         if (firstParentRule.id === inUseRule.id) {
+                            window._TEST_PRINT_ && console.log(firstParentRule.value);
                             // ex: State
                             var childId = inUseRule.filter.childId,
                                 parentRuleLength = inUseRule.parent.rules.length;
 
-                            // iterate through all the rules in same group
-                            for (var j = 0; j < parentRuleLength; j++) {
-                                for (var i = 0; i < parentRuleLength; i++) {
-                                    var rule = inUseRule.parent.rules[i];
-                                    //select child in group whiteout considering nested group rules.
-                                    if (rule && rule.filter && rule.level === inUseRule.level && rule.filter.id === childId) {
-                                        internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(inUseRule, rule);
-                                    }
+                            // iterate through all the rules in same group                            
+                            for (var i = 0; i < parentRuleLength; i++) {
+                                var rule = inUseRule.parent.rules[i];
+                                //select child in group whiteout considering nested group rules.
+                                if (rule && rule.filter && rule.level === inUseRule.level && rule.filter.id === childId) {
+                                    internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(inUseRule, rule);
                                 }
                             }
+                        } else {
+                            window._TEST_PRINT_ && console.log(firstParentRule.value);
                         }
                     } else {
+                        window._TEST_PRINT_ && console.log(firstParentRule.value);
                         if (firstParentRule && (firstParentRule.level === inUseRule.level)) {
                             internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(firstParentRule, inUseRule);
                         }
@@ -262,7 +264,32 @@
             //refresh child data based on parent
             refreshChildDataBasedOnParent: function (parentRule, childRule) {
                 var parentKey = parentRule.value;
-                var optionListString = internalQueryBuilder.parentChildFunctionality.getOptionListString(parentKey, childRule.filter.parentChildFilterMapping);
+                var grandParentId = parentRule.filter.parentId;
+                var grandParentValue;                
+                var childMapping = childRule.filter.parentChildFilterMapping;                
+                if (grandParentId && parentRule.parent) {
+                    var grandParentRules = parentRule.parent.rules.filter(function (rule) {
+                        return rule.id === grandParentId;
+                    });
+                    if (grandParentRules.length) {
+                        grandParentValue = grandParentRules[0].value;
+                    }
+                }
+
+                if (grandParentValue) {
+                    var parentMapping = parentRule.filter.parentChildFilterMapping.filter(function (parentOfChild) {
+                        return parentOfChild.parentKey === grandParentValue;
+                    });
+
+                    childMapping = childMapping.filter(function (child) {
+                        return parentMapping[0].ChildDataList.filter(function (childData) {
+                            childData.Key === child.ParentKey;
+                        }).length > 0;
+                    });                    
+                }
+
+
+                var optionListString = internalQueryBuilder.parentChildFunctionality.getOptionListString(parentKey, childMapping);
                 internalQueryBuilder.commonFunctions.rebindSelectInput(childRule, optionListString);
             },
 

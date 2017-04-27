@@ -264,11 +264,12 @@ describe('Query Builder', function () {
         });
        
         const rules_widget = builder.model.root.rules;
-       
+        window._TEST_PRINT_ = true;
         rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica - CR"'
+        window._TEST_PRINT_ = false;
         const state = rules_widget[1].$el.find('select').last().val();        
-        expect(state).toEqual('609'); // expect State value to be 'Alajuela - 2'
-        state.should.equal('609');
+        expect(state).toEqual('609'); 
+        state.should.equal('609'); // expect State value to be 'Alajuela - 2'
         cexpect(rules_widget).to.have.length.of(2); // expect County rule to be removed.
     });
 
