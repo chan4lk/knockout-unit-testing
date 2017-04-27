@@ -305,4 +305,27 @@ describe('Query Builder', function () {
         expect(county).toEqual('308'); // expect county value to be 'FAIRFIELD'
         expect(rules_widget.length).toEqual(3); // expect County rule to be removed.
     });
+
+    it('should update county after country change', function () {
+        var builder = builderDiv.data('queryBuilder');
+        builder.reset();
+
+        // add first rule.
+        builder.setRules({
+            condition: 'OR',
+            rules: [{
+                id: 'Country',
+                operator: 'equal',
+                value: '224' /* "USA - US" */
+            }]
+        });
+       
+        let rules_widget = builder.model.root.rules;
+
+        builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
+        rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'
+        rules_widget.last().$el.find('select').last().val('2820').change(); // set value to 'ACCOMACK'
+        rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica - CR"'
+        cexpect(builder.model.root.rules).to.have.lengthOf(1); //County is removed.
+    });
 });
