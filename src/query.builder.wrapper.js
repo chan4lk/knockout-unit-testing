@@ -178,7 +178,7 @@
                 return true;
             },
 
-            getFiltersByRule(rule) {
+            getFiltersByRule:function(rule) {
                 var parent = rule.parent;
                 while (parent.parent != null) {
                     parent = parent.parent;
@@ -306,9 +306,14 @@
                                             });
 
                                             var grandChildMapping = grandChildRule.filter.parentChildFilterMapping.filter(function (grandChild) {
-                                                return parentMapping[0].ChildDataList.filter(function (childData) {
-                                                    childData.Key === grandChild.ParentKey;
-                                                }).length > 0;
+                                                var isChildData = false;
+                                                parentMapping[0].ChildDataList.map(function (childData) {
+                                                    if(childData.Key === grandChild.ParentKey){
+                                                        isChildData = true;
+                                                    }
+                                                });
+
+                                                return isChildData;
                                             });
                                             var grandChildOptionListString = '';
                                             parentMapping[0].ChildDataList.map(function (childData) {
@@ -320,8 +325,6 @@
                                     }
                                 }
                             }
-                        } else {
-
                         }
                     } else {
                         if (firstParentRule && (firstParentRule.level === inUseRule.level)) {
