@@ -140,7 +140,7 @@ describe('Query Builder', function () {
         expect(rules_info.rules.length).toEqual(3);
 
         var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
-
+        cexpect(sql_raw).to.have.length.greaterThan(0);
         var builder = builderDiv.data('queryBuilder');
         var data = {
             id: 'Country',
@@ -148,10 +148,8 @@ describe('Query Builder', function () {
             value: '36' /* "Canada - CA" */
         };
 
-        var model = addRule(builder, data);
-
+        addRule(builder, data);
         var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
-
         rules_info = builderDiv.queryBuilder('getRules');
         expect(rules_info.rules.length).toEqual(4);
     });
@@ -176,7 +174,7 @@ describe('Query Builder', function () {
         expect(rules_info.rules.length).toEqual(2);
 
         var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
-
+        cexpect(sql_raw).to.have.length.greaterThan(0);
         var builder = builderDiv.data('queryBuilder');
         var data = {
             id: 'Country',
@@ -184,10 +182,8 @@ describe('Query Builder', function () {
             value: '36' /* "Canada - CA" */
         };
 
-        var model = addRule(builder, data);
-
+        addRule(builder, data);
         var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
-
         rules_info = builderDiv.queryBuilder('getRules');
         expect(rules_info.rules.length).toEqual(2);
     });
@@ -335,6 +331,28 @@ describe('Query Builder', function () {
         builder.setRules({
             condition: 'OR',
             rules: [{
+                id: 'County',
+                operator: 'equal',
+                 value: '1837' /* "WASHINGTON" */
+            }]
+        });
+
+        let rules_widget = builder.model.root.rules;
+        builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
+        rules_widget.last().$el.find('select').val('Country').change(); // set filter to 'Country'
+        const county = rules_widget[0].$el.find('select').last().val(); // get County value
+        cexpect(county).to.be.eql('1');
+        cexpect(builder.model.root.rules).to.have.lengthOf(2); //County is there.
+    });
+
+    it('should remove county after existing country change', function () {
+        var builder = builderDiv.data('queryBuilder');
+        builder.reset();
+
+        // add first rule.
+        builder.setRules({
+            condition: 'OR',
+            rules: [{
                 id: 'Country',
                 operator: 'equal',
                 value: '224' /* "WASHINGTON" */
@@ -344,10 +362,9 @@ describe('Query Builder', function () {
         let rules_widget = builder.model.root.rules;
         rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica -
         builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
+        window._TEST_PRINT_ = true;
         rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'
-         window._TEST_PRINT_ = true;
-        rules_widget[0].$el.find('select').last().val('224').change(); // set Country value to '"USA"'
          window._TEST_PRINT_ = false;
-        cexpect(builder.model.root.rules).to.have.lengthOf(2); //County is there.
+        cexpect(builder.model.root.rules).to.have.lengthOf(1); //County is removed.
     });
 });

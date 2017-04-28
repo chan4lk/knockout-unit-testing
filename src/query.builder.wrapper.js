@@ -62,9 +62,8 @@
                 // if arguments are empty
                 if (!args || args.length === 0) {
                     internalQueryBuilder.logging("Arguments are null,empty or undefined");
-                }
-                // if DOM elements are empty
-                else if (!domElements || domElements.length === 0) {
+                } else if (!domElements || domElements.length === 0) {
+                    // if DOM elements are empty
                     internalQueryBuilder.logging("Cannot find DOM element");
                 } else {
                     //Change operator display values
@@ -81,9 +80,8 @@
                         // if first argument is an object
                         if (typeof firstArgument === internalQueryBuilder.config.type.object) {
                             internalQueryBuilder.handleObject($element, firstArgument);
-                        }
-                        //if first argument is a string
-                        else if (typeof firstArgument === internalQueryBuilder.config.type.string) {
+                        } else if (typeof firstArgument === internalQueryBuilder.config.type.string) {
+                            //if first argument is a string
                             returnData = internalQueryBuilder.handleMethod($element, firstArgument, args);
                         }
                     });
@@ -173,18 +171,18 @@
                 }
                 return childCodes;
             },
-
-            isKeyInParentRule: function (currentRule, key) {
-                return true;
-            },
-
-            getFiltersByRule:function(rule) {
+            getBuilderByRule: function (rule) {
                 var parent = rule.parent;
                 while (parent.parent != null) {
                     parent = parent.parent;
                 }
-                var filters = parent.$el.parent().data('queryBuilder').filters;
-                return filters;
+                var builder = parent.$el.parent().data('queryBuilder');
+                return builder;
+            },
+
+            getFiltersByRule: function (rule) {
+                var builder = internalQueryBuilder.parentChildFunctionality.getBuilderByRule(rule).filters;
+                return builder;
             },
 
             //get child option string based on parent key
@@ -204,7 +202,7 @@
                         childNodeLength = selectedMappingChildData.length;
                         if (selectedParentKey) {
                             //identify mapping which is associated to selected parent key
-                            if (selectedMapping.ParentKey === selectedParentKey && internalQueryBuilder.parentChildFunctionality.isKeyInParentRule(selectedParentKey)) {
+                            if (selectedMapping.ParentKey === selectedParentKey) {
                                 selectedMappingChildData.sort(internalQueryBuilder.commonFunctions.getSortedArray('Value'));
                                 // loop through all child
                                 for (var j = 0; j < childNodeLength; j++) {
@@ -236,10 +234,9 @@
 
             //analyze child
             analyzeChild: function (inUseRule) {
+                var childUpdated = false;
                 if (inUseRule) {
-                    var firstParentRule = internalQueryBuilder.parentChildFunctionality.getFirstParentRuleOfGroup(inUseRule),
-                        selectedParentValue = "",
-                        parentRelatedchildCodes = null;
+                    var firstParentRule = internalQueryBuilder.parentChildFunctionality.getFirstParentRuleOfGroup(inUseRule);
 
                     // if in use rule is a parent
                     if (inUseRule.filter.childId) {
@@ -250,7 +247,7 @@
                             var childId = inUseRule.filter.childId,
                                 parentRuleLength = inUseRule.parent.rules.length;
 
-                            var childUpdated = false;
+
 
                             // iterate through all the rules in same group
                             for (var i = 0; i < parentRuleLength; i++) {
@@ -263,75 +260,88 @@
                             }
 
                             if (!childUpdated) {
-                                var parentRule = inUseRule;
-                                var parentKey = inUseRule.value;
-                                var childId = parentRule.filter.childId;
-                                var parentUtil = internalQueryBuilder.parentChildFunctionality;
-                                if (window._TEST_PRINT_) debugger;
-                                if (childId) {
-                                    var allFilters = parentUtil.getFiltersByRule(parentRule);
-                                    var childFilters = allFilters.filter(function (filter) {
-                                        return filter.id === childId;
-                                    });
-
-                                    var childRules = parentRule.parent.rules.filter(function (rule) {
-                                        return childFilters.filter(function (childFilter) {
-                                            return childFilter.id === rule.filter.id;
-                                        }).length > 0;
-                                    });
-
-                                    if (childRules.length === 0) {
-
-                                        var grandChildFilters = allFilters.filter(function (filter) {
-                                            return childFilters.filter(function (childFilter) {
-                                                return childFilter.id === filter.id;
-                                            }).length > 0;
-                                        });
-
-                                        var grandChildRules = parentRule.parent.rules.filter(function (rule) {
-                                            return grandChildFilters.filter(function (childFilter) {
-                                                return childFilter.childId === rule.filter.id;
-                                            }).length > 0;
-                                        });
-
-                                        if (grandChildRules.length) {
-                                            grandChildRules.map(function(grandChildRule){
-                                            var grandChildFilter =
-                                            grandChildFilters.filter(function (currentGrandChild) {
-                                                return currentGrandChild.childId === grandChildRule.filter.id;
-                                            });
-
-                                            var parentMapping = grandChildFilter[0].parentChildFilterMapping.filter(function (parentDataMapping) {
-                                                return parentDataMapping.ParentKey === parentKey;
-                                            });
-
-                                            var grandChildMapping = grandChildRule.filter.parentChildFilterMapping.filter(function (grandChild) {
-                                                var isChildData = false;
-                                                parentMapping[0].ChildDataList.map(function (childData) {
-                                                    if(childData.Key === grandChild.ParentKey){
-                                                        isChildData = true;
-                                                    }
-                                                });
-
-                                                return isChildData;
-                                            });
-                                            var grandChildOptionListString = '';
-                                            parentMapping[0].ChildDataList.map(function (childData) {
-                                                grandChildOptionListString += internalQueryBuilder.parentChildFunctionality.getOptionListString(childData.Key, grandChildMapping);
-                                            });
-                                            internalQueryBuilder.commonFunctions.rebindSelectInput(grandChildRule, grandChildOptionListString);
-                                            });
-                                        }
-                                    }
-                                }
+                                internalQueryBuilder.parentChildFunctionality.refreshGrandChildrenDataBasedOnParent(inUseRule);
                             }
                         }
                     } else {
                         if (firstParentRule && (firstParentRule.level === inUseRule.level)) {
                             internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(firstParentRule, inUseRule);
+                            if (window._TEST_PRINT_) {
+                                debugger;
+                            }
+                            internalQueryBuilder.parentChildFunctionality.refreshGrandChildrenDataBasedOnParent(inUseRule);
+
                         }
                     }
                 }
+            },
+
+            refreshGrandChildrenDataBasedOnParent: function (inUseRule) {
+
+                var parentRule = inUseRule;
+                var parentKey = inUseRule.value;
+                var childId = parentRule.filter.childId;
+                var parentUtil = internalQueryBuilder.parentChildFunctionality;
+                if (window._TEST_PRINT_) {
+                    debugger;
+                }
+                if (childId) {
+                    var allFilters = parentUtil.getFiltersByRule(parentRule);
+                    var childFilters = allFilters.filter(function (filter) {
+                        return filter.id === childId;
+                    });
+
+                    var childRules = parentRule.parent.rules.filter(function (rule) {
+                        return childFilters.filter(function (childFilter) {
+                            return childFilter.id === rule.filter.id;
+                        }).length > 0;
+                    });
+
+                    if (childRules.length === 0) {
+
+                        var grandChildFilters = allFilters.filter(function (filter) {
+                            return childFilters.filter(function (childFilter) {
+                                return childFilter.id === filter.id;
+                            }).length > 0;
+                        });
+
+                        var grandChildRules = parentRule.parent.rules.filter(function (rule) {
+                            return grandChildFilters.filter(function (childFilter) {
+                                return childFilter.childId === rule.filter.id;
+                            }).length > 0;
+                        });
+
+                        if (grandChildRules.length) {
+                            grandChildRules.map(function (grandChildRule) {
+                                var grandChildFilter =
+                                    grandChildFilters.filter(function (currentGrandChild) {
+                                        return currentGrandChild.childId === grandChildRule.filter.id;
+                                    });
+
+                                var parentMapping = grandChildFilter[0].parentChildFilterMapping.filter(function (parentDataMapping) {
+                                    return parentDataMapping.ParentKey === parentKey;
+                                });
+
+                                var grandChildMapping = grandChildRule.filter.parentChildFilterMapping.filter(function (grandChild) {
+                                    var isChildData = false;
+                                    parentMapping[0].ChildDataList.map(function (childData) {
+                                        if (childData.Key === grandChild.ParentKey) {
+                                            isChildData = true;
+                                        }
+                                    });
+
+                                    return isChildData;
+                                });
+                                var grandChildOptionListString = '';
+                                parentMapping[0].ChildDataList.map(function (childData) {
+                                    grandChildOptionListString += internalQueryBuilder.parentChildFunctionality.getOptionListString(childData.Key, grandChildMapping);
+                                });
+                                internalQueryBuilder.commonFunctions.rebindSelectInput(grandChildRule, grandChildOptionListString);
+                            });
+                        }
+                    }
+                }
+
             },
 
             //refresh child data based on parent
@@ -486,10 +496,12 @@
                 return function (item1, item2) {
                     var a = item1[prop].toLowerCase(),
                         b = item2[prop].toLowerCase();
-                    if (a < b)
+                    if (a < b) {
                         return -1;
-                    if (a > b)
+                    }
+                    if (a > b) {
                         return 1;
+                    }
                     return 0;
                 };
             },
@@ -619,9 +631,8 @@
                         if (rule.addRule) {
                             rule.addRule = false;
                             internalQueryBuilder.parentChildFunctionality.analyzeChild(rule);
-                        }
-                        //Value change event of parent
-                        else if (!rule.addRule && childId) {
+                        } else if (!rule.addRule && childId) {
+                            //Value change event of parent
                             internalQueryBuilder.parentChildFunctionality.analyzeChild(rule);
                         }
                     }
@@ -644,12 +655,12 @@
 
                 // if property exist
                 if (eventData.beforeDeleteRuleEvent) {
-                    eventData.beforeDeleteRuleEvent(e, rule, error, value);
+                    eventData.beforeDeleteRuleEvent(e, toBeDeleteRule, error, value);
                 }
 
                 // if property exist
                 if (eventData.deleteRuleEvent) {
-                    eventData.deleteRuleEvent(e, rule, error, value);
+                    eventData.deleteRuleEvent(e, toBeDeleteRule, error, value);
                 } else {
                     //handles only filter deletion
                     if (toBeDeleteRule.filter) {
@@ -669,7 +680,7 @@
                                     }
                                 }
                             } else if (firstSecondParent.secondParentRule && toBeDeleteRule.id === firstSecondParent.firstParentRule.id) {
-                                var selectedParentValue = firstSecondParent.secondParentRule.value;
+
                                 for (var i = 0; i < parentRuleLength; i++) {
                                     var childRule = toBeDeleteRule.parent.rules[i];
                                     if (childRule.filter && childRule.level === toBeDeleteRule.level && childRule.filter.id === childId) {
@@ -683,7 +694,7 @@
 
                 // if property exist
                 if (eventData.afterDeleteRuleEvent) {
-                    eventData.afterDeleteRuleEvent(e, rule, error, value);
+                    eventData.afterDeleteRuleEvent(e, toBeDeleteRule, error, value);
                 }
             });
 
