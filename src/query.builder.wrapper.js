@@ -295,10 +295,17 @@
                                         });
 
                                         if (grandChildRules.length) {
-                                            var parentMapping = grandChildFilters[0].parentChildFilterMapping.filter(function (parentDataMapping) {
+                                            grandChildRules.map(function(grandChildRule){
+                                            var grandChildFilter =
+                                            grandChildFilters.filter(function (currentGrandChild) {
+                                                return currentGrandChild.childId === grandChildRule.filter.id;
+                                            });
+
+                                            var parentMapping = grandChildFilter[0].parentChildFilterMapping.filter(function (parentDataMapping) {
                                                 return parentDataMapping.ParentKey === parentKey;
                                             });
-                                            var grandChildMapping = grandChildRules[0].filter.parentChildFilterMapping.filter(function (grandChild) {
+
+                                            var grandChildMapping = grandChildRule.filter.parentChildFilterMapping.filter(function (grandChild) {
                                                 return parentMapping[0].ChildDataList.filter(function (childData) {
                                                     childData.Key === grandChild.ParentKey;
                                                 }).length > 0;
@@ -307,7 +314,8 @@
                                             parentMapping[0].ChildDataList.map(function (childData) {
                                                 grandChildOptionListString += internalQueryBuilder.parentChildFunctionality.getOptionListString(childData.Key, grandChildMapping);
                                             });
-                                            internalQueryBuilder.commonFunctions.rebindSelectInput(grandChildRules[0], grandChildOptionListString);
+                                            internalQueryBuilder.commonFunctions.rebindSelectInput(grandChildRule, grandChildOptionListString);
+                                            });
                                         }
                                     }
                                 }
