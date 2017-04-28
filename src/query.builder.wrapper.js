@@ -1,16 +1,16 @@
-///<summary>  
-/// � 2012 UTC Climate Control & Security, Inc. All rights reserved. CONFIDENTIAL AND  
-/// PROPRIETARY INFORMATION The information contained herein (the   
-/// 'Proprietary Information') is highly confidential and proprietary to and   
-/// constitutes trade secrets of UTC Climate Control & Security, Inc.. The Proprietary Information  
+///<summary>
+/// � 2012 UTC Climate Control & Security, Inc. All rights reserved. CONFIDENTIAL AND
+/// PROPRIETARY INFORMATION The information contained herein (the
+/// 'Proprietary Information') is highly confidential and proprietary to and
+/// constitutes trade secrets of UTC Climate Control & Security, Inc.. The Proprietary Information
 /// is for UTC Climate Control & Security, Inc. internal use only and shall not be published,
-/// communicated, disclosed or divulged to any person, firm, corporation or   
-/// other legal entity, directly or indirectly, without the prior written   
-/// consent of UTC Climate Control & Security, Inc. Information Management. 
-///  
+/// communicated, disclosed or divulged to any person, firm, corporation or
+/// other legal entity, directly or indirectly, without the prior written
+/// consent of UTC Climate Control & Security, Inc. Information Management.
+///
 /// Source File:            query.builder.wrapper.js
 /// Sub-system/Module:      UTC.CCS.DPG.Branding.Artifact.en-US
-/// Description:            This is a wrapper for queryBuilder   
+/// Description:            This is a wrapper for queryBuilder
 /// </summary>
 ///
 //Version QAR 2.3.2
@@ -80,7 +80,7 @@
 
                         // if first argument is an object
                         if (typeof firstArgument === internalQueryBuilder.config.type.object) {
-                            internalQueryBuilder.handleObject($element, firstArgument)
+                            internalQueryBuilder.handleObject($element, firstArgument);
                         }
                         //if first argument is a string
                         else if (typeof firstArgument === internalQueryBuilder.config.type.string) {
@@ -97,7 +97,7 @@
 
         // if first argument is an object then this method will be called
         internalQueryBuilder.handleObject = function ($element, firstArgument) {
-            // render query builder using original API 
+            // render query builder using original API
             $element.queryBuilder(firstArgument);
             // register events
             internalQueryBuilder.registerEvents($element, firstArgument);
@@ -106,7 +106,7 @@
         // if first argument is a string, then we consider it as a method name of original query builder API
         internalQueryBuilder.handleMethod = function ($element, firstArgument, args) {
 
-            // if there are more than one arguments 
+            // if there are more than one arguments
             if (args.length > 1) {
                 return $element.queryBuilder(firstArgument, args[1]);
             } else {
@@ -162,7 +162,7 @@
 
                     //identify mapping which is associated to selected parent key
                     if (selectedMapping.ParentKey === selectedParentKey) {
-                        childNodeLength = selectedMapping.ChildDataList.length
+                        childNodeLength = selectedMapping.ChildDataList.length;
 
                         // loop through all child
                         for (var j = 0; j < childNodeLength; j++) {
@@ -176,6 +176,15 @@
 
             isKeyInParentRule: function (currentRule, key) {
                 return true;
+            },
+
+            getFiltersByRule(rule) {
+                var parent = rule.parent;
+                while (parent.parent != null) {
+                    parent = parent.parent;
+                }
+                var filters = parent.$el.parent().data('queryBuilder').filters;
+                return filters;
             },
 
             //get child option string based on parent key
@@ -236,21 +245,77 @@
                     if (inUseRule.filter.childId) {
                         //if in use rule and first parent are same, then we need to populate children.
                         if (firstParentRule.id === inUseRule.id) {
-                            
+
                             // ex: State
                             var childId = inUseRule.filter.childId,
                                 parentRuleLength = inUseRule.parent.rules.length;
 
-                            // iterate through all the rules in same group                            
+                            var childUpdated = false;
+
+                            // iterate through all the rules in same group
                             for (var i = 0; i < parentRuleLength; i++) {
                                 var rule = inUseRule.parent.rules[i];
                                 //select child in group whiteout considering nested group rules.
                                 if (rule && rule.filter && rule.level === inUseRule.level && rule.filter.id === childId) {
                                     internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(inUseRule, rule);
+                                    childUpdated = true;
                                 }
                             }
+
+                            if (!childUpdated) {
+                                var parentRule = inUseRule;
+                                var parentKey = inUseRule.value;
+                                var childId = parentRule.filter.childId;
+                                var parentUtil = internalQueryBuilder.parentChildFunctionality;
+                                if (window._TEST_PRINT_) debugger;
+                                if (childId) {
+                                    var allFilters = parentUtil.getFiltersByRule(parentRule);
+                                    var childFilters = allFilters.filter(function (filter) {
+                                        return filter.id === childId;
+                                    });
+
+                                    var childRules = parentRule.parent.rules.filter(function (rule) {
+                                        return childFilters.filter(function (childFilter) {
+                                            return childFilter.id === rule.filter.id;
+                                        }).length > 0;
+                                    });
+
+                                    if (childRules.length === 0) {
+
+                                        var grandChildFilters = allFilters.filter(function (filter) {
+                                            return childFilters.filter(function (childFilter) {
+                                                return childFilter.id === filter.id;
+                                            }).length > 0;
+                                        });
+
+                                        var grandChildRules = parentRule.parent.rules.filter(function (rule) {
+                                            return grandChildFilters.filter(function (childFilter) {
+                                                return childFilter.childId === rule.filter.id;
+                                            }).length > 0;
+                                        });
+
+                                        if (grandChildRules.length) {
+                                            var parentMapping = grandChildFilters[0].parentChildFilterMapping.filter(function (parentDataMapping) {
+                                                return parentDataMapping.ParentKey === parentKey;
+                                            });
+                                            var grandChildMapping = grandChildRules[0].filter.parentChildFilterMapping.filter(function (grandChild) {
+                                                return parentMapping[0].ChildDataList.filter(function (childData) {
+                                                    childData.Key === grandChild.ParentKey;
+                                                }).length > 0;
+                                            });
+                                            var grandChildOptionListString = '';
+                                            parentMapping[0].ChildDataList.map(function (childData) {
+                                                grandChildOptionListString += internalQueryBuilder.parentChildFunctionality.getOptionListString(childData.Key, grandChildMapping);
+                                            });
+                                            internalQueryBuilder.commonFunctions.rebindSelectInput(grandChildRules[0], grandChildOptionListString);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+
                         }
-                    } else {                        
+                    } else {
                         if (firstParentRule && (firstParentRule.level === inUseRule.level)) {
                             internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(firstParentRule, inUseRule);
                         }
@@ -261,30 +326,7 @@
             //refresh child data based on parent
             refreshChildDataBasedOnParent: function (parentRule, childRule) {
                 var parentKey = parentRule.value;
-                var grandChildId = childRule.filter.childId;
-                var childMapping = childRule.filter.parentChildFilterMapping;
-                if (grandChildId) {
-                    var grandChildRules = childRule.parent.rules.filter(function (rule) {
-                        return rule.filter.id === grandChildId;
-                    });
-                    if (grandChildRules.length) {      
-                        var parentMapping = childRule.filter.parentChildFilterMapping.filter(function(parentDataMapping) {
-                            return parentDataMapping.ParentKey === parentKey;
-                        });
-                        var grandChildMapping = grandChildRules[0].filter.parentChildFilterMapping.filter(function (grandChild) {
-                            return parentMapping[0].ChildDataList.filter(function (childData) {
-                                childData.Key === grandChild.ParentKey;
-                            }).length > 0;
-                        });
-                        var grandChildOptionListString = '';
-                        parentMapping[0].ChildDataList.map(function(childData){
-                            grandChildOptionListString += internalQueryBuilder.parentChildFunctionality.getOptionListString(childData.Key, grandChildMapping);
-                        });
-                        internalQueryBuilder.commonFunctions.rebindSelectInput(grandChildRules[0], grandChildOptionListString);
-                    }
-                }
-
-                var optionListString = internalQueryBuilder.parentChildFunctionality.getOptionListString(parentKey, childMapping);
+                var optionListString = internalQueryBuilder.parentChildFunctionality.getOptionListString(parentKey, childRule.filter.parentChildFilterMapping);
                 internalQueryBuilder.commonFunctions.rebindSelectInput(childRule, optionListString);
             },
 
@@ -370,7 +412,7 @@
                             if ($selectedChildInput) {
                                 $selectedChildInput.empty();
                                 if (optionListString) {
-                                    $selectedChildInput.html(optionListString);
+                                    $selectedChildInput.html(optionListString).change();
                                 } else {
                                     if (rule) {
                                         internalQueryBuilder.commonFunctions.generateDropDownEmptyErrorMessagePopup($(childElement.closest('.query-builder')));
@@ -385,7 +427,7 @@
 
             generateDropDownEmptyErrorMessagePopup: function ($queryBuilderDiv) {
                 var popupContainerDivId = internalQueryBuilder.config.selectors.queryBuilderDropdownDataEmptyErrorPopupDiv,
-                    popupContainer = $queryBuilderDiv.siblings('#' + popupContainerDivId)
+                    popupContainer = $queryBuilderDiv.siblings('#' + popupContainerDivId);
                 if (popupContainer && popupContainer.length > 0) {
                     showlightbox(popupContainerDivId);
                 } else {
@@ -438,7 +480,7 @@
                     if (a > b)
                         return 1;
                     return 0;
-                }
+                };
             },
 
             //get option list string based on given values
@@ -655,7 +697,7 @@
 
         // call init method
         return internalQueryBuilder.init(this, arguments);
-    }
+    };
 }(jQuery));
 
 Array.prototype.moveItem = function (property, value, newIndex) {
