@@ -2,8 +2,8 @@
 var cexpect = chai.expect;
 var should = chai.should();
 
-if (!Array.prototype.last){
-    Array.prototype.last = function(){
+if (!Array.prototype.last) {
+    Array.prototype.last = function () {
         return this[this.length - 1];
     };
 };
@@ -255,7 +255,8 @@ describe('Query Builder', function () {
                     id: 'County',
                     operator: 'equal',
                     value: '1837' /* "WASHINGTON" */
-                }]
+                }
+            ]
         });
 
         let rules_widget = builder.model.root.rules;
@@ -289,7 +290,8 @@ describe('Query Builder', function () {
                     id: 'County',
                     operator: 'equal',
                     value: '1837' /* "WASHINGTON" */
-                }]
+                }
+            ]
         });
 
         const rules_widget = builder.model.root.rules;
@@ -333,7 +335,7 @@ describe('Query Builder', function () {
             rules: [{
                 id: 'County',
                 operator: 'equal',
-                 value: '1837' /* "WASHINGTON" */
+                value: '1837' /* "WASHINGTON" */
             }]
         });
 
@@ -364,7 +366,7 @@ describe('Query Builder', function () {
         builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
         window._TEST_PRINT_ = true;
         rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'
-         window._TEST_PRINT_ = false;
+        window._TEST_PRINT_ = false;
         cexpect(builder.model.root.rules).to.have.lengthOf(1); //County is removed.
     });
 });

@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "lite-server",
-    "test": "karma start",
+    "test": "karma start --single-run",
     "server": "java -jar selenium-server-standalone.jar",
     "wdio:test": "wdio wdio.conf.js ",
     "e2e": "npm-run-all --parallel server wdio:test",
