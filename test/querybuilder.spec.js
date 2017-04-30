@@ -371,5 +371,6 @@ describe('Query Builder', function () {
         rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'.        
         window._TEST_PRINT_ = false;
         cexpect(builder.model.root.rules).to.have.lengthOf(1); //County is removed.
+        cexpect(builder.model.root.rules[0].filter.id).to.equal('Country'); //County is removed.
     });
 });
