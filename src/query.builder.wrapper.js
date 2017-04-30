@@ -171,6 +171,12 @@
                     }
                     return childCodes;
                 },
+                /**
+                 * Get the query builder instance.
+                 * 
+                 * @param {Rule} rule The updated rule
+                 * @returns QueryBuilder instance.
+                 */
                 getBuilderByRule: function (rule) {
                     var parent = rule;
                     while (parent.parent != null) {
@@ -179,14 +185,15 @@
                     var builder = parent.$el.parent().data('queryBuilder');
                     return builder;
                 },
+                
                 /**
+                 * Get the all the filters of the query builder instance.
+                 * 
                  * @param {Rule} rule - the rule to get all the filters.
+                 * @returns all the filters of the query builder.
                  */
                 getFiltersByRule: function (rule) {
                     var builder = internalQueryBuilder.parentChildFunctionality.getBuilderByRule(rule);
-                    if (builder === undefined) {
-
-                    }
                     var filters = builder.filters;
                     return filters;
                 },
@@ -360,15 +367,25 @@
                  */
                 updateParents: function (currentRule, parentId) {
                     var parentUtil = internalQueryBuilder.parentChildFunctionality;
-                    // get all the filters in query builder.
+
+                    /**
+                     * get all the filters in query builder.
+                     * @type {Array<any>}
+                     */
                     var allFilters = parentUtil.getFiltersByRule(currentRule);
 
-                    // get all fiters which could be a parent of current rule.
+                    /**
+                     * get all fiters which could be a parent of current rule.
+                     * @type {Array<any>}
+                     */
                     var parentFilters = allFilters.filter(function (filter) {
                         return filter.id === parentId;
                     });
 
-                    // get all the parent rules of current rule.
+                    /**
+                     * get all the parent rules of current rule.
+                     * @type {Array<any>}
+                     */
                     var parentRules = currentRule.parent.rules.filter(function (rule) {
                         return parentFilters.filter(function (parentFilter) {
                             return parentFilter.id === rule.filter.id;
@@ -377,12 +394,16 @@
 
                     // if parent rules are not present, then look for grand parents.
                     if (parentRules.length === 0) {
-                        // get all the rules which is based of grand parent filters.
+                        /**
+                         * get all the rules which is based of grand parent filters.
+                         * @type {Array<any>}
+                         */
                         var grandParentRules = currentRule.parent.rules.filter(function (rule) {
                             return parentFilters.filter(function (parentFilter) {
                                 return parentFilter.parentId === rule.filter.id;
                             }).length > 0;
                         });
+
                         // if grand parent rules exists, then update.
                         if (grandParentRules.length) {
 
@@ -401,14 +422,35 @@
 
                 },
 
+                /**
+                 * Refresh the rule hirachy if current rule has children
+                 * or if current rule is a decendent of a rule.
+                 * 
+                 * @param {any} currentRule The changed rule. 
+                 */
                 refreshHirachey: function (currentRule) {
                     if (!currentRule) {
                         return;
                     }
 
+                    /**
+                     * @type {string}
+                     */
                     var parentKey = currentRule.value;
+
+                    /**
+                     * @type {string}
+                     */
                     var childId = currentRule.filter.childId;
+
+                    /**
+                     * @type {string}
+                     */
                     var parentId = currentRule.filter.parentId;
+
+                    /**
+                     * @type {Function}
+                     */
                     var parentUtil = internalQueryBuilder.parentChildFunctionality;
 
                     // if current rule could have children, the update them.
