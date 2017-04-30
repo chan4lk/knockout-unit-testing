@@ -11,7 +11,7 @@ var ManageRelationships = { // Manage Relationships namespace
     collections: {}, // collections to hold data
     //#endregion
 
-}
+};
 
 ManageRelationships.config = (function () {
 
