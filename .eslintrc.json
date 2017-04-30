@@ -32,7 +32,8 @@
         "showlightbox": true,
         "closelightbox": true,
         "loadFixtures" : true,
-        "getJSONFixture": true
+        "getJSONFixture": true,
+        "chai": true
     }
 
 }

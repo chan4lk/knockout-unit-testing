@@ -2,7 +2,7 @@
 
 'use strict';
 var cexpect = chai.expect;
-var should = chai.should();
+chai.should();
 
 if (!Array.prototype.last) {
     Array.prototype.last = function () {
@@ -51,7 +51,7 @@ describe('Query Builder', function () {
     const selectors = {
         add_rule: '[data-add=rule]'
     };
-    
+
     beforeEach(() => {
         loadFixtures('QueryBuilder.html');
         builderDiv = $('.builder-widgets');
@@ -64,7 +64,7 @@ describe('Query Builder', function () {
     });
 
     it('should return sql', function () {
-        window._TEST_PRINT_ = true;
+
         builderDiv.queryBuilder('setRules', {
             condition: 'OR',
             rules: [{
@@ -85,9 +85,8 @@ describe('Query Builder', function () {
         });
 
         var sql_raw = builderDiv.queryBuilder('getSQL', false, true);
-        
+
         expect(sql_raw.sql.length).toBeGreaterThan(0);
-        window._TEST_PRINT_ = false;
     });
 
     it('should contain required colums sql', function () {
@@ -364,11 +363,13 @@ describe('Query Builder', function () {
                 value: '224' /* "WASHINGTON" */
             }]
         });
-        
+
         let rules_widget = builder.model.root.rules;
         rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica -
-        builderDiv.find(selectors.add_rule).trigger('click'); // add rule.        
+        builderDiv.find(selectors.add_rule).trigger('click'); // add rule.  
+        window._TEST_PRINT_ = true;
         rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'.        
+        window._TEST_PRINT_ = false;
         cexpect(builder.model.root.rules).to.have.lengthOf(1); //County is removed.
     });
 });

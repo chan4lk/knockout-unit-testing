@@ -15,7 +15,7 @@
 ///
 //Version QAR 2.3.2
 (function ($) {
-    
+
     "use strict";
 
     //This is a wrapper for queryBuilder
@@ -71,7 +71,7 @@
 
                         // get first argument
                         var firstArgument = args[0];
-                        
+
                         // loop through all DOM elements
                         domElements.each(function () {
 
@@ -139,7 +139,7 @@
             },
 
             // handles logging
-            logging : function (message) {
+            logging: function (message) {
                 throw new Error(message);
             },
 
@@ -172,9 +172,6 @@
                     return childCodes;
                 },
                 getBuilderByRule: function (rule) {
-                    if(window._TEST_PRINT_){
-                        debugger;
-                    }
                     var parent = rule;
                     while (parent.parent != null) {
                         parent = parent.parent;
@@ -182,10 +179,16 @@
                     var builder = parent.$el.parent().data('queryBuilder');
                     return builder;
                 },
-
+                /**
+                 * @param {Rule} rule - the rule to get all the filters.
+                 */
                 getFiltersByRule: function (rule) {
-                    var builder = internalQueryBuilder.parentChildFunctionality.getBuilderByRule(rule).filters;
-                    return builder;
+                    var builder = internalQueryBuilder.parentChildFunctionality.getBuilderByRule(rule);
+                    if (builder === undefined) {
+
+                    }
+                    var filters = builder.filters;
+                    return filters;
                 },
 
                 //get child option string based on parent key
@@ -250,8 +253,6 @@
                                 var childId = inUseRule.filter.childId,
                                     parentRuleLength = inUseRule.parent.rules.length;
 
-
-
                                 // iterate through all the rules in same group
                                 for (var i = 0; i < parentRuleLength; i++) {
                                     var rule = inUseRule.parent.rules[i];
@@ -262,154 +263,162 @@
                                     }
                                 }
 
+                                // if child not found then look for grand children or parents.
                                 if (!childUpdated) {
-                                    internalQueryBuilder.parentChildFunctionality.refreshGrandChildren(inUseRule);
+                                    internalQueryBuilder.parentChildFunctionality.refreshHirachey(inUseRule);
                                 }
                             }
                         } else {
                             if (firstParentRule && (firstParentRule.level === inUseRule.level)) {
                                 internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(firstParentRule, inUseRule);
-                                if (window._TEST_PRINT_) {
-                                    debugger;
-                                }
-                                internalQueryBuilder.parentChildFunctionality.refreshGrandChildren(inUseRule);
-
+                            } else {
+                                internalQueryBuilder.parentChildFunctionality.refreshHirachey(inUseRule);
                             }
                         }
                     }
                 },
+                /**
+                 * Update the grand children of current rule.
+                 * 
+                 * @param {Rule} currentRule 
+                 * @param {string} childId 
+                 * @param {string} parentKey 
+                 */
+                updateChildren: function (currentRule, childId, parentKey) {
+                    var parentUtil = internalQueryBuilder.parentChildFunctionality;
 
-                refreshGrandChildren: function (currentRule) {
-                    if(!currentRule) {
+                    // get all the filters in query builder.
+                    var allFilters = parentUtil.getFiltersByRule(currentRule);
+
+                    // get all fiters which could be a child of current rule.
+                    var childFilters = allFilters.filter(function (filter) {
+                        return filter.id === childId;
+                    });
+
+                    // get all the child rule of current rule.
+                    var childRules = currentRule.parent.rules.filter(function (rule) {
+                        return childFilters.filter(function (childFilter) {
+                            return childFilter.id === rule.filter.id;
+                        }).length > 0;
+                    });
+
+                    // only if current rule has no childre then look for grand child.
+                    if (childRules.length === 0) {
+
+                        // get all the rule which is based of grand child filter.
+                        var grandChildRules = currentRule.parent.rules.filter(function (rule) {
+                            return childFilters.filter(function (childFilter) {
+                                return childFilter.childId === rule.filter.id;
+                            }).length > 0;
+                        });
+
+                        // if grand child rules exists, then update.
+                        if (grandChildRules.length) {
+                            grandChildRules.map(function (grandChildRule) {
+
+                                // get the filter of the rule.
+                                var grandChildFilter =
+                                    childFilters.filter(function (currentGrandChild) {
+                                        return currentGrandChild.childId === grandChildRule.filter.id;
+                                    });
+
+                                // get parent data mapping of the grand child rule. ex :- all US states.
+                                var parentMapping = grandChildFilter[0].parentChildFilterMapping.filter(function (parentDataMapping) {
+                                    return parentDataMapping.ParentKey === parentKey;
+                                });
+
+                                // get all grand child data mapping of grand child rule. ex :- all NY counties.
+                                var grandChildMapping = grandChildRule.filter.parentChildFilterMapping.filter(function (grandChild) {
+                                    var isChildData = false;
+                                    parentMapping[0].ChildDataList.map(function (childData) {
+                                        if (childData.Key === grandChild.ParentKey) {
+                                            isChildData = true;
+                                        }
+                                    });
+
+                                    return isChildData;
+                                });
+
+                                var grandChildOptionListString = '';
+
+                                // aggregrate all grand child data of current rule. ex :- counties of the country.
+                                parentMapping[0].ChildDataList.map(function (childData) {
+                                    grandChildOptionListString += internalQueryBuilder.parentChildFunctionality.getOptionListString(childData.Key, grandChildMapping);
+                                });
+
+                                internalQueryBuilder.commonFunctions.rebindSelectInput(grandChildRule, grandChildOptionListString);
+                            });
+                        }
+                    }
+                },
+
+                /**
+                 * Update parent dropdown to propagate the changes to children.
+                 * 
+                 * @param {Rule} currentRule The currently updated rule.
+                 * @param {string} parentId The parent id of the rule.
+                 */
+                updateParents: function (currentRule, parentId) {
+                    var parentUtil = internalQueryBuilder.parentChildFunctionality;
+                    // get all the filters in query builder.
+                    var allFilters = parentUtil.getFiltersByRule(currentRule);
+
+                    // get all fiters which could be a parent of current rule.
+                    var parentFilters = allFilters.filter(function (filter) {
+                        return filter.id === parentId;
+                    });
+
+                    // get all the parent rules of current rule.
+                    var parentRules = currentRule.parent.rules.filter(function (rule) {
+                        return parentFilters.filter(function (parentFilter) {
+                            return parentFilter.id === rule.filter.id;
+                        }).length > 0;
+                    });
+
+                    // if parent rules are not present, then look for grand parents.
+                    if (parentRules.length === 0) {
+                        // get all the rules which is based of grand parent filters.
+                        var grandParentRules = currentRule.parent.rules.filter(function (rule) {
+                            return parentFilters.filter(function (parentFilter) {
+                                return parentFilter.parentId === rule.filter.id;
+                            }).length > 0;
+                        });
+                        // if grand parent rules exists, then update.
+                        if (grandParentRules.length) {
+
+                            grandParentRules.map(function (grandParentRule) {
+                                // fire change event of grand parent, then query builder will update the child rules.
+                                // make sure update happen only once per child rule change.
+                                if (grandParentRule.filter.updateHash === undefined || grandParentRule.filter.updateHash !== currentRule.filter.updateHash) {
+                                    grandParentRule.$el.find(internalQueryBuilder.config.constant.select).last().change();
+                                    var hash = new Date();
+                                    grandParentRule.filter.updateHash = hash;
+                                    currentRule.filter.updateHash = hash;
+                                }
+                            });
+                        }
+                    }
+
+                },
+
+                refreshHirachey: function (currentRule) {
+                    if (!currentRule) {
                         return;
                     }
-                    
+
                     var parentKey = currentRule.value;
                     var childId = currentRule.filter.childId;
                     var parentId = currentRule.filter.parentId;
                     var parentUtil = internalQueryBuilder.parentChildFunctionality;
-                    if (window._TEST_PRINT_) {
-                        debugger;
-                    }
 
                     // if current rule could have children, the update them.
                     if (childId) {
-                        // get all the filters in query builder.
-                        var allFilters = parentUtil.getFiltersByRule(currentRule);
-
-                        // get all fiters which could be a child of current rule.
-                        var childFilters = allFilters.filter(function (filter) {
-                            return filter.id === childId;
-                        });
-
-                        // get all the child rule of current rule.
-                        var childRules = currentRule.parent.rules.filter(function (rule) {
-                            return childFilters.filter(function (childFilter) {
-                                return childFilter.id === rule.filter.id;
-                            }).length > 0;
-                        });
-
-                        // only if current rule has no childre then look for grand child.
-                        if (childRules.length === 0) {
-
-                            // get all the grand child filter of the current rule.
-                            var grandChildFilters = allFilters.filter(function (filter) {
-                                return childFilters.filter(function (childFilter) {
-                                    return childFilter.id === filter.id;
-                                }).length > 0;
-                            });
-
-                            // get all the rule which is based of grand child filter.
-                            var grandChildRules = currentRule.parent.rules.filter(function (rule) {
-                                return grandChildFilters.filter(function (childFilter) {
-                                    return childFilter.childId === rule.filter.id;
-                                }).length > 0;
-                            });
-
-                            // if grand child rules exists, then update.
-                            if (grandChildRules.length) {
-                                grandChildRules.map(function (grandChildRule) {
-
-                                    // get the filter of the rule.
-                                    var grandChildFilter =
-                                        grandChildFilters.filter(function (currentGrandChild) {
-                                            return currentGrandChild.childId === grandChildRule.filter.id;
-                                        });
-                                    
-                                    // get parent data mapping of the grand child rule. ex :- all US states.
-                                    var parentMapping = grandChildFilter[0].parentChildFilterMapping.filter(function (parentDataMapping) {
-                                        return parentDataMapping.ParentKey === parentKey;
-                                    });
-
-                                    // get all grand child data mapping of grand child rule. ex :- all NY counties.
-                                    var grandChildMapping = grandChildRule.filter.parentChildFilterMapping.filter(function (grandChild) {
-                                        var isChildData = false;
-                                        parentMapping[0].ChildDataList.map(function (childData) {
-                                            if (childData.Key === grandChild.ParentKey) {
-                                                isChildData = true;
-                                            }
-                                        });
-
-                                        return isChildData;
-                                    });
-
-                                    var grandChildOptionListString = '';
-                                    
-                                    // aggregrate all grand child data of current rule. ex :- counties of the country.
-                                    parentMapping[0].ChildDataList.map(function (childData) {
-                                        grandChildOptionListString += internalQueryBuilder.parentChildFunctionality.getOptionListString(childData.Key, grandChildMapping);
-                                    });
-
-                                    internalQueryBuilder.commonFunctions.rebindSelectInput(grandChildRule, grandChildOptionListString);
-                                });
-                            }
-                        }
+                        parentUtil.updateChildren(currentRule, childId, parentKey);
                     }
 
                     // if current rule is child then, update this based on parents.
-                    if(parentId) {
-                        // get all the filters in query builder.
-                        var allFilters = parentUtil.getFiltersByRule(currentRule);
-
-                        // get all fiters which could be a parent of current rule.
-                        var parentFilters = allFilters.filter(function (filter) {
-                            return filter.id === parentId;
-                        });
-
-                        // get all the parent rules of current rule.
-                        var parentRules = currentRule.parent.rules.filter(function (rule) {
-                            return parentFilters.filter(function (parentFilter) {
-                                return parentFilter.id === rule.filter.id;
-                            }).length > 0;
-                        });
-
-                        // if parent rules are not present, then look for grand parents.
-                        if(parentRules.length === 0){
-                            // get all the grand parent filter of the current rule.
-                            var grandParentFilters = allFilters.filter(function (filter) {
-                                return parentFilters.filter(function (parentFilter) {
-                                    return parentFilter.id === filter.id;
-                                }).length > 0;
-                            });
-
-                            // get all the rules which is based of grand parent filters.
-                            var grandParentRules = currentRule.parent.rules.filter(function (rule) {
-                                return grandParentFilters.filter(function (parentFilter) {
-                                    return parentFilter.parentId === rule.filter.id;
-                                }).length > 0;
-                            });
-
-                            // if grand parent rules exists, then update.
-                            if (grandParentRules.length) {
-                                grandParentRules.map(function (grandParentRule) {
-                                    if(grandParentRule.filter.updatedBy !== currentRule.$el){
-                                        grandParentRule.$el.find('select').last().change();
-                                        grandParentRule.filter.updatedBy = currentRule.$el;
-                                    }
-                                     
-                                });
-                            }
-                        }
+                    if (parentId) {
+                        parentUtil.updateParents(currentRule, parentId);
                     }
 
                 },

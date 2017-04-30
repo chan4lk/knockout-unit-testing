@@ -1,7 +1,7 @@
 // Karma configuration
 // Generated on Fri Nov 04 2016 21:19:27 GMT+0530 (Sri Lanka Standard Time)
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -52,8 +52,7 @@ module.exports = function(config) {
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-    },
+    preprocessors: {},
 
 
     // test results reporter to use
@@ -80,7 +79,26 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: [/*'PhantomJS', */ 'Chrome',/*'Firefox'*/],
+    browsers: [ /*'PhantomJS',  'Chrome', 'Firefox'*/ 'ChromeDebugging'],
+
+    plugins: [
+      // Karma will require() these plugins
+      "karma-chrome-launcher",
+      //"karma-firefox-launcher",
+      //"karma-ie-launcher",
+      "karma-jasmine",
+      "karma-jquery-jasmine",
+      //"karma-phantomjs-launcher",
+      "karma-spec-reporter",
+      //"karma-xml-reporter",    
+    ],
+    customLaunchers: {
+      ChromeDebugging: {
+        base: 'Chrome',
+        flags: ['--remote-debugging-port=9333']
+      }
+    },
+
 
 
     // Continuous Integration mode
