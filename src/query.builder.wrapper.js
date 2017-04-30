@@ -449,7 +449,7 @@
                     var parentId = currentRule.filter.parentId;
 
                     /**
-                     * @type {Function}
+                     * @type {internalQueryBuilder.parentChildFunctionality}
                      */
                     var parentUtil = internalQueryBuilder.parentChildFunctionality;
 
