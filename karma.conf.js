@@ -27,7 +27,7 @@ module.exports = function (config) {
       //'src/ko/viewModel.js',
       /*'test/*.spec.js',*/
       './src/builder.plugin.js',
-      'test/querybuilder.spec.js',
+      './test/querybuilder.spec.js',
       './test/builder.spec.js',
       {
         pattern: 'test/mocks/*.html',

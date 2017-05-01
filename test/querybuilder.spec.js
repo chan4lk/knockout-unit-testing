@@ -10,6 +10,15 @@ if (!Array.prototype.last) {
     };
 };
 
+/**
+ * Add a rule to the query builder with 
+ * query builder internal methods.
+ * 
+ * @param {QueryBuilder} instance The query builder
+ * @param {any} data The data.
+ * @param {any} group The rule group.
+ * @returns 
+ */
 function addRule(instance, data, group) {
     if (data.id === undefined) {
         throw new Error('Missing rule field id');
@@ -45,332 +54,382 @@ function addRule(instance, data, group) {
 
 jasmine.getFixtures().fixturesPath = '/base/test/mocks';
 jasmine.getJSONFixtures().fixturesPath = '/base/test/mocks';
-describe('Query Builder', function () {
-    window.showlightbox = () => {};
-    let builderDiv = $('.builder-widgets');
-    const selectors = {
-        add_rule: '[data-add=rule]'
-    };
+describe('Query Builder', () => {
 
-    beforeEach(() => {
-        loadFixtures('QueryBuilder.html');
-        builderDiv = $('.builder-widgets');
-        var filterCriteria = getJSONFixture('filters.json');
-        builderDiv.QueryBuilderWrapper(filterCriteria);
-    });
-
-    it('should be defined', function () {
-        expect(builderDiv.queryBuilder).toBeDefined();
-    });
-
-    it('should return sql', function () {
-
-        builderDiv.queryBuilder('setRules', {
-            condition: 'OR',
-            rules: [{
-                    id: 'Country',
-                    operator: 'equal',
-                    /*value: '224'*/
-                },
-                {
-                    id: 'StateProvince',
-                    operator: 'equal',
-                    /*value: '3033'*/
-                },
-                {
-                    id: 'County',
-                    operator: 'equal'
-                }
-            ]
-        });
-
-        var sql_raw = builderDiv.queryBuilder('getSQL', false, true);
-
-        expect(sql_raw.sql.length).toBeGreaterThan(0);
-    });
-
-    it('should contain required colums sql', function () {
-        builderDiv.queryBuilder('setRules', {
-            condition: 'OR',
-            rules: [{
-                    id: 'Country',
-                    operator: 'equal',
-                    value: '224' /* "USA - US" */
-                },
-                {
-                    id: 'StateProvince',
-                    operator: 'equal',
-                    value: '3069' /*"New York"*/
-                },
-                {
-                    id: 'County',
-                    operator: 'equal',
-                    value: '1837' /* "WASHINGTON" */
-                }
-            ]
-        });
-
-        var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
-
-        expect(sql_raw.length).toBeGreaterThan(0);
-        expect(sql_raw).toContain('country');
-        expect(sql_raw).toContain('stateProvince');
-        expect(sql_raw).toContain('countyId');
-    });
-
-    it('should add existing filter', function () {
-        builderDiv.queryBuilder('setRules', {
-            condition: 'OR',
-            rules: [{
-                    id: 'Country',
-                    operator: 'equal',
-                    value: '224' /* "USA - US" */
-                },
-                {
-                    id: 'StateProvince',
-                    operator: 'equal',
-                    value: '3069' /*"New York"*/
-                },
-                {
-                    id: 'County',
-                    operator: 'equal',
-                    value: '1837' /* "WASHINGTON" */
-                }
-            ]
-        });
-
-        var rules_info = builderDiv.queryBuilder('getRules');
-        expect(rules_info.rules.length).toEqual(3);
-
-        var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
-        cexpect(sql_raw).to.have.length.greaterThan(0);
-        var builder = builderDiv.data('queryBuilder');
-        var data = {
-            id: 'Country',
-            operator: 'equal',
-            value: '36' /* "Canada - CA" */
+    describe('with real data', function () {
+        window.showlightbox = () => {};
+        let builderDiv = $('.builder-widgets');
+        const selectors = {
+            add_rule: '[data-add=rule]'
         };
 
-        addRule(builder, data);
-        var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
-        rules_info = builderDiv.queryBuilder('getRules');
-        expect(rules_info.rules.length).toEqual(4);
-    });
+        beforeEach(() => {
+            loadFixtures('QueryBuilder.html');
+            builderDiv = $('.builder-widgets');
+            var filterCriteria = getJSONFixture('filters.json');
+            builderDiv.QueryBuilderWrapper(filterCriteria);
+        });
 
-    it('should add new filter', function () {
-        builderDiv.queryBuilder('setRules', {
-            condition: 'OR',
-            rules: [{
+        it('should be defined', function () {
+            expect(builderDiv.queryBuilder).toBeDefined();
+        });
+
+        it('should return sql', function () {
+
+            builderDiv.queryBuilder('setRules', {
+                condition: 'OR',
+                rules: [{
+                        id: 'Country',
+                        operator: 'equal',
+                        /*value: '224'*/
+                    },
+                    {
+                        id: 'StateProvince',
+                        operator: 'equal',
+                        /*value: '3033'*/
+                    },
+                    {
+                        id: 'County',
+                        operator: 'equal'
+                    }
+                ]
+            });
+
+            var sql_raw = builderDiv.queryBuilder('getSQL', false, true);
+
+            expect(sql_raw.sql.length).toBeGreaterThan(0);
+        });
+
+        it('should contain required colums sql', function () {
+            builderDiv.queryBuilder('setRules', {
+                condition: 'OR',
+                rules: [{
+                        id: 'Country',
+                        operator: 'equal',
+                        value: '224' /* "USA - US" */
+                    },
+                    {
+                        id: 'StateProvince',
+                        operator: 'equal',
+                        value: '3069' /*"New York"*/
+                    },
+                    {
+                        id: 'County',
+                        operator: 'equal',
+                        value: '1837' /* "WASHINGTON" */
+                    }
+                ]
+            });
+
+            var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
+
+            expect(sql_raw.length).toBeGreaterThan(0);
+            expect(sql_raw).toContain('country');
+            expect(sql_raw).toContain('stateProvince');
+            expect(sql_raw).toContain('countyId');
+        });
+
+        it('should add existing filter', function () {
+            builderDiv.queryBuilder('setRules', {
+                condition: 'OR',
+                rules: [{
+                        id: 'Country',
+                        operator: 'equal',
+                        value: '224' /* "USA - US" */
+                    },
+                    {
+                        id: 'StateProvince',
+                        operator: 'equal',
+                        value: '3069' /*"New York"*/
+                    },
+                    {
+                        id: 'County',
+                        operator: 'equal',
+                        value: '1837' /* "WASHINGTON" */
+                    }
+                ]
+            });
+
+            var rules_info = builderDiv.queryBuilder('getRules');
+            expect(rules_info.rules.length).toEqual(3);
+
+            var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
+            cexpect(sql_raw).to.have.length.greaterThan(0);
+            var builder = builderDiv.data('queryBuilder');
+            var data = {
+                id: 'Country',
+                operator: 'equal',
+                value: '36' /* "Canada - CA" */
+            };
+
+            addRule(builder, data);
+            var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
+            rules_info = builderDiv.queryBuilder('getRules');
+            expect(rules_info.rules.length).toEqual(4);
+        });
+
+        it('should add new filter', function () {
+            builderDiv.queryBuilder('setRules', {
+                condition: 'OR',
+                rules: [{
+                        id: 'StateProvince',
+                        operator: 'equal',
+                        value: '3069' /*"New York"*/
+                    },
+                    {
+                        id: 'County',
+                        operator: 'equal',
+                        value: '1837' /* "WASHINGTON" */
+                    }
+                ]
+            });
+
+            var rules_info = builderDiv.queryBuilder('getRules');
+            expect(rules_info.rules.length).toEqual(2);
+
+            var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
+            cexpect(sql_raw).to.have.length.greaterThan(0);
+            var builder = builderDiv.data('queryBuilder');
+            var data = {
+                id: 'Country',
+                operator: 'equal',
+                value: '36' /* "Canada - CA" */
+            };
+
+            addRule(builder, data);
+            var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
+            rules_info = builderDiv.queryBuilder('getRules');
+            expect(rules_info.rules.length).toEqual(2);
+        });
+
+        it('should update county after state change', function () {
+            var builder = builderDiv.data('queryBuilder');
+            builder.reset();
+
+            builder.setRules({
+                condition: 'OR',
+                rules: [{
                     id: 'StateProvince',
                     operator: 'equal',
                     value: '3069' /*"New York"*/
-                },
-                {
+                }]
+            });
+
+            const rules_widget = builder.model.root.rules;
+
+            builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
+            rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'
+            rules_widget.last().$el.find('select').last().val('1837').change(); // set value to 'WASHINGTON'
+            rules_widget[0].$el.find('select').last().val('3081').change(); // set state value to 'Virginia'
+            expect(rules_widget[1].$el.find('select').last().val()).toEqual('2820'); // set county value to 'ACCOMACK'
+        });
+
+        it('should update state after country change', function () {
+            var builder = builderDiv.data('queryBuilder');
+            builder.reset();
+
+            // add first rule.
+            builder.setRules({
+                condition: 'OR',
+                rules: [{
+                    id: 'Country',
+                    operator: 'equal',
+                    value: '224' /* "USA - US" */
+                }]
+            });
+
+            const rules_widget = builder.model.root.rules;
+
+            builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
+            rules_widget.last().$el.find('select').val('StateProvince').change(); // set filter to 'StateProvince'
+            rules_widget.last().$el.find('select').last().val('3069').change(); // set value to 'NEW YORK'
+            rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica - CR"'
+            const expected = rules_widget[1].$el.find('select').last().val();
+            expect(expected).toEqual('609'); // expect State value to be 'Alajuela - 2'
+        });
+
+        it('should update state and county after country change', function () {
+            var builder = builderDiv.data('queryBuilder');
+            builder.reset();
+
+            // add first rule.
+            builder.setRules({
+                condition: 'OR',
+                rules: [{
+                        id: 'Country',
+                        operator: 'equal',
+                        value: '224' /* "USA - US" */
+                    },
+                    {
+                        id: 'StateProvince',
+                        operator: 'equal',
+                        value: '3069' /*"New York"*/
+                    },
+                    {
+                        id: 'County',
+                        operator: 'equal',
+                        value: '1837' /* "WASHINGTON" */
+                    }
+                ]
+            });
+
+            let rules_widget = builder.model.root.rules;
+
+            rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica - CR"'
+            const state = rules_widget[1].$el.find('select').last().val();
+            expect(state).toEqual('609');
+            state.should.equal('609'); // expect State value to be 'Alajuela - 2'
+            rules_widget = builder.model.root.rules;
+            cexpect(rules_widget).to.have.length.of(2); // expect County rule to be removed.
+        });
+
+        it('should update county after state change when country is present', function () {
+            var builder = builderDiv.data('queryBuilder');
+            builder.reset();
+
+            // add first rule.
+            builder.setRules({
+                condition: 'OR',
+                rules: [{
+                        id: 'Country',
+                        operator: 'equal',
+                        value: '224' /* "USA - US" */
+                    },
+                    {
+                        id: 'StateProvince',
+                        operator: 'equal',
+                        value: '3069' /*"New York"*/
+                    },
+                    {
+                        id: 'County',
+                        operator: 'equal',
+                        value: '1837' /* "WASHINGTON" */
+                    }
+                ]
+            });
+
+            const rules_widget = builder.model.root.rules;
+
+            rules_widget[1].$el.find('select').last().val('3039').change(); // set State value to '"Connecticut - CT'
+            const county = rules_widget[2].$el.find('select').last().val();
+            expect(county).toEqual('308'); // expect county value to be 'FAIRFIELD'
+            expect(rules_widget.length).toEqual(3); // expect County rule to be removed.
+        });
+
+        it('should update county after country change', function () {
+            var builder = builderDiv.data('queryBuilder');
+            builder.reset();
+
+            // add first rule.
+            builder.setRules({
+                condition: 'OR',
+                rules: [{
+                    id: 'Country',
+                    operator: 'equal',
+                    value: '224' /* "USA - US" */
+                }]
+            });
+
+            let rules_widget = builder.model.root.rules;
+
+            builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
+            rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'
+            rules_widget.last().$el.find('select').last().val('2820').change(); // set value to 'ACCOMACK'
+            rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica - CR"'
+            cexpect(builder.model.root.rules).to.have.lengthOf(1); //County is removed.
+        });
+
+        it('should update county after existing country change', function () {
+            var builder = builderDiv.data('queryBuilder');
+            builder.reset();
+
+            // add first rule.
+            builder.setRules({
+                condition: 'OR',
+                rules: [{
                     id: 'County',
                     operator: 'equal',
                     value: '1837' /* "WASHINGTON" */
-                }
-            ]
+                }]
+            });
+
+            let rules_widget = builder.model.root.rules;
+            builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
+            rules_widget.last().$el.find('select').val('Country').change(); // set filter to 'Country'
+            const county = rules_widget[0].$el.find('select').last().val(); // get County value
+            cexpect(county).to.be.eql('1');
+            cexpect(builder.model.root.rules).to.have.lengthOf(2); //County is there.
         });
 
-        var rules_info = builderDiv.queryBuilder('getRules');
-        expect(rules_info.rules.length).toEqual(2);
+        it('should remove county after existing country change', function () {
+            var builder = builderDiv.data('queryBuilder');
+            builder.reset();
 
-        var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
-        cexpect(sql_raw).to.have.length.greaterThan(0);
-        var builder = builderDiv.data('queryBuilder');
-        var data = {
-            id: 'Country',
-            operator: 'equal',
-            value: '36' /* "Canada - CA" */
+            // add first rule.
+            builder.setRules({
+                condition: 'OR',
+                rules: [{
+                    id: 'Country',
+                    operator: 'equal',
+                    value: '224' /* "WASHINGTON" */
+                }]
+            });
+
+            let rules_widget = builder.model.root.rules;
+            rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica -
+            builderDiv.find(selectors.add_rule).trigger('click'); // add rule.  
+            window._TEST_PRINT_ = true;
+            rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'.        
+            window._TEST_PRINT_ = false;
+            cexpect(builder.model.root.rules).to.have.lengthOf(1); //County is removed.
+            cexpect(builder.model.root.rules[0].filter.id).to.equal('Country'); //County is removed.
+        });
+    });
+
+    describe('with mock data', () => {
+        window.showlightbox = () => {};
+        let builderDiv = $('.builder-widgets');
+        const selectors = {
+            add_rule: '[data-add=rule]'
         };
 
-        addRule(builder, data);
-        var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
-        rules_info = builderDiv.queryBuilder('getRules');
-        expect(rules_info.rules.length).toEqual(2);
-    });
-
-    it('should update county after state change', function () {
-        var builder = builderDiv.data('queryBuilder');
-        builder.reset();
-
-        builder.setRules({
-            condition: 'OR',
-            rules: [{
-                id: 'StateProvince',
-                operator: 'equal',
-                value: '3069' /*"New York"*/
-            }]
+        beforeEach(() => {
+            loadFixtures('QueryBuilder.html');
+            builderDiv = $('.builder-widgets');
+            var filterCriteria = getJSONFixture('mock_filters.json');
+            builderDiv.QueryBuilderWrapper(filterCriteria);
         });
 
-        const rules_widget = builder.model.root.rules;
-
-        builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
-        rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'
-        rules_widget.last().$el.find('select').last().val('1837').change(); // set value to 'WASHINGTON'
-        rules_widget[0].$el.find('select').last().val('3081').change(); // set state value to 'Virginia'
-        expect(rules_widget[1].$el.find('select').last().val()).toEqual('2820'); // set county value to 'ACCOMACK'
-    });
-
-    it('should update state after country change', function () {
-        var builder = builderDiv.data('queryBuilder');
-        builder.reset();
-
-        // add first rule.
-        builder.setRules({
-            condition: 'OR',
-            rules: [{
-                id: 'Country',
-                operator: 'equal',
-                value: '224' /* "USA - US" */
-            }]
+        it('should be defined', function () {
+            expect(builderDiv.queryBuilder).toBeDefined();
         });
 
-        const rules_widget = builder.model.root.rules;
-
-        builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
-        rules_widget.last().$el.find('select').val('StateProvince').change(); // set filter to 'StateProvince'
-        rules_widget.last().$el.find('select').last().val('3069').change(); // set value to 'NEW YORK'
-        rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica - CR"'
-        const expected = rules_widget[1].$el.find('select').last().val();
-        expect(expected).toEqual('609'); // expect State value to be 'Alajuela - 2'
-    });
-
-    it('should update state and county after country change', function () {
-        var builder = builderDiv.data('queryBuilder');
-        builder.reset();
-
-        // add first rule.
-        builder.setRules({
-            condition: 'OR',
-            rules: [{
-                    id: 'Country',
-                    operator: 'equal',
-                    value: '224' /* "USA - US" */
-                },
-                {
-                    id: 'StateProvince',
-                    operator: 'equal',
-                    value: '3069' /*"New York"*/
-                },
-                {
-                    id: 'County',
-                    operator: 'equal',
-                    value: '1837' /* "WASHINGTON" */
-                }
-            ]
+        it('should change state and county on country changed', () => {
+            /**
+             * The builder instance.
+             * @type {QueryBuilder}
+             */
+            var builder = builderDiv.data('queryBuilder');
+            builder.reset();
+            builder.setRules({
+                condition: 'OR',
+                rules: [{
+                        id: 'Country',
+                        operator: 'equal',
+                        /*value: '1'*/
+                    },
+                    {
+                        id: 'StateProvince',
+                        operator: 'equal',
+                        /*value: '1'*/
+                    },
+                    {
+                        id: 'County',
+                        operator: 'equal'
+                    }
+                ]
+            });
         });
-
-        let rules_widget = builder.model.root.rules;
-
-        rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica - CR"'
-        const state = rules_widget[1].$el.find('select').last().val();
-        expect(state).toEqual('609');
-        state.should.equal('609'); // expect State value to be 'Alajuela - 2'
-        rules_widget = builder.model.root.rules;
-        cexpect(rules_widget).to.have.length.of(2); // expect County rule to be removed.
     });
 
-    it('should update county after state change when country is present', function () {
-        var builder = builderDiv.data('queryBuilder');
-        builder.reset();
-
-        // add first rule.
-        builder.setRules({
-            condition: 'OR',
-            rules: [{
-                    id: 'Country',
-                    operator: 'equal',
-                    value: '224' /* "USA - US" */
-                },
-                {
-                    id: 'StateProvince',
-                    operator: 'equal',
-                    value: '3069' /*"New York"*/
-                },
-                {
-                    id: 'County',
-                    operator: 'equal',
-                    value: '1837' /* "WASHINGTON" */
-                }
-            ]
-        });
-
-        const rules_widget = builder.model.root.rules;
-
-        rules_widget[1].$el.find('select').last().val('3039').change(); // set State value to '"Connecticut - CT'
-        const county = rules_widget[2].$el.find('select').last().val();
-        expect(county).toEqual('308'); // expect county value to be 'FAIRFIELD'
-        expect(rules_widget.length).toEqual(3); // expect County rule to be removed.
-    });
-
-    it('should update county after country change', function () {
-        var builder = builderDiv.data('queryBuilder');
-        builder.reset();
-
-        // add first rule.
-        builder.setRules({
-            condition: 'OR',
-            rules: [{
-                id: 'Country',
-                operator: 'equal',
-                value: '224' /* "USA - US" */
-            }]
-        });
-
-        let rules_widget = builder.model.root.rules;
-
-        builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
-        rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'
-        rules_widget.last().$el.find('select').last().val('2820').change(); // set value to 'ACCOMACK'
-        rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica - CR"'
-        cexpect(builder.model.root.rules).to.have.lengthOf(1); //County is removed.
-    });
-
-    it('should update county after existing country change', function () {
-        var builder = builderDiv.data('queryBuilder');
-        builder.reset();
-
-        // add first rule.
-        builder.setRules({
-            condition: 'OR',
-            rules: [{
-                id: 'County',
-                operator: 'equal',
-                value: '1837' /* "WASHINGTON" */
-            }]
-        });
-
-        let rules_widget = builder.model.root.rules;
-        builderDiv.find(selectors.add_rule).trigger('click'); // add rule.
-        rules_widget.last().$el.find('select').val('Country').change(); // set filter to 'Country'
-        const county = rules_widget[0].$el.find('select').last().val(); // get County value
-        cexpect(county).to.be.eql('1');
-        cexpect(builder.model.root.rules).to.have.lengthOf(2); //County is there.
-    });
-
-    it('should remove county after existing country change', function () {
-        var builder = builderDiv.data('queryBuilder');
-        builder.reset();
-
-        // add first rule.
-        builder.setRules({
-            condition: 'OR',
-            rules: [{
-                id: 'Country',
-                operator: 'equal',
-                value: '224' /* "WASHINGTON" */
-            }]
-        });
-
-        let rules_widget = builder.model.root.rules;
-        rules_widget[0].$el.find('select').last().val('48').change(); // set Country value to '"Costa Rica -
-        builderDiv.find(selectors.add_rule).trigger('click'); // add rule.  
-        window._TEST_PRINT_ = true;
-        rules_widget.last().$el.find('select').val('County').change(); // set filter to 'County'.        
-        window._TEST_PRINT_ = false;
-        cexpect(builder.model.root.rules).to.have.lengthOf(1); //County is removed.
-        cexpect(builder.model.root.rules[0].filter.id).to.equal('Country'); //County is removed.
-    });
 });

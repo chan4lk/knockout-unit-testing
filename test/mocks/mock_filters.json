@@ -1,0 +1,108 @@
+{
+    "allowGroups": true,
+    "filters": [
+        {
+            "id": "Country",
+            "childId": "StateProvince",
+            "field": "country",
+            "label": "Country",
+            "type": "integer",
+            "placeholder": null,
+            "input": "select",
+            "values": {
+                "1": "USA - US",
+                "2": "Canada - CA",
+                "3": "Sri Lanka - SL"
+            },
+            "multiple": false,
+            "operators": ["equal"],
+            "validation": null,
+            "sortInAlphabetically": true
+        },
+        {
+            "parentId": "Country",
+            "id": "StateProvince",
+            "childId": "County",
+            "field": "stateProvince",
+            "label": "State/Province",
+            "type": "integer",
+            "placeholder": null,
+            "input": "select",
+            "values": {
+                "1": "New York - US",
+                "2": "Prince Edward Island - CA",
+                "3": "Colombo - SL"
+            },
+            "multiple": false,
+            "operators": ["equal"],
+            "validation": null,
+            "sortInAlphabetically": true,
+            "parentChildFilterMapping": [{
+                    "ParentKey": "1",
+                    "ChildDataList": [{
+                        "Key": "1",
+                        "Value": "New York - US"
+                    }]
+                },
+                {
+                    "ParentKey": "2",
+                    "ChildDataList": [{
+                        "Key": "2",
+                        "Value": "Prince Edward Island - CA"
+                    }]
+                },
+                {
+                    "ParentKey": "3",
+                    "ChildDataList": [{
+                        "Key": "3",
+                        "Value": "Colombo - SL"
+                    }]
+                }
+            ]
+        },
+        {
+            "parentId": "StateProvince",
+            "id": "County",
+            "childId": null,
+            "field": "countyId",
+            "label": "County",
+            "type": "integer",
+            "placeholder": null,
+            "input": "select",
+            "values": {
+                "1": "WASHINGTON - US - NY",
+                "2": "Edward Island - CA - PEI",
+                "3": "Dematagoda - SL - CL"
+            },
+            "multiple": false,
+            "operators": ["equal"],
+            "validation": null,
+            "sortInAlphabetically": true,
+            "parentChildFilterMapping": [{
+                    "ParentKey": "1",
+                    "ChildDataList": [{
+                        "Key": "1",
+                        "Value": "WASHINGTON - US - NY"
+                    }]
+                },
+                {
+                    "ParentKey": "2",
+                    "ChildDataList": [{
+                        "Key": "2",
+                        "Value": "Edward Island - CA - PEI"
+                    }]
+                },
+                {
+                    "ParentKey": "3",
+                    "ChildDataList": [{
+                        "Key": "3",
+                        "Value": "Dematagoda - SL - CL"
+                    }]
+                }
+            ]
+        }
+    ],
+    "allow_groups": true,
+    "select_placeholder": "Select",
+    "event": {}
+}
