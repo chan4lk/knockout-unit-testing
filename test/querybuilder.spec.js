@@ -1,8 +1,9 @@
 /// <reference path="../src/query-builder.standalone.d.ts" />
+/// <reference path="../node_modules/chai/chai.js" />
 
 'use strict';
 var cexpect = chai.expect;
-chai.should();
+var should = chai.should();
 
 if (!Array.prototype.last) {
     Array.prototype.last = function () {
@@ -120,7 +121,6 @@ describe('Query Builder', () => {
                     }
                 ]
             });
-
             var sql_raw = builderDiv.queryBuilder('getSQL', false, true).sql;
 
             expect(sql_raw.length).toBeGreaterThan(0);
@@ -411,24 +411,27 @@ describe('Query Builder', () => {
              */
             var builder = builderDiv.data('queryBuilder');
             builder.reset();
-            builder.setRules({
-                condition: 'OR',
-                rules: [{
-                        id: 'Country',
-                        operator: 'equal',
-                        /*value: '1'*/
-                    },
-                    {
-                        id: 'StateProvince',
-                        operator: 'equal',
-                        /*value: '1'*/
-                    },
-                    {
-                        id: 'County',
-                        operator: 'equal'
-                    }
-                ]
-            });
+
+            let rules_widget = builder.model.root.rules;
+
+            rules_widget[0].$el.find('select').val('Country').change(); // set value to Country
+            rules_widget[0].$el.find('select').last().val('1').change(); // set Country value to 'US'
+
+            builderDiv.find(selectors.add_rule).trigger('click'); // add rule
+            rules_widget[1].$el.find('select').val('StateProvince').change(); // set value to Country
+            //rules_widget[1].$el.find('select').last().val('1').change(); // set Country value to 'US'
+
+            builderDiv.find(selectors.add_rule).trigger('click'); // add rule
+            rules_widget[2].$el.find('select').val('County').change(); // set value to Country
+            //rules_widget[2].$el.find('select').last().val('1').change(); // set Country value to 'US'
+            //rules_widget[0].$el.find('select').last().val('1').change();
+            console.log(rules_widget[1].$el.find('select').last());
+            //console.log(rules_widget[2].$el.find('select'));
+            var sql = builder.getSQL(false, true).sql;
+            cexpect(sql).to.contain('country = 1');
+            cexpect(sql).to.contain('stateProvince = 1');
+            cexpect(sql).to.contain('countyId = 1');
+
         });
     });
 

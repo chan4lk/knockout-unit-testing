@@ -1,5 +1,5 @@
 
-interface JQuery  {
+interface JQuery {
 
     /**
      * Create the query builder.
@@ -9,7 +9,7 @@ interface JQuery  {
      * 
      * @memberof JQuery
      */
-    queryBuilder(options:any): QueryBuilder;
+    queryBuilder(options: any): QueryBuilder;
 
     /**
      * Call the Query builder methods by name.
@@ -20,8 +20,8 @@ interface JQuery  {
      * 
      * @memberof JQuery
      */
-    queryBuilder(method:string, ...options:any): QueryBuilder;
-    
+    queryBuilder(method: string, ...options: any): QueryBuilder;
+
     /**
      * Create Query builder wrapper.
      * 
@@ -30,11 +30,11 @@ interface JQuery  {
      * 
      * @memberof JQuery
      */
-    QueryBuilderWrapper(options:any): QueryBuilder;
+    QueryBuilderWrapper(options: any): QueryBuilder;
 
 }
 
-interface QueryBuilder extends JQuery{
+interface QueryBuilder extends JQuery {
     /**
      * Add a new rule to the group.
      * 
@@ -43,7 +43,7 @@ interface QueryBuilder extends JQuery{
      * 
      * @memberof QueryBuilder
      */
-    addRule(group:any):any;
+    addRule(group: any): any;
 
     /**
      * Set Rules for the query builder.
@@ -52,17 +52,76 @@ interface QueryBuilder extends JQuery{
      * 
      * @memberof QueryBuilder
      */
-    setRules(group:RuleGroup);
+    setRules(group: RuleGroup);
 
-    reset():void;
+    /**
+     * Reset all the rules.
+     * 
+     * @memberof QueryBuilder
+     */
+    reset(): void;
 }
 
-export interface Rule {
-	id: string;
-	operator: string;
+/**
+ * Single Rule in the query builder group.
+ * 
+ * @interface Rule
+ */
+interface Rule {
+	/**
+     * The filter identifier.
+     * 
+     * @type {string}
+     * @memberof Rule
+     */
+    id: string;
+
+	/**
+     * The operator type
+     * ex :- equals, contains.
+     * 
+     * @type {string}
+     * @memberof Rule
+     */
+    operator: string;
+
+    /**
+     * The filter information
+     * 
+     * @type {Filter}
+     * @memberof Rule
+     */
+    filter: Filter;
+
+    parent:any;
+
+    model:any;
 }
 
-export interface RuleGroup {
-	condition: string;
-	rules: Rule[];
+interface Filter {
+    childId?: string;
+    parentId?: string;
+    id: string;
+    parentChildFilterMapping: Array<any>;
+
 }
+
+interface RuleGroup {
+	/**
+     * The rule group condition : OR, AND
+     * 
+     * @type {string}
+     * @memberof RuleGroup
+     */
+    condition: Condition;
+
+	/**
+     * All the rules in the group.
+     * 
+     * @type {Rule[]}
+     * @memberof RuleGroup
+     */
+    rules: Rule[];
+}
+
+type Condition = 'OR' | 'AND';

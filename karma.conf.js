@@ -15,14 +15,14 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/jquery/dist/jquery.min.js',
-      'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
-      'node_modules/knockout/build/output/knockout-latest.debug.js',
-      'node_modules/chai/chai.js',
+      './node_modules/jquery/dist/jquery.min.js',
+      './node_modules/jasmine-jquery/lib/jasmine-jquery.js',
+      './node_modules/knockout/build/output/knockout-latest.debug.js',
+      './node_modules/chai/chai.js',
       // 'src/program.enrollmentform.common.js',
       // 'src/program.enrollmentform.*.js',
-      'src/query-builder.standalone.js',
-      'src/query.builder.wrapper.js',
+      './src/query-builder.standalone.js',
+      './src/query.builder.wrapper.js',
       // 'src/company.search.js',
       //'src/ko/viewModel.js',
       /*'test/*.spec.js',*/
@@ -30,13 +30,13 @@ module.exports = function (config) {
       './test/querybuilder.spec.js',
       './test/builder.spec.js',
       {
-        pattern: 'test/mocks/*.html',
+        pattern: './test/mocks/*.html',
         watched: true,
         served: true,
         included: false
       },
       {
-        pattern: 'test/mocks/*.json',
+        pattern: './test/mocks/*.json',
         watched: true,
         served: true,
         included: false
@@ -46,7 +46,7 @@ module.exports = function (config) {
 
     // list of files to exclude
     exclude: [
-      'node_modules'
+      './node_modules'
     ],
 
 

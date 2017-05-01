@@ -185,7 +185,7 @@
                     var builder = parent.$el.parent().data('queryBuilder');
                     return builder;
                 },
-                
+
                 /**
                  * Get the all the filters of the query builder instance.
                  * 
@@ -247,41 +247,9 @@
 
                 //analyze child
                 analyzeChild: function (inUseRule) {
-                    var childUpdated = false;
+                    var util = internalQueryBuilder.parentChildFunctionality;
                     if (inUseRule) {
-                        var firstParentRule = internalQueryBuilder.parentChildFunctionality.getFirstParentRuleOfGroup(inUseRule);
-
-                        // if in use rule is a parent
-                        if (inUseRule.filter.childId) {
-                            //if in use rule and first parent are same, then we need to populate children.
-                            if (firstParentRule.id === inUseRule.id) {
-
-                                // ex: State
-                                var childId = inUseRule.filter.childId,
-                                    parentRuleLength = inUseRule.parent.rules.length;
-
-                                // iterate through all the rules in same group
-                                for (var i = 0; i < parentRuleLength; i++) {
-                                    var rule = inUseRule.parent.rules[i];
-                                    //select child in group whiteout considering nested group rules.
-                                    if (rule && rule.filter && rule.level === inUseRule.level && rule.filter.id === childId) {
-                                        internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(inUseRule, rule);
-                                        childUpdated = true;
-                                    }
-                                }
-
-                                // if child not found then look for grand children or parents.
-                                if (!childUpdated) {
-                                    internalQueryBuilder.parentChildFunctionality.refreshHirachey(inUseRule);
-                                }
-                            }
-                        } else {
-                            if (firstParentRule && (firstParentRule.level === inUseRule.level)) {
-                                internalQueryBuilder.parentChildFunctionality.refreshChildDataBasedOnParent(firstParentRule, inUseRule);
-                            } else {
-                                internalQueryBuilder.parentChildFunctionality.refreshHirachey(inUseRule);
-                            }
-                        }
+                        util.refreshHirachey(inUseRule);
                     }
                 },
                 /**
@@ -302,7 +270,10 @@
                         return filter.id === childId;
                     });
 
-                    // get all the child rule of current rule.
+                    /**
+                     * get all the child rule of current rule.
+                     * @type {Array<Rule>}
+                     */
                     var childRules = currentRule.parent.rules.filter(function (rule) {
                         return childFilters.filter(function (childFilter) {
                             return childFilter.id === rule.filter.id;
@@ -356,6 +327,10 @@
                                 internalQueryBuilder.commonFunctions.rebindSelectInput(grandChildRule, grandChildOptionListString);
                             });
                         }
+                    } else {
+                        childRules.map(function (childRule) {
+                            parentUtil.refreshChildDataBasedOnParent(currentRule, childRule);
+                        });
                     }
                 },
 
@@ -417,6 +392,14 @@
                                     currentRule.filter.updateHash = hash;
                                 }
                             });
+                        }
+                    } else {
+                        var parent = parentUtil.getFirstParentRuleOfGroup(currentRule);
+                        if (parent.filter.updateHash === undefined || parent.filter.updateHash !== currentRule.filter.updateHash) {
+                            parent.$el.find(internalQueryBuilder.config.constant.select).last().change();
+                            var hash = new Date();
+                            parent.filter.updateHash = hash;
+                            currentRule.filter.updateHash = hash;
                         }
                     }
 
@@ -487,27 +470,32 @@
                     }
                 },
 
-                //get first parent rule of group
+                /**
+                 * get first parent rule of group
+                 * @param {Rule} inUseRule The rule in query builder.
+                 */
                 getFirstParentRuleOfGroup: function (inUseRule) {
-                    var parentId = null,
-                        ruleLength = inUseRule.parent.rules.length,
-                        rule = null;
-
-                    // select in use rule as parent if child id exist
-                    if (inUseRule.filter.childId) {
-                        // select in use rule as parent
-                        parentId = inUseRule.filter.id;
-                    } else {
-                        // when child. get it's parent filter id
-                        parentId = inUseRule.filter.parentId;
+                    if (inUseRule.filter.childId === undefined && inUseRule.filter.parentId === undefined) {
+                        return null;
                     }
 
-                    //loop through all loops
-                    for (var i = 0; i < ruleLength; i++) {
-                        rule = inUseRule.parent.rules[i];
-                        if (rule.filter && (rule.level === inUseRule.level) && (parentId === rule.filter.id)) {
-                            return rule;
-                        }
+                    /**
+                     * @type {Rule}
+                     */
+                    var parent = inUseRule;
+
+                    /**
+                     * @type {Array<any>}
+                     */
+                    var rules = inUseRule.parent.rules;
+
+                    while (parent.filter.parentId !== undefined) {
+                        rules.map(function (rule) {
+                            if (parent.filter.parentId === rule.filter.id) {
+                                parent = rule;
+                                return;
+                            }
+                        });
                     }
 
                     return null;
