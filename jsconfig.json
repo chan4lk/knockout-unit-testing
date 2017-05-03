@@ -9,7 +9,8 @@
    "typeAcquisition": {
        "enable": true,
        "include": [
-           "chai"
-       ]       
+           "chai",
+           "jqwidgets-framework"
+       ]
    }
 }

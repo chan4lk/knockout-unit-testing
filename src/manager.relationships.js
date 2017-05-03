@@ -1,17 +1,17 @@
-//<-- version UAT 2.1.14 -->
+//<-- version HYP_PH2_1.0.1 -->
 var ManageRelationships = { // Manage Relationships namespace
 
     //#region Objects
-    config: {}, // configuration   
-    service: {}, //service      
-    events: {}, //static events 
-    dataManager: {}, //data manager    
-    gridEvents: {}, // grid related events   
+    config: {}, // configuration
+    service: {}, //service
+    events: {}, //static events
+    dataManager: {}, //data manager
+    gridEvents: {}, // grid related events
     validations: {}, //validations
     collections: {}, // collections to hold data
     //#endregion
 
-};
+}
 
 ManageRelationships.config = (function () {
 
@@ -603,7 +603,7 @@ ManageRelationships.events = (function () {
                 privateShowMessage(ManageRelationships.collections.initialData.Entity.Messages.PricingDeactivated,
                     constants.relationshipPopupMessageDivId,
                     constants.relationshipMessagePopupWrapperDivId);
-            }else{
+            } else {
                 privateShowMessage(ManageRelationships.collections.initialData.Entity.Messages.Deactivation,
                     constants.relationshipPopupMessageDivId,
                     constants.relationshipMessagePopupWrapperDivId);
@@ -731,14 +731,19 @@ ManageRelationships.events = (function () {
                     var currentdBrand = primaryBrands[i];
 
                     for (var j = 0; j < rows.length; j++) {
+
                         var brandId = grid.jqxGrid(ManageRelationships.config.constants.getCellValueKey, j,
-                            ManageRelationships.config.gridColumnDataFields.brandId);
-                        if (currentdBrand.Id === brandId) {
+                                ManageRelationships.config.gridColumnDataFields.brandId),
+
+                            statusId = grid.jqxGrid(ManageRelationships.config.constants.getCellValueKey, j,
+                                ManageRelationships.config.gridColumnDataFields.statusId);
+
+                        if (currentdBrand.Id === brandId && statusId === 1) {
                             itemInArray = true;
                             break;
                         }
-
                     }
+
                     if (!itemInArray) {
                         filteredBrands.push({
                             Id: currentdBrand.Id,
@@ -1127,7 +1132,7 @@ ManageRelationships.dataManager = (function () {
             companyRelationshipIdColumn.datafield = ManageRelationships.config.gridColumnDataFields.companyRelationshipId;
             companyRelationshipIdColumn.hidden = "true";
             commonGridColumns.push(companyRelationshipIdColumn);
-            //#endregion 
+            //#endregion
 
             //#region Distributor Company Id Column
             //Define hidden column to keep the distributor company id
@@ -1167,7 +1172,7 @@ ManageRelationships.dataManager = (function () {
             relationshipTypeIdColumn.datafield = ManageRelationships.config.gridColumnDataFields.relationshipTypeId;
             relationshipTypeIdColumn.hidden = "true";
             commonGridColumns.push(relationshipTypeIdColumn);
-            //#endregion 
+            //#endregion
 
             //#region Company Name Column
             //Define Name column
@@ -1191,7 +1196,7 @@ ManageRelationships.dataManager = (function () {
                 }
             };
             commonGridColumns.push(companyNameColumn);
-            //#endregion 
+            //#endregion
 
             //#region Distributor Company Display Id
             //Define company display id column
@@ -1203,7 +1208,7 @@ ManageRelationships.dataManager = (function () {
             companyIdColumn.editable = false;
             companyIdColumn.cellsformat = "n";
             commonGridColumns.push(companyIdColumn);
-            //#endregion 
+            //#endregion
 
             //#region Company Address1 Column
             //Define address 1 column
@@ -1214,7 +1219,7 @@ ManageRelationships.dataManager = (function () {
             companyAddress1Column.width = "15%";
             companyAddress1Column.editable = false;
             commonGridColumns.push(companyAddress1Column);
-            //#endregion 
+            //#endregion
 
             //#region Valid To Column
             //Define valid to column
@@ -1230,7 +1235,7 @@ ManageRelationships.dataManager = (function () {
                 }
             };
             commonGridColumns.push(validToColumn);
-            //#endregion 
+            //#endregion
 
             //#region Comment Column
             //Define comment column
@@ -1251,7 +1256,7 @@ ManageRelationships.dataManager = (function () {
                 return true;
             }
             commonGridColumns.push(commentColumn);
-            //#endregion 
+            //#endregion
 
             //#region Status Column
             //Define status column
@@ -1267,7 +1272,7 @@ ManageRelationships.dataManager = (function () {
                 }
             };
             commonGridColumns.push(statusColumn);
-            //#endregion 
+            //#endregion
 
             //#region Status Id hidden Column
             //Define status id hidden column
@@ -1278,7 +1283,7 @@ ManageRelationships.dataManager = (function () {
             statusIdColumn.editable = false;
             statusIdColumn.hidden = "true";
             commonGridColumns.push(statusIdColumn);
-            //#endregion 
+            //#endregion
 
             //return populated column array
             return commonGridColumns;
@@ -1379,7 +1384,7 @@ ManageRelationships.dataManager = (function () {
             return commonGridFields;
         },
 
-        // Binding the distributor search related data 
+        // Binding the distributor search related data
         privateBindDistributorSearchPopupData = function (data) {
             $("#" + ManageRelationships.config.constants.distributorSearchDivId).hide();
             privateBindFilterControl(data);
@@ -1417,6 +1422,8 @@ ManageRelationships.dataManager = (function () {
                 if (ManageRelationships.config.screenDataSubmitted && row === 0) {
                     return '<span/>';
                 }
+
+                return value;
             };
             brandColumn.initeditor = function (row, cellvalue, editor) {
                 if (!ManageRelationships.config.screenDataSubmitted) {
@@ -1549,7 +1556,7 @@ ManageRelationships.dataManager = (function () {
                 tierLevelIdColumn.datafield = ManageRelationships.config.gridColumnDataFields.tierLevelId;
                 tierLevelIdColumn.hidden = "true";
                 brandedRelationshipGridColumns.push(tierLevelIdColumn);
-                //#endregion           
+                //#endregion
             }
             //#endregion
 
@@ -1565,11 +1572,11 @@ ManageRelationships.dataManager = (function () {
                 }
                 var gridId = ManageRelationships.config.constants.brandedRelationshipGridId;
                 if (row === 0)
-                    return '<span onclick="ManageRelationships.gridEvents.addBrandedRow(this)"  row="' + row + '" class="add-btn action-icons">';
+                    return '<span onclick="ManageRelationships.gridEvents.addBrandedRow(this)"  row="' + row + '" class="add-btn action-icons" title="Add New Relationship">';
                 else {
                     var relationshipId = privateGetRelationshipId(gridId, row);
                     if (relationshipId === undefined || relationshipId === '') {
-                        return '<span onclick="ManageRelationships.gridEvents.deleteBrandedRow(this)" gridId="' + gridId + '" row="' + row + '" class="inactive-btn action-icons"></span>';
+                        return '<span onclick="ManageRelationships.gridEvents.deleteBrandedRow(this)" gridId="' + gridId + '" row="' + row + '" class="inactive-btn action-icons" title="Remove Relationship"></span>';
                     } else {
                         if (privateIsSameHierarchy(row)) {
                             var status = $(gridId).jqxGrid(
@@ -1577,9 +1584,9 @@ ManageRelationships.dataManager = (function () {
                                 row,
                                 ManageRelationships.config.gridColumnDataFields.status);
                             if (status === ManageRelationships.config.constants.activeStatusText) {
-                                return '<span onclick="ManageRelationships.events.confirmDeactivate(this)" relationshipId="' + relationshipId + '"  gridId="' + gridId + '"  row="' + row + '" class="delete-btn action-icons"></span>';
+                                return '<span onclick="ManageRelationships.events.confirmDeactivate(this)" relationshipId="' + relationshipId + '"  gridId="' + gridId + '"  row="' + row + '" class="delete-btn action-icons" title="Deactivate Relationship"></span>';
                             } else if (status === ManageRelationships.config.constants.deactivatedStatusText) {
-                                return '<span onclick="ManageRelationships.events.confirmActivate(this)" relationshipId="' + relationshipId + '" gridId="' + gridId + '"  row="' + row + '"  class="locator-btn action-icons"></span>';
+                                return '<span onclick="ManageRelationships.events.confirmActivate(this)" relationshipId="' + relationshipId + '" gridId="' + gridId + '"  row="' + row + '"  class="locator-btn action-icons" title="Reactivate Relationship"></span>';
                             }
                         } else {
                             return '<span/>';
@@ -1588,7 +1595,7 @@ ManageRelationships.dataManager = (function () {
                 }
             };
             brandedRelationshipGridColumns.push(actionColumn);
-            //#endregion 
+            //#endregion
 
             //#endregion
 
@@ -1621,7 +1628,7 @@ ManageRelationships.dataManager = (function () {
                 brandedRelationshipGridDataFields,
                 true);
 
-            //#endregion       
+            //#endregion
         },
 
         //Bind pricing & Warranty relationships
@@ -1675,7 +1682,7 @@ ManageRelationships.dataManager = (function () {
                             //Resetting the distributor information when dropdown change
                             ManageRelationships.config.lastSelectedPricingWarrantyDistributorCompany = null;
                             ManageRelationships.config.lastSelectedPricingWarrantyTypeId = null;
-                            //Clearing cell values in the row                        
+                            //Clearing cell values in the row
                             if (grid) {
                                 var gridFields = ManageRelationships.config.gridColumnDataFields;
                                 grid.jqxGrid(constants.setCellValueKey, row, gridFields.companyDisplayId, '');
@@ -1753,26 +1760,26 @@ ManageRelationships.dataManager = (function () {
                 }
                 var gridId = ManageRelationships.config.constants.pricingWarrantyRelationshipGridId;
                 if (row === 0)
-                    return '<span onclick="ManageRelationships.gridEvents.addPricingWarrantyRow(this)" gridId="' + gridId + '" row=' + "'" + row + "'" + 'class="add-btn action-icons">';
+                    return '<span onclick="ManageRelationships.gridEvents.addPricingWarrantyRow(this)" gridId="' + gridId + '" row=' + "'" + row + "'" + 'class="add-btn action-icons" title="Add New Relationship">';
                 else {
                     var relationshipId = privateGetRelationshipId(gridId, row);
                     if (relationshipId === undefined || relationshipId === '') {
-                        return '<span onclick="ManageRelationships.gridEvents.deletePricingWarrantyRow(this)" gridId="' + gridId + '" row=' + "'" + row + "'" + 'class="inactive-btn action-icons"></span>';
+                        return '<span onclick="ManageRelationships.gridEvents.deletePricingWarrantyRow(this)" gridId="' + gridId + '" row=' + "'" + row + "'" + 'class="inactive-btn action-icons" title="Remove Relationship"></span>';
                     } else {
                         var status = $(gridId).jqxGrid(
                             ManageRelationships.config.constants.getCellValueKey,
                             row,
                             ManageRelationships.config.gridColumnDataFields.status);
                         if (status === ManageRelationships.config.constants.activeStatusText) {
-                            return '<span onclick="ManageRelationships.events.confirmDeactivate(this)" gridId="' + gridId + '"  relationshipId="' + relationshipId + '" row="' + row + '" class="delete-btn action-icons"></span>';
+                            return '<span onclick="ManageRelationships.events.confirmDeactivate(this)" gridId="' + gridId + '"  relationshipId="' + relationshipId + '" row="' + row + '" class="delete-btn action-icons" title="Deactivate Relationship"></span>';
                         } else if (status === ManageRelationships.config.constants.deactivatedStatusText) {
-                            return '<span onclick="ManageRelationships.events.confirmActivate(this)" gridId="' + gridId + '" relationshipId="' + relationshipId + '" row="' + row + '" class="locator-btn action-icons"></span>';
+                            return '<span onclick="ManageRelationships.events.confirmActivate(this)" gridId="' + gridId + '" relationshipId="' + relationshipId + '" row="' + row + '" class="locator-btn action-icons" title="Reactivate Relationship"></span>';
                         }
                     }
                 }
             };
             pricingRelationshipGridColumns.push(actionColumn);
-            //#endregion 
+            //#endregion
 
             //#region Data Fields
 
@@ -1888,6 +1895,11 @@ ManageRelationships.gridEvents = (function () {
             var gridRendered = false;
             var grid = $(gridId);
             if (grid) {
+                // grid.on('bindingcomplete', function (event) {
+
+                // });
+                ManageRelationships.renderCount = 0;
+
                 grid.jqxGrid({
                     width: "100%",
                     source: dataAdapter,
@@ -1916,7 +1928,7 @@ ManageRelationships.gridEvents = (function () {
                             var grid = $(gridId)
                             if (grid) {
                                 grid.jqxGrid(constants.setCellValueKey, 0, ManageRelationships.config.gridColumnDataFields.statusId, 1);
-
+                                //
                             }
                         }
                         setTimeout(function () {
@@ -1925,13 +1937,32 @@ ManageRelationships.gridEvents = (function () {
                         setTimeout(function () {
                             $(constants.manageRelationshipBusyImageDiv).hide()
                         }, 10);
+
                     },
                     rendered: function (type) {
                         if (type == "full") {
-                            gridRendered = true;
+                            ManageRelationships.renderCount = ManageRelationships.renderCount || 0;
+                            if (ManageRelationships.renderCount === 3) {
+                                gridRendered = true;
+                            }
+                            ManageRelationships.renderCount++;
                         }
                     },
                 });
+
+                var enableEditMode = setInterval(function () {
+
+                    if ($(ManageRelationships.config.constants.brandedRelationshipGridId).jqxGrid('updating') === false && gridRendered) {
+                       var select = $('#row0brand-relationship-grid').find('.jqx-grid-cell.jqx-item').get(1);
+                       if(select.firstElementChild.nodeName === "INPUT"){
+                         $(ManageRelationships.config.constants.brandedRelationshipGridId).jqxGrid('begincelledit', 0, "BrandName");
+                            clearInterval(enableEditMode);
+                       }
+                        console.count('begincelledit');
+
+                    }
+                }, 25);
+
                 if (source.length < 4) {
                     grid.jqxGrid({
                         autoheight: true
