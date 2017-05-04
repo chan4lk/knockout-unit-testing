@@ -1894,10 +1894,9 @@ ManageRelationships.gridEvents = (function () {
             var dataAdapter = new $.jqx.dataAdapter(gridSource);
             var gridRendered = false;
             var grid = $(gridId);
+            var interval;
             if (grid) {
-                // grid.on('bindingcomplete', function (event) {
 
-                // });
                 ManageRelationships.renderCount = 0;
 
                 grid.jqxGrid({
@@ -1950,15 +1949,20 @@ ManageRelationships.gridEvents = (function () {
                     },
                 });
 
-                var enableEditMode = setInterval(function () {
+                // setTimeout(function () {
+                //     $(ManageRelationships.config.constants.brandedRelationshipGridId).jqxGrid('begincelledit', 0, "BrandName");
+                //     console.count('begincelledit');
+                // }, 3000);
 
+                interval = setInterval(function () {
+                    console.count('checkRendered');
                     if ($(ManageRelationships.config.constants.brandedRelationshipGridId).jqxGrid('updating') === false && gridRendered) {
-                       var select = $('#row0brand-relationship-grid').find('.jqx-grid-cell.jqx-item').get(1);
-                       if(select.firstElementChild.nodeName === "INPUT"){
-                         $(ManageRelationships.config.constants.brandedRelationshipGridId).jqxGrid('begincelledit', 0, "BrandName");
-                            clearInterval(enableEditMode);
-                       }
-                        console.count('begincelledit');
+                        clearInterval(interval);
+                        setTimeout(function () {
+                            $(ManageRelationships.config.constants.brandedRelationshipGridId).jqxGrid('begincelledit', 0, "BrandName");
+
+                            console.count('begincelledit');
+                        }, 25);
 
                     }
                 }, 25);
